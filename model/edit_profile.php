@@ -23,7 +23,7 @@ if (!empty($id)) {
     if ($res->num_rows == 0) {
 
         $_SESSION['message'] = 'User not found!';
-        $_SESSION['success'] = 'danger';
+        $_SESSION['status'] = 'danger';
 
         if (isset($_SERVER["HTTP_REFERER"])) {
             header("Location: " . $_SERVER["HTTP_REFERER"]);
@@ -45,12 +45,12 @@ if (!empty($id)) {
         }
 
         $_SESSION['message'] = "Profile has been updated! Please login again!";
-        $_SESSION['success'] = 'success';
+        $_SESSION['status'] = 'success';
     }
 } else {
 
     $_SESSION['message'] = 'Please fill up the form completely!';
-    $_SESSION['success'] = 'danger';
+    $_SESSION['status'] = 'danger';
 }
 
 if (isset($_SERVER["HTTP_REFERER"])) {

@@ -1,30 +1,32 @@
 <?php include 'server/server.php' ?>
-<?php 
-    $id = $_GET['id'];
-    $query = "SELECT * FROM tblfpscert WHERE id='$id'";
-    $result = $conn->query($query);
-    $request = $result->fetch_assoc();
+<?php
+$id = $_GET['id'];
+$query = "SELECT * FROM tblfpscert WHERE id='$id'";
+$result = $conn->query($query);
+$request = $result->fetch_assoc();
 
-    $c = "SELECT * FROM tblofficials JOIN tblposition ON tblofficials.position=tblposition.id WHERE tblposition.position='Captain'";
-    $captain = $conn->query($c)->fetch_assoc();
+$c = "SELECT * FROM tblofficials JOIN tblposition ON tblofficials.position=tblposition.id WHERE tblposition.position='Captain'";
+$captain = $conn->query($c)->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <?php include 'templates/header.php' ?>
-    <title>4ps certification -  Barangay Services Management System</title>
+    <title>4ps certification - Barangay Services Management System</title>
     <style>
-        @page  
-        { 
-            size: auto;   /* auto is the initial value */ 
+        @page {
+            size: auto;
+            /* auto is the initial value */
 
-            /* this affects the margin in the printer settings */ 
-            margin: 20mm 20mm 20mm 20mm;  
-        } 
+            /* this affects the margin in the printer settings */
+            margin: 20mm 20mm 20mm 20mm;
+        }
     </style>
 </head>
+
 <body>
-<?php include 'templates/loading_screen.php' ?>
+    <?php include 'templates/loading_screen.php' ?>
     <div class="wrapper">
         <!-- Main Header -->
         <?php include 'templates/main-header.php' ?>
@@ -49,11 +51,11 @@
                     <div class="row mt--2">
                         <div class="col-md-12">
 
-                            <?php if(isset($_SESSION['message'])): ?>
-                                <div class="alert alert-<?php echo $_SESSION['success']; ?> <?= $_SESSION['success']=='danger' ? 'bg-danger text-light' : null ?>" role="alert">
+                            <?php if (isset($_SESSION['message'])) : ?>
+                                <div class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
                                     <?php echo $_SESSION['message']; ?>
                                 </div>
-                            <?php unset($_SESSION['message']); ?>
+                                <?php unset($_SESSION['message']); ?>
                             <?php endif ?>
 
                             <div class="card">
@@ -92,65 +94,70 @@
                                             <div class="text-center">
                                                 <h1 class="mt-4 fw-bold mb-5" style="font-size:38px;color:darkblue"> 4ps Beneficiary Clearance</h1>
                                             </div>
-                                             <h2 class="mt-5 fw-bold">TO WHOM IT MAY CONCERN;</h2><br>
-                                             <h3 class="mt-3" style="text-indent: 40px;">This is to certify that
-                                            <b><u><?= ucfirst($request['name']) ?></u></b>, legal age, resident of <span class="fw-bold" style="font-size:18px"><?= ucwords($brgy) ?>, <span class="fw-bold" style="font-size:18px"><?= ucwords($town) ?>,. <span class="fw-bold" style="font-size:18px"><?= ucwords($province) ?>.</span></span></span></h3><br>
+                                            <h2 class="mt-5 fw-bold">TO WHOM IT MAY CONCERN;</h2><br>
+                                            <h3 class="mt-3" style="text-indent: 40px;">This is to certify that
+                                                <b><u><?= ucfirst($request['name']) ?></u></b>, legal age, resident of <span class="fw-bold" style="font-size:18px"><?= ucwords($brgy) ?>, <span class="fw-bold" style="font-size:18px"><?= ucwords($town) ?>,. <span class="fw-bold" style="font-size:18px"><?= ucwords($province) ?>.</span></span></span>
+                                            </h3><br>
 
                                             <h3 class="mt-3" style="text-indent: 40px;">Also certify that <u><b> <?= ucfirst($request['name']) ?></b></u> is a Pantawid Pamilya Pilipino Program beneficiary (4ps). </h3><br>
 
-                                            <h3 class="mt-3" style="text-indent: 40px;">Certified Further that the name stated above is now residing in  <?= ucfirst($request['current_location']) ?>. </h3><br>
+                                            <h3 class="mt-3" style="text-indent: 40px;">Certified Further that the name stated above is now residing in <?= ucfirst($request['current_location']) ?>. </h3><br>
 
 
 
                                             <h3 class="mt-3" style="text-indent: 40px;">Issued this <?= ucfirst($request['applied']) ?> at <span class="fw-bold" style="font-size:18px"><?= ucwords($brgy) ?>, <span class="fw-bold" style="font-size:18px"><?= ucwords($town) ?>,. <span class="fw-bold" style="font-size:18px"><?= ucwords($province) ?>.</span></span></span></h3> <br><br><br><br><br><br>
-                                           
-                                            
-                                            
-                                             <h3 style="text-indent: 400px;" >Certified by:
 
 
 
-                                            <div class="col-md-12">
-                                             <div class="p-3 text-right mr-5" >
-                                                
-
-                                                <h1 class="fw-bold mb-0 text-uppercase"><u><?= ucwords($captain['name']) ?></u></h1>
-                                                <p class="mr-5">PUNONG BARANGAY</p>
-                                            </div>
+                                            <h3 style="text-indent: 400px;">Certified by:
 
 
-                        </form>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Main Footer -->
-            <?php include 'templates/main-footer.php' ?>
-            <!-- End Main Footer -->
-            <?php if(!isset($_GET['closeModal'])){ ?>
-            
-                <script>
-                    setTimeout(function(){ openModal(); }, 1000);
-                </script>
-            <?php } ?>
-        </div>
-        
-    </div>
-    <?php include 'templates/footer.php' ?>
-    <script>
-            function openModal(){
-                $('#pment').modal('show');
-            }
-            function printDiv(divName) {
-                var printContents = document.getElementById(divName).innerHTML;
-                var originalContents = document.body.innerHTML;
+                                                <div class="col-md-12">
+                                                    <div class="p-3 text-right mr-5">
 
-                document.body.innerHTML = printContents;
 
-                window.print();
+                                                        <h1 class="fw-bold mb-0 text-uppercase"><u><?= ucwords($captain['name']) ?></u></h1>
+                                                        <p class="mr-5">PUNONG BARANGAY</p>
+                                                    </div>
 
-                document.body.innerHTML = originalContents;
-            }
-    </script>
+
+                                                    </form>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Main Footer -->
+                                    <?php include 'templates/main-footer.php' ?>
+                                    <!-- End Main Footer -->
+                                    <?php if (!isset($_GET['closeModal'])) { ?>
+
+                                        <script>
+                                            setTimeout(function() {
+                                                openModal();
+                                            }, 1000);
+                                        </script>
+                                    <?php } ?>
+                                </div>
+
+                            </div>
+                            <?php include 'templates/footer.php' ?>
+                            <script>
+                                function openModal() {
+                                    $('#pment').modal('show');
+                                }
+
+                                function printDiv(divName) {
+                                    var printContents = document.getElementById(divName).innerHTML;
+                                    var originalContents = document.body.innerHTML;
+
+                                    document.body.innerHTML = printContents;
+
+                                    window.print();
+
+                                    document.body.innerHTML = originalContents;
+                                }
+                            </script>
 </body>
+
 </html>

@@ -19,17 +19,17 @@ if ($username != '' and $password != '') {
 		}
 
 		$_SESSION['message'] = 'You have successfull logged in to Automated Barangay Services Management System!';
-		$_SESSION['success'] = 'success';
+		$_SESSION['status'] = 'success';
 
 		header('location: ../dashboard.php');
 	} else {
 		$_SESSION['message'] = 'Username or Password is incorrect!';
-		$_SESSION['success'] = 'danger';
+		$_SESSION['status'] = 'danger';
 		header('location: ../login.php');
 	}
 } else {
 	$_SESSION['message'] = 'Username or password is empty!';
-	$_SESSION['success'] = 'danger';
+	$_SESSION['status'] = 'danger';
 	header('location: ../login.php');
 }
 

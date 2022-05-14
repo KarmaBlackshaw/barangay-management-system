@@ -1,34 +1,32 @@
-<?php 
-	include('../server/server.php');
+<?php
+include('../server/server.php');
 
-    if(!isset($_SESSION['username'])){
-        if (isset($_SERVER["HTTP_REFERER"])) {
-            header("Location: " . $_SERVER["HTTP_REFERER"]);
-        }
+if (!isset($_SESSION['username'])) {
+    if (isset($_SERVER["HTTP_REFERER"])) {
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
     }
-    
-	$title 	= $conn->real_escape_string($_POST['chair']);
+}
 
-    if(!empty($title)){
+$title     = $conn->real_escape_string($_POST['chair']);
 
-        $insert  = "INSERT INTO tblchairmanship (`title`) VALUES ('$title')";
-        $result  = $conn->query($insert);
+if (!empty($title)) {
 
-        if($result === true){
-            $_SESSION['message'] = 'Chairmanship added!';
-            $_SESSION['success'] = 'success';
+    $insert  = "INSERT INTO tblchairmanship (`title`) VALUES ('$title')";
+    $result  = $conn->query($insert);
 
-        }else{
-            $_SESSION['message'] = 'Something went wrong!';
-            $_SESSION['success'] = 'danger';
-        }
-
-    }else{
-
-        $_SESSION['message'] = 'Please fill up the form completely!';
-        $_SESSION['success'] = 'danger';
+    if ($result === true) {
+        $_SESSION['message'] = 'Chairmanship added!';
+        $_SESSION['status'] = 'success';
+    } else {
+        $_SESSION['message'] = 'Something went wrong!';
+        $_SESSION['status'] = 'danger';
     }
+} else {
 
-    header("Location: ../chairmanship.php");
+    $_SESSION['message'] = 'Please fill up the form completely!';
+    $_SESSION['status'] = 'danger';
+}
 
-	$conn->close();
+header("Location: ../chairmanship.php");
+
+$conn->close();
