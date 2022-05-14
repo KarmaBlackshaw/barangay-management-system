@@ -41,4 +41,45 @@
     z-index: 9999;
     text-align: center;
   }
+
+  body,
+  html,
+  .preloader {
+    background-color: #18181b !important;
+    color: #a1a1aa;
+  }
+
+  .card {
+    background-color: #27272a;
+  }
+
+  .card-title {
+    color: #d4d4d8;
+  }
+
+  .card-header {
+    border-bottom: 1px solid #27272a !important;
+  }
+
+  .modal-content {
+    background-color: #27272a;
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: #18181b !important;
+    color: #d4d4d8 !important;
+    border-color: #27272a !important;
+  }
+
+  .footer {
+    background-color: #18181b;
+    border-top: 1px solid #27272a;
+  }
+
+  .sidebar-wrapper {
+    background-color: #18181b !important;
+    border-right: 1px solid #27272a;
+  }
 </style>
