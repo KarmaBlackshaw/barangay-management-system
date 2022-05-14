@@ -55,15 +55,13 @@ $settled = $result3->num_rows;
 
 					<?php include 'templates/alert.php' ?>
 
-
-
 					<div class="row mt--2">
 						<div class="col-md-9">
 							<div class="card">
 								<div class="card-header">
 									<div class="card-head-row">
 										<div class="card-title">All Resident</div>
-										<?php if (isset($_SESSION['username'])) : ?>
+										<?php if (isAuthenticated()) : ?>
 											<div class="card-tools">
 												<a href="#add" data-toggle="modal" class="btn btn-info btn-border btn-round btn-sm">
 													<i class="fa fa-plus"></i>
@@ -105,10 +103,10 @@ $settled = $result3->num_rows;
 																	<span class="badge badge-success">Settled</span>
 																<?php endif ?>
 															</td>
-															<?php if (isset($_SESSION['username'])) : ?>
+															<?php if (isAuthenticated()) : ?>
 																<td>
 																	<a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Blotter" onclick="editBlotter1(this)" data-id="<?= $row['id'] ?>" data-complainant="<?= $row['complainant'] ?>" data-respondent="<?= $row['respondent'] ?>" data-victim="<?= $row['victim'] ?>" data-type="<?= $row['type'] ?>" data-l="<?= $row['location'] ?>" data-date="<?= $row['date'] ?>" data-time="<?= $row['time'] ?>" data-details="<?= $row['details'] ?>" data-status="<?= $row['status'] ?>">
-																		<?php if (isset($_SESSION['username'])) : ?>
+																		<?php if (isAuthenticated()) : ?>
 																			<i class="fa fa-edit"></i>
 																		<?php else : ?>
 																			<i class="fa fa-eye"></i>
@@ -117,7 +115,7 @@ $settled = $result3->num_rows;
 																	<a type="button" data-toggle="tooltip" href="generate_blotter_report.php?id=<?= $row['id'] ?>" class="btn btn-link btn-primary" data-original-title="Generate Report">
 																		<i class="fas fa-file-alt"></i>
 																	</a>
-																	<?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
+																	<?php if (isAdmin()) : ?>
 																		<a type="button" data-toggle="tooltip" href="model/remove_blotter.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this blotter?');" class="btn btn-link btn-danger" data-original-title="Remove">
 																			<i class="fa fa-times"></i>
 																		</a>
@@ -135,7 +133,7 @@ $settled = $result3->num_rows;
 													<th scope="col">Victim(s)</th>
 													<th scope="col">Blotter/Incident</th>
 													<th scope="col">Status</th>
-													<?php if (isset($_SESSION['username'])) : ?>
+													<?php if (isAuthenticated()) : ?>
 														<th scope="col">Action</th>
 													<?php endif ?>
 												</tr>
@@ -218,87 +216,41 @@ $settled = $result3->num_rows;
 			</div>
 
 			<!-- Modal -->
-			<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" id="add">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">Manage Blotter</h5>
+							<h5 class="modal-title" id="exampleModalLabel">Register Announcement</h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
 						<div class="modal-body">
-							<form method="POST" action="model/save_blotter.php">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Complainant</label>
-											<input type="text" class="form-control" placeholder="Enter Complainant Name" name="complainant" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Respondent</label>
-											<input type="text" class="form-control" placeholder="Enter Respondent Name" name="respondent" required>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Victim(s)</label>
-											<input type="text" class="form-control" placeholder="Enter Victim(s) Name" name="victim" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Type</label>
-											<select class="form-control" name="type">
-												<option disabled selected>Select Blotter Type</option>
-												<option value="Amicable">Amicable</option>
-												<option value="Incident">Incident</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Location</label>
-											<input type="text" class="form-control" placeholder="Enter Location" name="location" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Date</label>
-											<input type="date" class="form-control" name="date" value="<?= date('Y-m-d'); ?>" required>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Time</label>
-											<input type="time" class="form-control" name="time" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Status</label>
-											<select class="form-control" name="status">
-												<option disabled selected>Select Blotter Status</option>
-												<option value="Active">Active</option>
-												<option value="Settled">Settled</option>
-												<option value="Scheduled">Scheduled</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label>Details</label>
-									<textarea class="form-control" placeholder="Enter Blotter or Incident here..." name="details" required></textarea>
-								</div>
+							<form method="POST" action="model/announcement.php" enctype="multipart/form-data">
+								<input type="hidden" name="register-announcement" value="1">
 
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Title</label>
+											<input type="text" class="form-control" placeholder="Enter title" name="title" required>
+										</div>
+									</div>
+
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Content</label>
+											<textarea type="text" class="form-control" placeholder="Enter content" name="content" required></textarea>
+										</div>
+									</div>
+
+									<div class="col-md-12">
+										<div class="form-group">
+											<label>Thumbnail</label>
+											<input type="file" class="form-control" placeholder="Thumbnail" name="thumbnail" accept="image/png, image/jpeg">
+										</div>
+									</div>
+								</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -395,7 +347,7 @@ $settled = $result3->num_rows;
 						<div class="modal-footer">
 							<input type="hidden" id="blotter_id" name="id">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<?php if (isset($_SESSION['username'])) : ?>
+							<?php if (isAuthenticated()) : ?>
 								<button type="submit" class="btn btn-primary">Update</button>
 							<?php endif ?>
 						</div>
