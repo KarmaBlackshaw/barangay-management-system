@@ -1,12 +1,24 @@
-<?php include 'bootstrap/index.php' ?>
 <?php
+include 'bootstrap/index.php';
+
+use Carbon\Carbon;
+
 $query = "SELECT * FROM tblblotter";
 $result = $conn->query($query);
 
 $blotter = array();
+
+
 while ($row = $result->fetch_assoc()) {
 	$blotter[] = $row;
 }
+
+$announcementList = (function () use ($conn) {
+	$query = "SELECT id, title, content, thumbnail, created_at FROM announcements";
+
+	return  $conn
+		->query($query);
+})();
 
 $query1 = "SELECT * FROM tblblotter WHERE `status`='Active'";
 $result1 = $conn->query($query1);
@@ -26,7 +38,7 @@ $settled = $result3->num_rows;
 
 <head>
 	<?php include 'templates/header.php' ?>
-	<title>Blotter/Incident Complaint - Barangay Services Management System</title>
+	<title>Announcements - Barangay Services Management System</title>
 </head>
 
 <body>
@@ -56,11 +68,11 @@ $settled = $result3->num_rows;
 					<?php include 'templates/alert.php' ?>
 
 					<div class="row mt--2">
-						<div class="col-md-9">
+						<div class="col-md-12">
 							<div class="card">
 								<div class="card-header">
 									<div class="card-head-row">
-										<div class="card-title">All Resident</div>
+										<div class="card-title">Announcement List</div>
 										<?php if (isAuthenticated()) : ?>
 											<div class="card-tools">
 												<a href="#add" data-toggle="modal" class="btn btn-info btn-border btn-round btn-sm">
@@ -76,138 +88,42 @@ $settled = $result3->num_rows;
 										<table id="blottertable" class="display table table-striped">
 											<thead>
 												<tr>
-													<th scope="col">Complainant</th>
-													<th scope="col">Respondent</th>
-													<th scope="col">Victim(s)</th>
-													<th scope="col">Blotter/Incident</th>
-													<th scope="col">Status</th>
+													<th scope="col">Title</th>
+													<th scope="col">Content</th>
+													<th scope="col">Created</th>
 													<?php if (isAdmin()) : ?>
 														<th scope="col">Action</th>
 													<?php endif ?>
 												</tr>
 											</thead>
 											<tbody>
-												<?php if (!empty($blotter)) : ?>
-													<?php foreach ($blotter as $row) : ?>
-														<tr>
-															<td><?= ucwords($row['complainant']) ?></td>
-															<td><?= ucwords($row['respondent']) ?></td>
-															<td><?= ucwords($row['victim']) ?></td>
-															<td><?= ucwords($row['type']) ?></td>
+												<?php foreach ($announcementList as $announcement) : ?>
+													<tr>
+														<td><?= ucwords($announcement['title']) ?></td>
+														<td><?= ucwords($announcement['content']) ?></td>
+														<td><?= Carbon::create($announcement['created_at'])->toDayDateTimeString() ?></td>
+														<?php if (isAdmin()) : ?>
 															<td>
-																<?php if ($row['status'] == 'Scheduled') : ?>
-																	<span class="badge badge-warning">Scheduled</span>
-																<?php elseif ($row['status'] == 'Active') : ?>
-																	<span class="badge badge-danger">Active</span>
-																<?php else : ?>
-																	<span class="badge badge-success">Settled</span>
+																<a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Blotter" onclick="editBlotter1(this)" data-id="<?= $row['id'] ?>" data-complainant="<?= $row['complainant'] ?>" data-respondent="<?= $row['respondent'] ?>" data-victim="<?= $row['victim'] ?>" data-type="<?= $row['type'] ?>" data-l="<?= $row['location'] ?>" data-date="<?= $row['date'] ?>" data-time="<?= $row['time'] ?>" data-details="<?= $row['details'] ?>" data-status="<?= $row['status'] ?>">
+																	<?php if (isset($_SESSION['username'])) : ?>
+																		<i class="fa fa-edit"></i>
+																	<?php else : ?>
+																		<i class="fa fa-eye"></i>
+																	<?php endif ?>
+																</a>
+
+																<?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
+																	<a type="button" data-toggle="tooltip" href="model/remove_blotter.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this blotter?');" class="btn btn-link btn-danger" data-original-title="Remove">
+																		<i class="fa fa-times"></i>
+																	</a>
 																<?php endif ?>
 															</td>
-															<?php if (isAuthenticated()) : ?>
-																<td>
-																	<a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Blotter" onclick="editBlotter1(this)" data-id="<?= $row['id'] ?>" data-complainant="<?= $row['complainant'] ?>" data-respondent="<?= $row['respondent'] ?>" data-victim="<?= $row['victim'] ?>" data-type="<?= $row['type'] ?>" data-l="<?= $row['location'] ?>" data-date="<?= $row['date'] ?>" data-time="<?= $row['time'] ?>" data-details="<?= $row['details'] ?>" data-status="<?= $row['status'] ?>">
-																		<?php if (isAuthenticated()) : ?>
-																			<i class="fa fa-edit"></i>
-																		<?php else : ?>
-																			<i class="fa fa-eye"></i>
-																		<?php endif ?>
-																	</a>
-																	<a type="button" data-toggle="tooltip" href="generate_blotter_report.php?id=<?= $row['id'] ?>" class="btn btn-link btn-primary" data-original-title="Generate Report">
-																		<i class="fas fa-file-alt"></i>
-																	</a>
-																	<?php if (isAdmin()) : ?>
-																		<a type="button" data-toggle="tooltip" href="model/remove_blotter.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this blotter?');" class="btn btn-link btn-danger" data-original-title="Remove">
-																			<i class="fa fa-times"></i>
-																		</a>
-																	<?php endif ?>
-																</td>
-															<?php endif ?>
-														</tr>
-													<?php endforeach ?>
-												<?php endif ?>
+														<?php endif ?>
+													</tr>
+												<?php endforeach ?>
 											</tbody>
-											<tfoot>
-												<tr>
-													<th scope="col">Complainant</th>
-													<th scope="col">Respondent</th>
-													<th scope="col">Victim(s)</th>
-													<th scope="col">Blotter/Incident</th>
-													<th scope="col">Status</th>
-													<?php if (isAuthenticated()) : ?>
-														<th scope="col">Action</th>
-													<?php endif ?>
-												</tr>
-											</tfoot>
 										</table>
 									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3">
-							<div class="card card-stats card-danger card-round">
-								<div class="card-body">
-									<div class="row">
-										<div class="col-3">
-											<div class="icon-big text-center">
-												<i class="flaticon-users"></i>
-											</div>
-										</div>
-										<div class="col-6 col-stats">
-										</div>
-										<div class="col-3 col-stats">
-											<div class="numbers">
-												<p class="card-category">Active</p>
-												<h4 class="card-title"><?= number_format($active) ?></h4>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="card-body">
-									<a href="javascript:void(0)" id="activeCase" class="card-link text-light">Active Case </a>
-								</div>
-							</div>
-							<div class="card card-stats card-success card-round">
-								<div class="card-body">
-									<div class="row">
-										<div class="col-3">
-											<div class="icon-big text-center">
-												<i class="flaticon-users"></i>
-											</div>
-										</div>
-										<div class="col-6 col-stats">
-										</div>
-										<div class="col-3 col-stats">
-											<div class="numbers">
-												<p class="card-category">Settled</p>
-												<h4 class="card-title"><?= number_format($settled) ?></h4>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="card-body">
-									<a href="javascript:void(0)" id="settledCase" class="card-link text-light">Settled Case </a>
-								</div>
-							</div>
-							<div class="card card-stats card-warning card-round">
-								<div class="card-body">
-									<div class="row">
-										<div class="col-3">
-											<div class="icon-big text-center">
-												<i class="flaticon-users"></i>
-											</div>
-										</div>
-										<div class="col-6 col-stats">
-										</div>
-										<div class="col-3 col-stats">
-											<div class="numbers">
-												<p class="card-category">Scheduled</p>
-												<h4 class="card-title"><?= number_format($scheduled) ?></h4>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="card-body">
-									<a href="javascript:void(0)" id="scheduledCase" class="card-link text-light">Scheduled Case </a>
 								</div>
 							</div>
 						</div>
@@ -262,7 +178,7 @@ $settled = $result3->num_rows;
 			</div>
 
 			<!-- Modal -->
-			<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" id="edit">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -368,22 +284,22 @@ $settled = $result3->num_rows;
 		$(document).ready(function() {
 			var oTable = $('#blottertable').DataTable({
 				"order": [
-					[4, "asc"]
+					[1, "asc"]
 				]
 			});
 
-			$("#activeCase").click(function() {
-				var textSelected = 'Active';
-				oTable.columns(4).search(textSelected).draw();
-			});
-			$("#settledCase").click(function() {
-				var textSelected = 'Settled';
-				oTable.columns(4).search(textSelected).draw();
-			});
-			$("#scheduledCase").click(function() {
-				var textSelected = 'Scheduled';
-				oTable.columns(4).search(textSelected).draw();
-			});
+			// $("#activeCase").click(function() {
+			// 	var textSelected = 'Active';
+			// 	oTable.columns(4).search(textSelected).draw();
+			// });
+			// $("#settledCase").click(function() {
+			// 	var textSelected = 'Settled';
+			// 	oTable.columns(4).search(textSelected).draw();
+			// });
+			// $("#scheduledCase").click(function() {
+			// 	var textSelected = 'Scheduled';
+			// 	oTable.columns(4).search(textSelected).draw();
+			// });
 		});
 	</script>
 </body>
