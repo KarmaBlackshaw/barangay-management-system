@@ -21,13 +21,7 @@ if (isset($_SESSION['username'])) {
 
 		<div class="container container-login animated fadeIn">
 
-			<?php if (isset($_SESSION['message'])) : ?>
-				<div class="alert alert-<?= $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-					<?= $_SESSION['message']; ?>
-				</div>
-
-				<?php unset($_SESSION['message']); ?>
-			<?php endif ?>
+			<?php include 'templates/alert.php' ?>
 
 			<h3 class="text-center">Sign In Here</h3>
 			<div class="login-form">

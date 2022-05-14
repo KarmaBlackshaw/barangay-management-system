@@ -13,9 +13,13 @@ $query2 = "SELECT * FROM tblresident WHERE gender='Female' AND resident_type=1";
 $result2 = $conn->query($query2);
 $female = $result2->num_rows;
 
-$query3 = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND resident_type=1";
-$result3 = $conn->query($query3);
-$totalvoters = $result3->num_rows;
+$totalVoters = (function ($conn) {
+	$query = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND resident_type=1";
+
+	return  $conn
+		->query($query)
+		->num_rows;
+})($conn);
 
 $query4 = "SELECT * FROM tblresident WHERE voterstatus='No' AND resident_type=1";
 $non = $conn->query($query4)->num_rows;
@@ -29,9 +33,14 @@ $precinct = $conn->query($query6)->num_rows;
 $query7 = "SELECT * FROM tblblotter";
 $blotter = $conn->query($query7)->num_rows;
 
-$date = date('Y-m-d');
-$query8 = "SELECT SUM(amounts) as am FROM tblpayments WHERE `date`='$date'";
-$revenue = $conn->query($query8)->fetch_assoc();
+$revenue = (function ($conn) {
+	$date = date('Y-m-d');
+	$query = "SELECT IFNULL(SUM(amounts), 0) as am FROM tblpayments WHERE `date`='$date'";
+
+	return $conn
+		->query($query)
+		->fetch_assoc();
+})($conn);
 
 $query9 = "SELECT * FROM tbldocuments";
 $documents = $conn->query($query9)->num_rows;
@@ -152,7 +161,7 @@ $documents = $conn->query($query9)->num_rows;
 							</div>
 						</div>
 					</div>
-					<?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
+					<?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'administrator') : ?>
 						<div class="row">
 							<div class="col-md-4">
 								<div class="card card-stats card-success card-round">
@@ -168,7 +177,9 @@ $documents = $conn->query($query9)->num_rows;
 											<div class="col-6 col-stats">
 												<div class="numbers mt-4">
 													<h7 class="fw-bold text-uppercase">Voters</h7>
-													<h3 class="fw-bold text-uppercase"><?= number_format($totalvoters) ?></h3>
+													<h3 class="fw-bold text-uppercase">
+														<?= number_format($totalVoters) ?>
+													</h3>
 												</div>
 											</div>
 										</div>
@@ -288,7 +299,6 @@ $documents = $conn->query($query9)->num_rows;
 											<div class="col-6 col-stats">
 												<div class="numbers mt-4">
 													<h7 class="fw-bold text-uppercase">Collection - by day</h7>
-													<?= $revenue ?>asdf
 													<h7 class="fw-bold text-uppercase">P <?= number_format($revenue['am'], 2) ?></h7>
 												</div>
 											</div>
