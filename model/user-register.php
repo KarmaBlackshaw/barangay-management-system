@@ -64,7 +64,7 @@ if ($result !== TRUE) {
 	return $conn->close();
 }
 
-move_uploaded_file($_FILES['avatar']['name'], $avatarDir);
+move_uploaded_file($_FILES['avatar']['tmp_name'], $avatarDir);
 
 $_SESSION['message'] = 'You are now registered';
 $_SESSION['status'] = 'success';
