@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $query = "SELECT * FROM tblblotter";
 $result = $conn->query($query);
@@ -19,6 +19,7 @@ $scheduled = $result2->num_rows;
 $query3 = "SELECT * FROM tblblotter WHERE `status`='Settled'";
 $result3 = $conn->query($query3);
 $settled = $result3->num_rows;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,18 +46,17 @@ $settled = $result3->num_rows;
 					<div class="page-inner">
 						<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 							<div>
-								<h2 class="text-white fw-bold">Blotter/Incident Complaint</h2>
+								<h2 class="text-white fw-bold">Announcements</h2>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="page-inner">
-					<?php if (isset($_SESSION['message'])) : ?>
-						<div class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-							<?php echo $_SESSION['message']; ?>
-						</div>
-						<?php unset($_SESSION['message']); ?>
-					<?php endif ?>
+
+					<?php include 'templates/alert.php' ?>
+
+
+
 					<div class="row mt--2">
 						<div class="col-md-9">
 							<div class="card">
@@ -67,7 +67,7 @@ $settled = $result3->num_rows;
 											<div class="card-tools">
 												<a href="#add" data-toggle="modal" class="btn btn-info btn-border btn-round btn-sm">
 													<i class="fa fa-plus"></i>
-													Blotter/Incident
+													Announcement
 												</a>
 											</div>
 										<?php endif ?>
@@ -83,7 +83,7 @@ $settled = $result3->num_rows;
 													<th scope="col">Victim(s)</th>
 													<th scope="col">Blotter/Incident</th>
 													<th scope="col">Status</th>
-													<?php if (isset($_SESSION['username'])) : ?>
+													<?php if (isAdmin()) : ?>
 														<th scope="col">Action</th>
 													<?php endif ?>
 												</tr>

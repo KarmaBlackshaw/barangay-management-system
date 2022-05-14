@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $query = "SELECT * FROM tblpermit";
 $result = $conn->query($query);

@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $state = $_GET['state'];
 $purok = array();

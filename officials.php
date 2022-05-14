@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 if (isset($_SESSION['role'])) {
 	if ($_SESSION['role'] == 'staff') {

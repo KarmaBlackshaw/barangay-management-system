@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $user = $_SESSION['username'];
 $query = "SELECT * FROM tbl_users WHERE NOT username='$user' ORDER BY `created_at` DESC";

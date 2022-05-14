@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $id = $_GET['id'];
 $query = "SELECT * FROM tblblotter WHERE id='$id'";

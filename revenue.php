@@ -1,4 +1,4 @@
-<?php include 'server/server.php' ?>
+<?php include 'bootstrap/index.php' ?>
 <?php
 $sql = "SELECT * FROM tblpayments ORDER BY `date` DESC";
 $result = $conn->query($sql);
