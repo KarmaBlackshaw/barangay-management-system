@@ -1,10 +1,22 @@
 <?php // function to get the current page name
-function PageName()
-{
-  return substr($_SERVER["SCRIPT_NAME"], strrpos($_SERVER["SCRIPT_NAME"], "/") + 1);
-}
+$currentPage = (function () {
+  $fullFilename = substr($_SERVER["SCRIPT_NAME"], strrpos($_SERVER["SCRIPT_NAME"], "/") + 1);
 
-$current_page = PageName();
+  return pathinfo($fullFilename)['filename'];
+})();
+
+
+$isSettingsPage = in_array($currentPage, [
+  'purok',
+  'position',
+  'precinct',
+  'chairmanship',
+  'users',
+  'support',
+  'requestdoc',
+  'backup'
+]);
+
 ?>
 <div class="sidebar sidebar-style-2">
   <div class="sidebar-wrapper scrollbar scrollbar-inner">
@@ -42,19 +54,21 @@ $current_page = PageName();
         </div>
       </div>
       <ul class="nav nav-primary">
-        <li class="nav-item <?= $current_page == 'dashboard.php' || $current_page == 'resident_info.php' || $current_page == 'purok_info.php'  ? 'active' : null ?>">
+        <li class="nav-item <?= in_array($currentPage, ['dashboard', 'resident_info', 'purok_info']) ? 'active' : null ?>">
           <a href="dashboard.php">
             <i class="fas fa-home"></i>
             <p>Dashboard</p>
           </a>
         </li>
+
         <li class="nav-section">
           <span class="sidebar-mini-icon">
             <i class="fa fa-ellipsis-h"></i>
           </span>
           <h4 class="text-section">Menu</h4>
         </li>
-        <li class="nav-item <?= $current_page == 'officials.php' ? 'active' : null ?>">
+
+        <li class="nav-item <?= $currentPage == 'officials' ? 'active' : null ?>">
           <a href="officials.php">
             <i class="fas fa-user-tie"></i>
             <p>Brgy Officials and Staff</p>
@@ -62,22 +76,21 @@ $current_page = PageName();
         </li>
 
 
-
-
-        <li class="nav-item <?= $current_page == 'resident.php' || $current_page == 'generate_resident.php' ? 'active' : null ?>">
+        <li class="nav-item <?= in_array($currentPage, ['resident', 'generate_resident']) ? 'active' : null ?>">
           <a href="resident.php">
             <i class="icon-people"></i>
             <p>Resident Information</p>
           </a>
         </li>
-        <li class="nav-item <?= $current_page == 'resident_certification.php' || $current_page == 'generate_brgy_cert.php' ? 'active' : null ?>">
+
+        <li class="nav-item <?= in_array($currentPage, ['resident_certification', 'generate_brgy_cert']) ? 'active' : null ?>">
           <a href="resident_certification.php">
             <i class="icon-badge"></i>
             <p>Barangay Certificates</p>
           </a>
         </li>
 
-        <li class="nav-item <?= $current_page == 'resident_cuttingpermit.php' || $current_page == 'generate_cuttingpermit.php' ? 'active' : null ?>">
+        <li class="nav-item <?= in_array($currentPage, ['resident_cuttingpermit', 'generate_cuttingpermit']) ? 'active' : null ?>">
           <a href="resident_cuttingpermit.php">
             <i class="icon-docs"></i>
             <p>Cutting permit</p>
@@ -85,7 +98,7 @@ $current_page = PageName();
         </li>
 
 
-        <li class="nav-item <?= $current_page == 'resident_fpscert.php' || $current_page == 'generate_fpscert.php' ? 'active' : null ?>">
+        <li class="nav-item <?= in_array($currentPage, ['resident_fpscert', 'generate_fpscert']) ? 'active' : null ?>">
           <a href="resident_fpscert.php">
             <i class="icon-doc"></i>
             <p>4ps Certification</p>
@@ -93,27 +106,33 @@ $current_page = PageName();
         </li>
 
 
-        <li class="nav-item <?= $current_page == 'resident_indigency.php' || $current_page == 'generate_indi_cert.php' ? 'active' : null ?>">
+        <li class="nav-item <?= in_array($currentPage, ['resident_indigency', 'generate_indi_cert']) ? 'active' : null ?>">
           <a href="resident_indigency.php">
             <i class="icon-docs"></i>
             <p>Certificate of Indigency</p>
           </a>
         </li>
-        <li class="nav-item <?= $current_page == 'business_permit.php' || $current_page == 'generate_business_permit.php' ? 'active' : null ?>">
+
+        <li class="nav-item <?= in_array($currentPage, ['business_permit', 'generate_business_permit']) ? 'active' : null ?>">
           <a href="business_permit.php">
             <i class="icon-doc"></i>
             <p>Brgy Business Clearance</p>
           </a>
         </li>
-        <li class="nav-item <?= $current_page == 'blotter.php' || $current_page == 'generate_blotter_report.php'  ? 'active' : null ?>">
+
+        <li class="nav-item <?= in_array($currentPage, ['blotter', 'generate_blotter_report']) ? 'active' : null ?>">
           <a href="blotter.php">
             <i class="icon-layers"></i>
             <p>Blotter Records</p>
           </a>
         </li>
 
-
-
+        <li class="nav-item <?= in_array($currentPage, ['announcements']) ? 'active' : null ?>">
+          <a href="announcements.php">
+            <i class="icon-pin"></i>
+            <p>Announcements</p>
+          </a>
+        </li>
 
         <?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'staff') : ?>
           <li class="nav-section">
@@ -135,8 +154,9 @@ $current_page = PageName();
             </a>
           </li>
         <?php endif ?>
+
         <?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
-          <li class="nav-item <?= $current_page == 'revenue.php' ? 'active' : null ?>">
+          <li class="nav-item <?= $currentPage == 'revenue' ? 'active' : null ?>">
             <a href="revenue.php">
               <i>₱</i>
               <p>Collection Payment</p>
@@ -148,35 +168,35 @@ $current_page = PageName();
             </span>
             <h4 class="text-section">System</h4>
           </li>
-          <li class="nav-item <?= $current_page == 'purok.php' || $current_page == 'position.php' || $current_page == 'chairmanship.php' || $current_page == 'precinct.php' || $current_page == 'users.php' || $current_page == 'support.php' || $current_page == 'requestdoc.php' || $current_page == 'backup.php' ? 'active' : null ?>">
+          <li class="nav-item <?= $isSettingsPage ? 'active' : null ?>">
             <a href="#settings" data-toggle="collapse" class="collapsed" aria-expanded="false">
               <i class="icon-wrench"></i>
               <p>Settings</p>
               <span class="caret"></span>
             </a>
-            <div class="collapse <?= $current_page == 'purok.php' || $current_page == 'position.php'  || $current_page == 'precinct.php' || $current_page == 'chairmanship.php' || $current_page == 'users.php' || $current_page == 'support.php' || $current_page == 'requestdoc.php' || $current_page == 'backup.php' ? 'show' : null ?>" id="settings">
+            <div class="collapse <?= $isSettingsPage ? 'show' : null ?>" id="settings">
               <ul class="nav nav-collapse">
                 <li>
                   <a href="#barangay" data-toggle="modal">
                     <span class="sub-item">Barangay Info</span>
                   </a>
                 </li>
-                <li class="<?= $current_page == 'purok.php' ? 'active' : null ?>">
+                <li class="<?= $currentPage == 'purok' ? 'active' : null ?>">
                   <a href="purok.php">
                     <span class="sub-item">Purok</span>
                   </a>
                 </li>
-                <li class="<?= $current_page == 'precinct.php' ? 'active' : null ?>">
+                <li class="<?= $currentPage == 'precinct' ? 'active' : null ?>">
                   <a href="precinct.php">
                     <span class="sub-item">Contact Number</span>
                   </a>
                 </li>
-                <li class="<?= $current_page == 'position.php' ? 'active' : null ?>">
+                <li class="<?= $currentPage == 'position' ? 'active' : null ?>">
                   <a href="position.php">
                     <span class="sub-item">Positions</span>
                   </a>
                 </li>
-                <li class="<?= $current_page == 'chairmanship.php' ? 'active' : null ?>">
+                <li class="<?= $currentPage == 'chairmanship' ? 'active' : null ?>">
                   <a href="chairmanship.php">
                     <span class="sub-item">Chairmanship</span>
                   </a>
@@ -195,18 +215,18 @@ $current_page = PageName();
                   </li>
 
                 <?php else : ?>
-                  <li class="<?= $current_page == 'users.php' ? 'active' : null ?>">
+                  <li class="<?= $currentPage == 'users' ? 'active' : null ?>">
                     <a href="users.php">
                       <span class="sub-item">Users</span>
                     </a>
                   </li>
-                  <li class="<?= $current_page == 'support.php' ? 'active' : null ?>">
+                  <li class="<?= $currentPage == 'support' ? 'active' : null ?>">
                     <a href="support.php">
                       <span class="sub-item">Support</span>
                     </a>
                   </li>
 
-                  <li class="<?= $current_page == 'requestdoc.php' ? 'active' : null ?>">
+                  <li class="<?= $currentPage == 'requestdoc' ? 'active' : null ?>">
                     <a href="requestdoc.php">
                       <span class="sub-item">Requested Documents</span>
                     </a>
