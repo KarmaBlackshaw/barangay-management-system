@@ -1,7 +1,7 @@
 <?php include 'bootstrap/index.php' ?>
 <?php
 $id = $_GET['id'];
-$query = "SELECT * FROM tblresident WHERE id='$id'";
+$query = "SELECT * FROM residents WHERE id='$id'";
 $result = $conn->query($query);
 $resident = $result->fetch_assoc();
 

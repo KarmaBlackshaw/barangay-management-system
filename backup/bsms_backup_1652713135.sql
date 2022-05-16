@@ -488,19 +488,19 @@ INSERT INTO tblrequest VALUES("3","Ian Figuracion","100","Flywood","Arado City",
 
 
 #
-# Delete any existing table `tblresident`
+# Delete any existing table `residents`
 #
 
-DROP TABLE IF EXISTS `tblresident`;
+DROP TABLE IF EXISTS `residents`;
 
 
 #
-# Table structure of table `tblresident`
+# Table structure of table `residents`
 #
 
 
 
-CREATE TABLE `tblresident` (
+CREATE TABLE `residents` (
   `id` int NOT NULL AUTO_INCREMENT,
   `national_id` varchar(100) DEFAULT NULL,
   `account_id` int unsigned NOT NULL,
@@ -529,7 +529,7 @@ CREATE TABLE `tblresident` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `account_id` (`account_id`),
-  CONSTRAINT `tblresident_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `tbl_users` (`id`)
+  CONSTRAINT `residents_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `tbl_users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

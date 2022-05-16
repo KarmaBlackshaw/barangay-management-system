@@ -3,7 +3,7 @@
 require("../server/server.php");
 
 // get Users
-$query = "SELECT national_id,firstname,middlename,lastname,alias,birthplace,birthdate,age,civilstatus,gender,purok,voterstatus,identified_as,phone,email,address FROM tblresident";
+$query = "SELECT national_id,firstname,middlename,lastname,alias,birthplace,birthdate,age,civilstatus,gender,purok,voterstatus,identified_as,phone,email,address FROM residents";
 if (!$result = $conn->query($query)) {
     exit($conn->error);
 }

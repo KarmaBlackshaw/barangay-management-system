@@ -1,27 +1,27 @@
 <?php include 'bootstrap/index.php' ?>
 <?php
 
-$query = "SELECT * FROM tblresident WHERE resident_type=1";
+$query = "SELECT * FROM residents WHERE resident_type=1";
 $result = $conn->query($query);
 $total = $result->num_rows;
 
-$query1 = "SELECT * FROM tblresident WHERE gender='Male' AND resident_type=1";
+$query1 = "SELECT * FROM residents WHERE gender='Male' AND resident_type=1";
 $result1 = $conn->query($query1);
 $male = $result1->num_rows;
 
-$query2 = "SELECT * FROM tblresident WHERE gender='Female' AND resident_type=1";
+$query2 = "SELECT * FROM residents WHERE gender='Female' AND resident_type=1";
 $result2 = $conn->query($query2);
 $female = $result2->num_rows;
 
 $totalVoters = (function ($conn) {
-	$query = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND resident_type=1";
+	$query = "SELECT * FROM residents WHERE voterstatus='Yes' AND resident_type=1";
 
 	return  $conn
 		->query($query)
 		->num_rows;
 })($conn);
 
-$query4 = "SELECT * FROM tblresident WHERE voterstatus='No' AND resident_type=1";
+$query4 = "SELECT * FROM residents WHERE voterstatus='No' AND resident_type=1";
 $non = $conn->query($query4)->num_rows;
 
 $query5 = "SELECT * FROM tblpurok";

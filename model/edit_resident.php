@@ -36,14 +36,14 @@ $newName = date('dmYHis') . str_replace(" ", "", $profile2);
 
 // image file directory
 $target = "../assets/uploads/resident_profile/" . basename($newName);
-$check = "SELECT id FROM tblresident WHERE national_id='$national_id'";
+$check = "SELECT id FROM residents WHERE national_id='$national_id'";
 $nat = $conn->query($check)->fetch_assoc();
 if ($nat['id'] == $id || count($nat) <= 0) {
 	if (!empty($id)) {
 
 		if (!empty($profile) && !empty($profile2)) {
 
-			$query = "UPDATE tblresident SET national_id='$national_id',citizenship='$citi',`picture`='$profile', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
+			$query = "UPDATE residents SET national_id='$national_id',citizenship='$citi',`picture`='$profile', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
 						age=$age, `civilstatus`='$cstatus', `gender`='$gender', `purok`='$purok', `voterstatus`='$vstatus', `identified_as`='$indetity', `phone`='$number', `email`='$email',`occupation`='$occu', `address`='$address',
 						`resident_type`='$deceased', `remarks`='$remarks'
 						WHERE id=$id;";
@@ -55,7 +55,7 @@ if ($nat['id'] == $id || count($nat) <= 0) {
 			}
 		} else if (!empty($profile) && empty($profile2)) {
 
-			$query = "UPDATE tblresident SET national_id='$national_id',citizenship='$citi',`picture`='$profile', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
+			$query = "UPDATE residents SET national_id='$national_id',citizenship='$citi',`picture`='$profile', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
 						age=$age, `civilstatus`='$cstatus', `gender`='$gender', `purok`='$purok', `voterstatus`='$vstatus', `identified_as`='$indetity', `phone`='$number', `email`='$email',`occupation`='$occu', `address`='$address',
 						`resident_type`='$deceased', `remarks`='$remarks'
 						WHERE id=$id;";
@@ -67,7 +67,7 @@ if ($nat['id'] == $id || count($nat) <= 0) {
 			}
 		} else if (empty($profile) && !empty($profile2)) {
 
-			$query = "UPDATE tblresident SET national_id='$national_id',citizenship='$citi',`picture`='$newName', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
+			$query = "UPDATE residents SET national_id='$national_id',citizenship='$citi',`picture`='$newName', `firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
 							age=$age, `civilstatus`='$cstatus', `gender`='$gender', `purok`='$purok', `voterstatus`='$vstatus', `identified_as`='$indetity', `phone`='$number', `email`='$email',`occupation`='$occu', `address`='$address',
 							`resident_type`='$deceased', `remarks`='$remarks'
 							WHERE id=$id;";
@@ -84,7 +84,7 @@ if ($nat['id'] == $id || count($nat) <= 0) {
 				}
 			}
 		} else {
-			$query = "UPDATE tblresident SET national_id='$national_id',citizenship='$citi',`firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
+			$query = "UPDATE residents SET national_id='$national_id',citizenship='$citi',`firstname`='$fname', `middlename`='$mname', `lastname`='$lname', `alias`='$alias', `birthplace`='$bplace', `birthdate`='$bdate',
 							age=$age, `civilstatus`='$cstatus', `gender`='$gender', `purok`='$purok', `voterstatus`='$vstatus', `identified_as`='$indetity', `phone`='$number', `email`='$email',`occupation`='$occu', `address`='$address',
 							`resident_type`='$deceased', `remarks`='$remarks'
 							WHERE id=$id;";

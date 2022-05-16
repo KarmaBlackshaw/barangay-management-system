@@ -10,7 +10,7 @@ if (!isset($_SESSION['username']) && $_SESSION['role'] != 'administrator') {
 $id 	= $conn->real_escape_string($_GET['id']);
 
 if ($id != '') {
-	$query 		= "DELETE FROM tblresident WHERE id = '$id'";
+	$query 		= "DELETE FROM residents WHERE id = '$id'";
 
 	$result 	= $conn->query($query);
 

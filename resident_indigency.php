@@ -1,6 +1,6 @@
 <?php include 'bootstrap/index.php' ?>
 <?php
-$query = "SELECT * FROM tblresident";
+$query = "SELECT * FROM residents";
 $result = $conn->query($query);
 
 $resident = array();

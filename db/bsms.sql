@@ -335,10 +335,10 @@ INSERT INTO `tblrequest` (`id`, `name`, `pcs`, `type`, `location`, `applied`) VA
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tblresident`
+-- Table structure for table `residents`
 --
 
-CREATE TABLE `tblresident` (
+CREATE TABLE `residents` (
   `id` int(11) NOT NULL,
   `national_id` varchar(100) DEFAULT NULL,
   `citizenship` varchar(50) DEFAULT NULL,
@@ -364,10 +364,10 @@ CREATE TABLE `tblresident` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `tblresident`
+-- Dumping data for table `residents`
 --
 
-INSERT INTO `tblresident` (`id`, `national_id`, `citizenship`, `picture`, `firstname`, `middlename`, `lastname`, `alias`, `birthplace`, `birthdate`, `age`, `civilstatus`, `gender`, `purok`, `voterstatus`, `identified_as`, `phone`, `email`, `occupation`, `address`, `resident_type`, `remarks`) VALUES
+INSERT INTO `residents` (`id`, `national_id`, `citizenship`, `picture`, `firstname`, `middlename`, `lastname`, `alias`, `birthplace`, `birthdate`, `age`, `civilstatus`, `gender`, `purok`, `voterstatus`, `identified_as`, `phone`, `email`, `occupation`, `address`, `resident_type`, `remarks`) VALUES
 (169, '2018-24738', 'Filipino', '02012022031808FB_IMG_16410173556326371.jpg', 'JEREMY', 'ECHON', 'OLA', 'MY', 'Brgy. Buri Burauen Leyte', '1998-06-30', 23, 'Single', 'Male', 'Purok 2', 'Yes', 'Positive', '09102037489', 'jeremyechon@gmail.com', 'Student', 'Barangay Buri Burauen Leyte', 1, 'no remarks'),
 (174, '2018-34555', 'Filipino', '02012022032131FB_IMG_16410174636644719.jpg', 'Jhon Paulo', 'Mahilog', 'Tismo', 'pau pau', 'Dist. 8 Burauen', '2022-01-01', 26, 'Single', 'Male', 'Purok 7', 'Yes', 'Positive', '349358957', 'cajanr02@gmail.com', 'Student', 'San Diego Burauen Leyte', 1, 'no remarks'),
 (180, '1212321321', 'Filipino', '02012022030838anniemaybarreraID.jpg', 'Annie May', 'Calupas', 'Barrera', 'maytion', 'Brgy. Limburan Burauen Leyte', '1999-10-22', 22, 'Single', 'Female', 'Purok 6', 'Yes', 'Positive', '19512659595', 'anniemaybarrera@gmail.com', 'Student', 'Barangay Tabang LaPaz Leyte', 1, 'No remarks');
@@ -500,9 +500,9 @@ ALTER TABLE `tblrequest`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tblresident`
+-- Indexes for table `residents`
 --
-ALTER TABLE `tblresident`
+ALTER TABLE `residents`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -594,9 +594,9 @@ ALTER TABLE `tblrequest`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `tblresident`
+-- AUTO_INCREMENT for table `residents`
 --
-ALTER TABLE `tblresident`
+ALTER TABLE `residents`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --

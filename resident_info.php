@@ -4,28 +4,28 @@
 $state = $_GET['state'];
 
 if ($state == 'male') {
-    $query = "SELECT * FROM tblresident WHERE gender='Male' AND resident_type=1";
+    $query = "SELECT * FROM residents WHERE gender='Male' AND resident_type=1";
     $result = $conn->query($query);
 } elseif ($state == 'female') {
-    $query = "SELECT * FROM tblresident WHERE gender='Female' AND resident_type=1";
+    $query = "SELECT * FROM residents WHERE gender='Female' AND resident_type=1";
     $result = $conn->query($query);
 } elseif ($state == 'non_voters') {
-    $query = "SELECT * FROM tblresident WHERE voterstatus='No' AND resident_type=1";
+    $query = "SELECT * FROM residents WHERE voterstatus='No' AND resident_type=1";
     $result = $conn->query($query);
 } elseif ($state == 'voters') {
-    $query = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND resident_type=1";
+    $query = "SELECT * FROM residents WHERE voterstatus='Yes' AND resident_type=1";
     $result = $conn->query($query);
 
-    $query1 = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND identified_as='Positive' AND resident_type=1";
+    $query1 = "SELECT * FROM residents WHERE voterstatus='Yes' AND identified_as='Positive' AND resident_type=1";
     $pos = $conn->query($query1)->num_rows;
 
-    $query2 = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND identified_as='Negative' AND resident_type=1";
+    $query2 = "SELECT * FROM residents WHERE voterstatus='Yes' AND identified_as='Negative' AND resident_type=1";
     $nega = $conn->query($query2)->num_rows;
 
-    $query3 = "SELECT * FROM tblresident WHERE voterstatus='Yes' AND identified_as='Unidentified' AND resident_type=1";
+    $query3 = "SELECT * FROM residents WHERE voterstatus='Yes' AND identified_as='Unidentified' AND resident_type=1";
     $unid = $conn->query($query3)->num_rows;
 } else {
-    $query = "SELECT * FROM tblresident";
+    $query = "SELECT * FROM residents";
     $result = $conn->query($query);
 }
 

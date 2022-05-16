@@ -355,19 +355,19 @@ INSERT INTO tblpurok VALUES("7","Purok 7","rew");
 
 
 #
-# Delete any existing table `tblresident`
+# Delete any existing table `residents`
 #
 
-DROP TABLE IF EXISTS `tblresident`;
+DROP TABLE IF EXISTS `residents`;
 
 
 #
-# Table structure of table `tblresident`
+# Table structure of table `residents`
 #
 
 
 
-CREATE TABLE `tblresident` (
+CREATE TABLE `residents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `national_id` varchar(100) DEFAULT NULL,
   `citizenship` varchar(50) DEFAULT NULL,
@@ -393,7 +393,7 @@ CREATE TABLE `tblresident` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=181 DEFAULT CHARSET=latin1;
 
-INSERT INTO tblresident VALUES("169","2018-24738","Filipino","02012022031808FB_IMG_16410173556326371.jpg","JEREMY","ECHON","OLA","MY","Brgy. Buri Burauen Leyte","1998-06-30","23","Single","Male","Purok 2","Yes","Positive","09102037489","jeremyechon@gmail.com","Student","Barangay Buri Burauen Leyte","1","no remarks");
-INSERT INTO tblresident VALUES("174","2018-34555","Filipino","02012022032131FB_IMG_16410174636644719.jpg","Jhon Paulo","Mahilog","Tismo","pau pau","Dist. 8 Burauen","2022-01-01","26","Single","Male","Purok 8","Yes","Positive","349358957","cajanr02@gmail.com","Student","San Diego Burauen Leyte","1","no remarks");
-INSERT INTO tblresident VALUES("180","1212321321","Filipino","02012022030838anniemaybarreraID.jpg","Annie May","Calupas","Barrera","maytion","Brgy. Limburan Burauen Leyte","1999-10-22","22","Single","Female","Purok 6","Yes","Positive","19512659595","anniemaybarrera@gmail.com","Student","Barangay Tabang LaPaz Leyte","1","No remarks");
+INSERT INTO residents VALUES("169","2018-24738","Filipino","02012022031808FB_IMG_16410173556326371.jpg","JEREMY","ECHON","OLA","MY","Brgy. Buri Burauen Leyte","1998-06-30","23","Single","Male","Purok 2","Yes","Positive","09102037489","jeremyechon@gmail.com","Student","Barangay Buri Burauen Leyte","1","no remarks");
+INSERT INTO residents VALUES("174","2018-34555","Filipino","02012022032131FB_IMG_16410174636644719.jpg","Jhon Paulo","Mahilog","Tismo","pau pau","Dist. 8 Burauen","2022-01-01","26","Single","Male","Purok 8","Yes","Positive","349358957","cajanr02@gmail.com","Student","San Diego Burauen Leyte","1","no remarks");
+INSERT INTO residents VALUES("180","1212321321","Filipino","02012022030838anniemaybarreraID.jpg","Annie May","Calupas","Barrera","maytion","Brgy. Limburan Burauen Leyte","1999-10-22","22","Single","Female","Purok 6","Yes","Positive","19512659595","anniemaybarrera@gmail.com","Student","Barangay Tabang LaPaz Leyte","1","No remarks");
 
