@@ -5,12 +5,12 @@ require '../helpers/method-vars.php';
 
 if ($_POST['register-official']) {
 try {
-    $name = getPost('name');
-    $chair = getPost('chair');
-    $position = getPost('position');
-    $start = getPost('start');
-    $end = getPost('end');
-    $status = getPost('status');
+    $name = getBody('name', $_POST);
+    $chair = getBody('chair', $_POST);
+    $position = getBody('position', $_POST);
+    $start = getBody('start', $_POST);
+    $end = getBody('end', $_POST);
+    $status = getBody('status', $_POST);
 
     if (!isset($name, $chair, $position, $start, $end, $status)) {
       $_SESSION['message'] = 'All fields are required!';
