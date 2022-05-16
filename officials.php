@@ -167,7 +167,7 @@ while ($row = $res_o->fetch_assoc()) {
 			</div>
 
 			<!-- Modal -->
-			<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" id="add" >
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -177,7 +177,7 @@ while ($row = $res_o->fetch_assoc()) {
 							</button>
 						</div>
 						<div class="modal-body">
-							<form method="POST" action="model/save_official.php">
+							<form method="POST" action="model/officials.php">
 								<div class="form-group">
 									<label>Fullname</label>
 									<input type="text" class="form-control" placeholder="Enter Fullname" name="name" required>
@@ -219,6 +219,7 @@ while ($row = $res_o->fetch_assoc()) {
 						</div>
 						<div class="modal-footer">
 							<input type="hidden" id="pos_id" name="id">
+							<input type="hidden" name="register-official" value="1">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 							<button type="submit" class="btn btn-primary">Create</button>
 						</div>
