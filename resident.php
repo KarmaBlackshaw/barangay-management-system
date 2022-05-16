@@ -224,7 +224,7 @@ while ($row = $result1->fetch_assoc()) {
       </div>
 
       <!-- Modal -->
-      <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="add">
         <div class="modal-dialog modal-xl" role="document">
           <div class="modal-content">
             <div class="modal-header">
