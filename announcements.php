@@ -20,19 +20,8 @@ $announcementList = (function () use ($conn) {
 		->query($query);
 })();
 
-$query1 = "SELECT * FROM tblblotter WHERE `status`='Active'";
-$result1 = $conn->query($query1);
-$active = $result1->num_rows;
-
-$query2 = "SELECT * FROM tblblotter WHERE `status`='Scheduled'";
-$result2 = $conn->query($query2);
-$scheduled = $result2->num_rows;
-
-$query3 = "SELECT * FROM tblblotter WHERE `status`='Settled'";
-$result3 = $conn->query($query3);
-$settled = $result3->num_rows;
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -102,23 +91,36 @@ $settled = $result3->num_rows;
 														<td><?= ucwords($announcement['title']) ?></td>
 														<td><?= ucwords($announcement['content']) ?></td>
 														<td><?= Carbon::create($announcement['created_at'])->toDayDateTimeString() ?></td>
-														<?php if (isAdmin()) : ?>
-															<td>
-																<a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Blotter" onclick="editBlotter1(this)" data-id="<?= $row['id'] ?>" data-complainant="<?= $row['complainant'] ?>" data-respondent="<?= $row['respondent'] ?>" data-victim="<?= $row['victim'] ?>" data-type="<?= $row['type'] ?>" data-l="<?= $row['location'] ?>" data-date="<?= $row['date'] ?>" data-time="<?= $row['time'] ?>" data-details="<?= $row['details'] ?>" data-status="<?= $row['status'] ?>">
-																	<?php if (isset($_SESSION['username'])) : ?>
-																		<i class="fa fa-edit"></i>
-																	<?php else : ?>
-																		<i class="fa fa-eye"></i>
-																	<?php endif ?>
-																</a>
-
-																<?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
-																	<a type="button" data-toggle="tooltip" href="model/remove_blotter.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this blotter?');" class="btn btn-link btn-danger" data-original-title="Remove">
-																		<i class="fa fa-times"></i>
-																	</a>
+														<td>
+															<a
+																href="javascript:void(0)"
+																data-target="#edit-announcement"
+																data-value-id="<?= $announcement['id']; ?>"
+																data-value-title="<?= $announcement['title']; ?>"
+																data-value-content="<?= $announcement['content']; ?>"
+																data-value-old-thumbnail="<?= $announcement['thumbnail']; ?>"
+																onclick="showModal(this)"
+															>
+																<?php if (isAdmin()) : ?>
+																	<i class="fa fa-edit"></i>
+																<?php else : ?>
+																	<i class="fa fa-eye"></i>
 																<?php endif ?>
-															</td>
-														<?php endif ?>
+															</a>
+
+															<?php if (isAdmin()) : ?>
+																<a
+																	type="button"
+																	data-toggle="tooltip"
+																	data-original-title="Remove"
+																	href="model/announcement.php?id=<?= $announcement['id'] ?>&delete-announcement=1"
+																	onclick="return confirm('Are you sure you want to delete this blotter?');"
+																	class="btn btn-link btn-danger"
+																>
+																	<i class="fa fa-times"></i>
+																</a>
+															<?php endif ?>
+														</td>
 													</tr>
 												<?php endforeach ?>
 											</tbody>
@@ -178,99 +180,83 @@ $settled = $result3->num_rows;
 			</div>
 
 			<!-- Modal -->
-			<div class="modal fade" id="edit">
+			<div class="modal fade" id="edit-announcement">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">Edit Blotter</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<form method="POST" action="model/edit_blotter.php">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Complainant</label>
-											<input type="text" class="form-control" placeholder="Enter Complainant Name" id="complainant" name="complainant" required>
-										</div>
+						<form method="POST" action="model/announcement.php" enctype="multipart/form-data">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Edit Blotter</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<input
+									type="hidden"
+									name="edit-announcement"
+									value="1"
+								>
+
+								<input
+									type="hidden"
+									id="edit-announcement-id"
+									name="id"
+									required
+								>
+
+								<input
+									type="hidden"
+									id="edit-announcement-old-thumbnail"
+									name="old-thumbnail"
+									required
+								>
+
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Title</label>
+										<input
+											type="text"
+											class="form-control"
+											placeholder="Enter Complainant Name"
+											id="edit-announcement-title"
+											name="title"
+											required
+										>
 									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Respondent</label>
-											<input type="text" class="form-control" placeholder="Enter Respondent Name" id="respondent" name="respondent" required>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Victim(s)</label>
-											<input type="text" class="form-control" placeholder="Enter Victim(s) Name" id="victim" name="victim" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Type</label>
-											<select class="form-control" name="type" id="type">
-												<option disabled selected>Select Blotter Type</option>
-												<option value="Amicable">Amicable</option>
-												<option value="Incident">Incident</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Location</label>
-											<input type="text" class="form-control" placeholder="Enter Location" id="location" name="location" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Date</label>
-											<input type="date" class="form-control" name="date" id="date" required>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Time</label>
-											<input type="time" class="form-control" name="time" id="time" required>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>Status</label>
-											<select class="form-control" name="status" id="status">
-												<option disabled selected>Select Blotter Status</option>
-												<option value="Active">Active</option>
-												<option value="Settled">Settled</option>
-												<option value="Scheduled">Scheduled</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label>Details</label>
-									<textarea class="form-control" placeholder="Enter Blotter or Incident here..." id="details" name="details" required></textarea>
 								</div>
 
-						</div>
-						<div class="modal-footer">
-							<input type="hidden" id="blotter_id" name="id">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<?php if (isAuthenticated()) : ?>
-								<button type="submit" class="btn btn-primary">Update</button>
-							<?php endif ?>
-						</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Content</label>
+										<textarea
+											type="text"
+											class="form-control"
+											placeholder="Enter Complainant Name"
+											id="edit-announcement-content"
+											name="content"
+											required
+										></textarea>
+									</div>
+								</div>
+
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Thumbnail</label>
+										<input type="file" class="form-control" placeholder="Thumbnail" name="thumbnail" accept="image/png, image/jpeg">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<?php if (isAuthenticated()) : ?>
+									<button type="submit" class="btn btn-primary">Update</button>
+								<?php endif ?>
+							</div>
 						</form>
 					</div>
 				</div>
 			</div>
+
 			<!-- Main Footer -->
 			<?php include 'templates/main-footer.php' ?>
 			<!-- End Main Footer -->
@@ -287,19 +273,6 @@ $settled = $result3->num_rows;
 					[1, "asc"]
 				]
 			});
-
-			// $("#activeCase").click(function() {
-			// 	var textSelected = 'Active';
-			// 	oTable.columns(4).search(textSelected).draw();
-			// });
-			// $("#settledCase").click(function() {
-			// 	var textSelected = 'Settled';
-			// 	oTable.columns(4).search(textSelected).draw();
-			// });
-			// $("#scheduledCase").click(function() {
-			// 	var textSelected = 'Scheduled';
-			// 	oTable.columns(4).search(textSelected).draw();
-			// });
 		});
 	</script>
 </body>
