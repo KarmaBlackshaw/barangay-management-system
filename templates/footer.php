@@ -39,6 +39,7 @@
 <script type="text/javascript" src="assets/webcamjs/webcam.min.js"></script>
 
 <script src="assets/js/customFunction.js"></script>
+<script src="assets/js/helpers.js"></script>
 
 <script>
     var $window = $(window);
