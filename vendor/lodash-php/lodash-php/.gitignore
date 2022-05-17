@@ -1,0 +1,6 @@
+/vendor/
+/composer.lock
+/vendor-bin/**/vendor
+/.php_cs.cache
+/src/compiled.php
+.idea
