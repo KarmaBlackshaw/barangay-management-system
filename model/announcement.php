@@ -17,14 +17,15 @@ if (isset($_POST['register-announcement'])) {
     }
 
 
-    $imgDir = '';
     $imgFilename = '';
 
     if ($thumbnail) {
       $uniqId = uniqid(date("YmdhisU"));
       $ext = pathinfo($thumbnail['name'], PATHINFO_EXTENSION);
       $imgFilename = "$uniqId.$ext";
+
       $imgDir = "../assets/uploads/$imgFilename";
+      move_uploaded_file($thumbnail['tmp_name'], $imgDir);
     }
 
 
@@ -40,9 +41,6 @@ if (isset($_POST['register-announcement'])) {
       header('location: ../announcements.php');
       return $conn->close();
     }
-
-
-    move_uploaded_file($thumbnail['tmp_name'], $imgDir);
 
     $_SESSION['message'] = 'Announcement published';
     $_SESSION['status'] = 'success';

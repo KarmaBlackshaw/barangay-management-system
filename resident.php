@@ -107,7 +107,7 @@ while ($row = $result1->fetch_assoc()) {
                               <td>
                                 <div class="avatar avatar-xs">
                                   <img
-                                    src="<?= preg_match('/data:image/i', $row['picture']) ? $row['picture'] : 'assets/uploads/resident_profile/' . $row['picture'] ?>"
+                                    src="<?= preg_match('/data:image/i', $row['picture']) ? $row['picture'] : 'assets/uploads/' . $row['picture'] ?>"
                                     alt="Resident Profile"
                                     class="avatar-img rounded-circle"
                                   >
@@ -234,7 +234,7 @@ while ($row = $result1->fetch_assoc()) {
               </button>
             </div>
             <div class="modal-body">
-              <form method="POST" action="model/save_resident.php" enctype="multipart/form-data">
+              <form method="POST" action="model/residents.php" enctype="multipart/form-data">
                 <input type="hidden" name="size" value="1000000">
                 <input type="hidden" name="register-resident" value="1">
                 <div class="row">

@@ -22,12 +22,11 @@ $insertDB = function ($tbl, $payload) use ($conn) {
 	$wrapQuote = fn($str) => '"' . $str . '"';
 	$wrapTicks = fn($str) => '`' . $str . '`';
 
-	$columns = join(", ", array_map($wrapTicks, array_keys($payload)));
-	$values = join(", ", array_map($wrapQuote, array_values($payload)));
+	$filteredPayload = array_filter($payload);
+	$columns = join(", ", array_map($wrapTicks, array_keys($filteredPayload)));
+	$values = join(", ", array_map($wrapQuote, array_values($filteredPayload)));
 
-	$query = "INSERT INTO `${tbl}` ($columns) VALUES ($values)";
-
-	$status = $conn->query($query);
+	$status = $conn->query("INSERT INTO `${tbl}` ($columns) VALUES ($values)");
 
 	return array(
 		'status' => $status,
