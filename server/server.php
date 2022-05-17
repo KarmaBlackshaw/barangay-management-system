@@ -18,6 +18,28 @@ if (!isset($_SESSION)) {
 	session_start();
 }
 
+$insertDB = function ($tbl, $payload) use ($conn) {
+	function wrapQuote ($str) {
+		return '"' . $str . '"';
+	}
+
+	function wrapTicks ($str) {
+		return '`' . $str . '`';
+	}
+
+	$columns = join(", ", array_map('wrapTicks', array_keys($payload)));
+	$values = join(", ", array_map('wrapQuote', array_values($payload)));
+
+	$query = "INSERT INTO `${tbl}` ($columns) VALUES ($values)";
+
+	$status = $conn->query($query);
+
+	return array(
+		'status' => $status,
+		'id' => mysqli_insert_id($conn)
+	);
+};
+
 // if (!isset($_SESSION['username'])) {
 // 	header('Location: login.php');
 // }
