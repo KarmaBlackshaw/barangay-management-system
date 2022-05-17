@@ -28,13 +28,13 @@ if (isset($_POST['register-announcement'])) {
       move_uploaded_file($thumbnail['tmp_name'], $imgDir);
     }
 
+    $result = $insertDB('announcements', array(
+      'title' => $title,
+      'content' => $content,
+      'thumbnail' => $imgFilename,
+    ));
 
-    $result = $conn->query("
-      INSERT INTO announcements(title, content, thumbnail)
-      VALUES('$title', '$content', '$imgFilename')
-    ");
-
-    if ($result !== true) {
+    if ($result['status'] !== true) {
       $_SESSION['message'] = 'Internal Server Error';
       $_SESSION['status'] = 'danger';
 

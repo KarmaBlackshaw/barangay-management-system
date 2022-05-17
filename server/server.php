@@ -37,3 +37,67 @@ $insertDB = function ($tbl, $payload) use ($conn) {
 // if (!isset($_SESSION['username'])) {
 // 	header('Location: login.php');
 // }
+
+class DB {
+	private $_table = '';
+	private $_select = '';
+	private $_where = '';
+
+	public function from ($table) {
+		$this->_table = $table;
+		return $this;
+	}
+
+	public function select ($cols) {
+		$selectArr = [];
+
+		foreach ($cols as $alias => $col) {
+			$selectArr[] = "{$col} as {$alias}";
+		}
+
+		$select = join(", ", $selectArr);
+
+		if ($this->_select === '') {
+			$this->_select = " SELECT {$select} ";
+		} else {
+			$this->_select .= " {$select} ";
+		}
+
+		echo $this->_select;
+
+		return $this;
+	}
+
+	public function where ($key, $valueOrOperand, $value = false) {
+		if (!$value) {
+			if ($this->_where === '') {
+				$this->_where = " WHERE {$key} = '{$valueOrOperand}' ";
+			} else {
+				$this->_where .= " AND {$key} = '{$valueOrOperand}' ";
+			}
+		} else {
+			if ($this->_where === '') {
+				$this->_where = " WHERE {$key} {$valueOrOperand} {$value} ";
+			} else {
+				$this->_where .= " AND {$key} {$valueOrOperand} {$value}";
+			}
+		}
+
+		return $this;
+	}
+}
+
+$db = new DB();
+
+$db
+	->from('users')
+	->where('id', 2)
+	->select(array(
+		'id' => 'users.id',
+		'name' => 'users.name',
+		'username' => 'users.username',
+	))
+	;
+// echo '<pre>';
+// var_dump($db);
+// echo '</pre>';

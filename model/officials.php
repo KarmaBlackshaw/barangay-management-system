@@ -3,7 +3,7 @@
 require '../server/server.php';
 require '../helpers/method-vars.php';
 
-if ($_POST['register-official']) {
+if (getBody('register-official', $_POST)) {
 try {
     $name = getBody('name', $_POST);
     $chair = getBody('chair', $_POST);
