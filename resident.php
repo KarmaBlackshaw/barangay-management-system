@@ -236,6 +236,7 @@ while ($row = $result1->fetch_assoc()) {
             <div class="modal-body">
               <form method="POST" action="model/save_resident.php" enctype="multipart/form-data">
                 <input type="hidden" name="size" value="1000000">
+                <input type="hidden" name="register-resident" value="1">
                 <div class="row">
                   <div class="col-md-4">
                     <div style="width: 370px; height: 250;" class="text-center" id="my_camera">
@@ -358,7 +359,7 @@ while ($row = $result1->fetch_assoc()) {
                           <select class="form-control indetity" name="indetity">
                             <option value="Positive">Positive</option>
                             <option value="Negative">Negative</option>
-                            <option value="Unidentified">Unidentified</option>
+                            <option value="Unidentified" selected>Unidentified</option>
                           </select>
                         </div>
                       </div>

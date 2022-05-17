@@ -1,37 +1,107 @@
 <?php
 include '../bootstrap/index.php';
 
+use function _\camelCase as _camelCase;
+
 if (!isset($_SESSION['username'])) {
 	if (isset($_SERVER["HTTP_REFERER"])) {
 		header("Location: " . $_SERVER["HTTP_REFERER"]);
 	}
 }
 
-$insertData = array(
-	"national_id" => getBody('national', $_POST),
-	"account_id" => getBody('account_id', $_POST),
-	"citizenship" => getBody('citizenship', $_POST),
-	"firstname" => getBody('fname', $_POST),
-	"middlename" => getBody('mname', $_POST),
-	"lastname" => getBody('lname', $_POST),
-	"alias" => getBody('alias', $_POST),
-	"birthplace" => getBody('bplace', $_POST),
-	"birthdate" => getBody('bdate', $_POST),
-	"age" => getBody('age', $_POST),
-	"civilstatus" => getBody('cstatus', $_POST),
-	"gender" => getBody('gender', $_POST),
-	"purok" => getBody('purok', $_POST),
-	"voterstatus" => getBody('vstatus', $_POST),
-	"identified_as" => getBody('indetity', $_POST),
-	"phone" => getBody('number', $_POST),
-	"email" => getBody('email', $_POST),
-	"occupation" => getBody('occupation', $_POST),
-	"address" => getBody('address', $_POST),
-);
 
-echo '<pre>';
-var_dump($insertData);
-echo '</pre>';
+
+if (isset($_POST['register-resident'])) {
+	$national = getBody('national', $_POST);
+	// $accountId = getBody('account_id', $_POST);
+	$citizenship = getBody('citizenship', $_POST);
+	$fname = getBody('fname', $_POST);
+	$mname = getBody('mname', $_POST);
+	$lname = getBody('lname', $_POST);
+	$alias = getBody('alias', $_POST);
+	$bplace = getBody('bplace', $_POST);
+	$bdate = getBody('bdate', $_POST);
+	$age = getBody('age', $_POST);
+	$cstatus = getBody('cstatus', $_POST);
+	$gender = getBody('gender', $_POST);
+	$purok = getBody('purok', $_POST);
+	$vstatus = getBody('vstatus', $_POST);
+	$indetity = getBody('indetity', $_POST);
+	$number = getBody('number', $_POST);
+	$email = getBody('email', $_POST);
+	$occupation = getBody('occupation', $_POST);
+	$address = getBody('address', $_POST);
+
+
+	$insertData = array(
+		"national_id" => $national,
+		// "account_id" => $accountId,
+		"citizenship" => $citizenship,
+		"firstname" => $fname,
+		"middlename" => $mname,
+		"lastname" => $lname,
+		"alias" => $alias,
+		"birthplace" => $bplace,
+		"birthdate" => $bdate,
+		"age" => $age,
+		"civilstatus" => $cstatus,
+		"gender" => $gender,
+		"purok" => $purok,
+		"voterstatus" => $vstatus,
+		"identified_as" => $indetity,
+		"phone" => $number,
+		"email" => $email,
+		"occupation" => $occupation,
+		"address" => $address,
+	);
+
+	if (!isset(
+		$national,
+		$citizenship,
+		$fname,
+		$mname,
+		$lname,
+		$alias,
+		$bplace,
+		$bdate,
+		$age,
+		$cstatus,
+		$gender,
+		$purok,
+		$vstatus,
+		$indetity,
+		$number,
+		$email,
+		$occupation,
+		$address)) {
+      $_SESSION['message'] = 'All fields are required!';
+      $_SESSION['status'] = 'danger';
+
+			echo '<pre>';
+			var_dump($insertData);
+			echo '</pre>';
+
+      // header('location: ../announcements.php');
+      return $conn->close();
+	}
+
+
+	/**
+	 * Create account
+	 */
+	$accountId = (function () use ($insertDB) {
+			// $uniqId = uniqid();
+		// $username = _camelCase($fname) . '_' . $uniqId;
+		// $password = sha1($username);
+
+		$result = $insertDB('announcements', array(
+			'title' => 'test',
+			'content' => 'test',
+			'thumbnail' => 'test',
+		));
+	})();
+}
+
 
 // $national_id 		= $conn->real_escape_string($_POST['national']);
 // $citizen 		= $conn->real_escape_string($_POST['citizenship']);
