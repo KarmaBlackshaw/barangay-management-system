@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '922b8bffa6be54ecd7fb2b552869304832f7dfeb',
+        'reference' => '14bd462a3ce958d6f6068cf5db3a8d11f68703e6',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '922b8bffa6be54ecd7fb2b552869304832f7dfeb',
+            'reference' => '14bd462a3ce958d6f6068cf5db3a8d11f68703e6',
             'dev_requirement' => false,
         ),
         'lodash-php/lodash-php' => array(
