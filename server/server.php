@@ -19,16 +19,11 @@ if (!isset($_SESSION)) {
 }
 
 $insertDB = function ($tbl, $payload) use ($conn) {
-	function wrapQuote ($str) {
-		return '"' . $str . '"';
-	}
+	$wrapQuote = fn($str) => '"' . $str . '"';
+	$wrapTicks = fn($str) => '`' . $str . '`';
 
-	function wrapTicks ($str) {
-		return '`' . $str . '`';
-	}
-
-	$columns = join(", ", array_map('wrapTicks', array_keys($payload)));
-	$values = join(", ", array_map('wrapQuote', array_values($payload)));
+	$columns = join(", ", array_map($wrapTicks, array_keys($payload)));
+	$values = join(", ", array_map($wrapQuote, array_values($payload)));
 
 	$query = "INSERT INTO `${tbl}` ($columns) VALUES ($values)";
 
