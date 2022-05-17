@@ -33,7 +33,7 @@ if (isset($_POST['register-announcement'])) {
       VALUES('$title', '$content', '$imgFilename')
     ");
 
-    if ($result !== TRUE) {
+    if ($result !== true) {
       $_SESSION['message'] = 'Internal Server Error';
       $_SESSION['status'] = 'danger';
 
@@ -46,6 +46,7 @@ if (isset($_POST['register-announcement'])) {
 
     $_SESSION['message'] = 'Announcement published';
     $_SESSION['status'] = 'success';
+
     header('location: ../announcements.php');
     $conn->close();
 
