@@ -1,69 +1,94 @@
 <?php
-include '../bootstrap/index.php';
+
+include "../bootstrap/index.php";
 
 use function _\camelCase as _camelCase;
 
-if (isset($_POST['register-resident']) && isAdmin()) {
+if (isset($_POST["register-resident"])) {
 	try {
-		$national = getBody('national', $_POST);
-		$citizenship = getBody('citizenship', $_POST);
-		$fname = getBody('fname', $_POST);
-		$mname = getBody('mname', $_POST);
-		$lname = getBody('lname', $_POST);
-		$alias = getBody('alias', $_POST);
-		$bplace = getBody('bplace', $_POST);
-		$bdate = getBody('bdate', $_POST);
-		$age = getBody('age', $_POST);
-		$cstatus = getBody('cstatus', $_POST);
-		$gender = getBody('gender', $_POST);
-		$purok = getBody('purok', $_POST);
-		$vstatus = getBody('vstatus', $_POST);
-		$indetity = getBody('indetity', $_POST);
-		$number = getBody('number', $_POST);
-		$email = getBody('email', $_POST);
-		$occupation = getBody('occupation', $_POST);
-		$address = getBody('address', $_POST);
+		$nationalId = getBody("national_id", $_POST);
+		$citizenship = getBody("citizenship", $_POST);
+		$address = getBody("address", $_POST);
+		$fname = getBody("fname", $_POST);
+		$mname = getBody("mname", $_POST);
+		$lname = getBody("lname", $_POST);
+		$alias = getBody("alias", $_POST);
+		$birthplace = getBody("birthplace", $_POST);
+		$birthdate = getBody("birthdate", $_POST);
+		$age = getBody("age", $_POST);
+		$civilStatus = getBody("civil_status", $_POST);
+		$gender = getBody("gender", $_POST);
+		$purokId = getBody("purok_id", $_POST);
+		$voterStatus = getBody("voter_status", $_POST);
+		$identifiedAs = getBody("identified_as", $_POST);
+		$email = getBody("email", $_POST);
+		$number = getBody("number", $_POST);
+		$occupation = getBody("occupation", $_POST);
+		$username = getBody("username", $_POST);
+		$password = getBody("password", $_POST);
+		$passwordConfirm = getBody("password_confirm", $_POST);
 
-		if (!isset(
-			$national,
-			$citizenship,
-			$fname,
-			$mname,
-			$lname,
-			$alias,
-			$bplace,
-			$bdate,
-			$age,
-			$cstatus,
-			$gender,
-			$purok,
-			$vstatus,
-			$number,
-			$email,
-			$occupation,
-			$address)) {
-				$_SESSION['message'] = 'All fields are required!';
-				$_SESSION['status'] = 'danger';
+		$profileimg = getBody("profileimg", $_POST);
 
-				header('location: ../resident.php');
+		$requiredFields = [
+			"National ID" => $nationalId,
+			"Citizenship" => $citizenship,
+			"Address" => $address,
+			"First Name" => $fname,
+			"Middle Name" => $mname,
+			"Last Name" => $lname,
+			"Alias" => $alias,
+			"Birth Place" => $birthplace,
+			"Birth Date" => $birthdate,
+			"Age" => $age,
+			"Civil Status" => $civilStatus,
+			"Gender" => $gender,
+			"Purok" => $purokId,
+			"Voter Status" => $voterStatus,
+			"Email" => $email,
+			"Contact Number" => $number,
+			"Cccupation" => $occupation,
+			"Username" => $username,
+			"Password" => $password,
+			"Password Confirmation" => $passwordConfirm,
+		];
+
+		/**
+		 * Check required fields
+		 */
+		$emptyRequiredField = array_find_key(
+			$requiredFields,
+			fn($item) => empty($item)
+		);
+
+		if ($emptyRequiredField) {
+			$_SESSION["message"] = "<b>$emptyRequiredField</b> is required!";
+			$_SESSION["status"] = "danger";
+
+			if ($_SERVER["HTTP_REFERER"]) {
+				header("Location: " . $_SERVER["HTTP_REFERER"]);
 				return $conn->close();
+			}
+
+			header("location: ../user-register.php");
+			return $conn->close();
 		}
 
 		/**
 		 * Handle profile image
 		 */
-		$profileCamera = getBody('profileimg', $_POST); // base 64 image
-		$profileFile = $_FILES['img'];
+		$profileCamera = getBody("profileimg", $_POST); // base 64 image
+		$profileFile = $_FILES["img"];
 
 		$imgFilename = empty($profileCamera) ? null : $profileCamera;
 
-		if ($profileFile['name']) {
+		if ($profileFile["name"]) {
 			$uniqId = uniqid(date("YmdhisU"));
-			$ext = pathinfo($profileFile['name'], PATHINFO_EXTENSION);
+			$ext = pathinfo($profileFile["name"], PATHINFO_EXTENSION);
 			$imgFilename = "$uniqId.$ext";
 			$imgDir = "../assets/uploads/$imgFilename";
 
-			move_uploaded_file($profileFile['tmp_name'], $imgDir);
+			move_uploaded_file($profileFile["tmp_name"], $imgDir);
 		}
 
 		/**
@@ -74,50 +99,62 @@ if (isset($_POST['register-resident']) && isAdmin()) {
 			$password = sha1($username);
 
 			$result = $db
-				->insert('tbl_users')
-				->values(array(
+				->insert("tbl_users")
+				->values([
 					"username" => $username,
 					"password" => $password,
 					"user_type" => "user",
 					"avatar" => $imgFilename,
-				))
+				])
 				->exec();
 
-			return $result['id'];
+			return $result["id"];
 		})();
 
 		$result = $db
-			->insert('residents')
-			->values(array(
-				"national_id" => $national,
+			->insert("residents")
+			->values([
+				"national_id" => $nationalId,
 				"citizenship" => $citizenship,
 				"firstname" => $fname,
 				"middlename" => $mname,
 				"lastname" => $lname,
 				"alias" => $alias,
-				"birthplace" => $bplace,
-				"birthdate" => $bdate,
+				"birthplace" => $birthplace,
+				"birthdate" => $birthdate,
 				"age" => $age,
-				"civilstatus" => $cstatus,
+				"civilstatus" => $civilStatus,
 				"gender" => $gender,
-				"purok" => $purok,
-				"voterstatus" => $vstatus,
-				"identified_as" => $indetity,
+				"purok_id" => $purokId,
+				"voterstatus" => $voterStatus,
+				"identified_as" => $identifiedAs,
 				"phone" => $number,
 				"email" => $email,
 				"occupation" => $occupation,
 				"address" => $address,
 				"picture" => $imgFilename,
-				"account_id" => $accountId
-			))
+				"account_id" => $accountId,
+			])
 			->exec();
 
-		$_SESSION['message'] = 'Resident registered';
-		$_SESSION['status'] = 'success';
+		echo "<pre>";
+		var_dump($result);
+		echo "</pre>";
 
-		header('location: ../resident.php');
-		$conn->close();
-	} catch (\Throwable $th) {
-		throw $th;
+		$_SESSION["message"] = "Resident registered";
+		$_SESSION["status"] = "success";
+
+		if ($_SERVER["HTTP_REFERER"]) {
+			header("Location: " . $_SERVER["HTTP_REFERER"]);
+			return $conn->close();
+		}
+
+		header("location: ../user-register.php");
+		return $conn->close();
+	} catch (Exception $e) {
+		echo "<pre>";
+		var_dump($e);
+		echo "</pre>";
+		throw $e;
 	}
 }
