@@ -17,18 +17,6 @@ while ($row = $result1->fetch_assoc()) {
 	$purok[] = $row;
 }
 
-$purokList = (function () use ($db) {
-	// prettier-ignore
-	return $db
-    ->from("purok")
-    ->select([
-      "id" => "purok.id",
-      "name" => "purok.name",
-      "details" => "purok.details",
-    ])
-    ->exec();
-})();
-
 $residentList = (function () use ($db) {
 	// prettier-ignore
 	return $db
@@ -100,7 +88,7 @@ $residentList = (function () use ($db) {
                 <div class="card-header">
                   <div class="card-head-row">
                     <div class="card-title">Resident Information</div>
-                    <?php if (isset($_SESSION["username"])): ?>
+                    <?php if (isAuthenticated()): ?>
                       <div class="card-tools">
                         <a
                           href="resident-register.php"
@@ -166,7 +154,7 @@ $residentList = (function () use ($db) {
                               <td><?= $row["civilstatus"] ?></td>
                               <td><?= $row["gender"] ?></td>
                               <td><?= $row["purok_name"] ?></td>
-                              <?php if (isset($_SESSION["username"])): ?>
+                              <?php if (isAuthenticated()): ?>
                                 <?php if (isAdmin()): ?>
                                   <td><?= $row["voterstatus"] ?></td>
                                 <?php endif; ?>
@@ -204,7 +192,7 @@ $residentList = (function () use ($db) {
                                       data-dead="<?= $row["resident_type"] ?>"
                                       data-remarks="<?= $row["remarks"] ?>"
                                     >
-                                      <?php if (isset($_SESSION["username"])): ?>
+                                      <?php if (isAuthenticated()): ?>
                                         <i class="fa fa-edit"></i>
                                       <?php else: ?>
                                         <i class="fa fa-eye"></i>
@@ -248,7 +236,7 @@ $residentList = (function () use ($db) {
                           <th scope="col">Civil Status</th>
                           <th scope="col">Gender</th>
                           <th scope="col">Purok</th>
-                          <?php if (isset($_SESSION["username"])): ?>
+                          <?php if (isAuthenticated()): ?>
                             <?php if (isAdmin()): ?>
                               <th scope="col">Voter Status</th>
                             <?php endif; ?>
@@ -283,7 +271,7 @@ $residentList = (function () use ($db) {
                     <div id="my_camera1" style="width: 370px; height: 250;" class="text-center">
                       <img src="assets/img/person.png" alt="..." class="img img-fluid" width="250" id="image">
                     </div>
-                    <?php if (isset($_SESSION["username"])): ?>
+                    <?php if (isAuthenticated()): ?>
                       <div class="form-group d-flex justify-content-center">
                         <button type="button" class="btn btn-danger btn-sm mr-2" id="open_cam1">Open Camera</button>
                         <button type="button" class="btn btn-secondary btn-sm ml-2" onclick="save_photo1()">Capture</button>
@@ -463,7 +451,7 @@ $residentList = (function () use ($db) {
             <div class="modal-footer">
               <input type="hidden" name="id" id="res_id">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <?php if (isset($_SESSION["username"])): ?>
+              <?php if (isAuthenticated()): ?>
                 <button type="submit" class="btn btn-primary">Update</button>
               <?php endif; ?>
             </div>
