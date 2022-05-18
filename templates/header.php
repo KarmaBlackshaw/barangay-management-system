@@ -42,10 +42,18 @@
     text-align: center;
   }
 
-  /* body,
+  a {
+    text-decoration: none;
+  }
+
+  body,
   html,
   .preloader {
     background-color: #18181b !important;
+    color: #a1a1aa!important;
+  }
+
+  th, td {
     color: #a1a1aa!important;
   }
 
@@ -81,5 +89,5 @@
   .sidebar-wrapper {
     background-color: #18181b !important;
     border-right: 1px solid #27272a;
-  } */
+  }
 </style>
