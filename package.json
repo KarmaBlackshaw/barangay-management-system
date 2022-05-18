@@ -1,0 +1,25 @@
+{
+  "name": "barangay-management-system",
+  "version": "1.0.0",
+  "description": "Barangay Services System using core PHP",
+  "main": "index.js",
+  "dependencies": {
+    "prettier": "^2.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarmaBlackshaw/barangay-management-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KarmaBlackshaw/barangay-management-system/issues"
+  },
+  "homepage": "https://github.com/KarmaBlackshaw/barangay-management-system#readme"
+}
