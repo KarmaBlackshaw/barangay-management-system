@@ -1,54 +1,53 @@
 <?php
 
-include '../bootstrap/index.php';
+include "../bootstrap/index.php";
 
-if (isset($_POST['register-announcement'])) {
+if (isset($_POST["register-announcement"])) {
   try {
-    $title = $conn->real_escape_string($_POST['title']);
-    $content = $conn->real_escape_string($_POST['content']);
-    $thumbnail  = $_FILES['thumbnail'];
+    $title = $conn->real_escape_string($_POST["title"]);
+    $content = $conn->real_escape_string($_POST["content"]);
+    $thumbnail = $_FILES["thumbnail"];
 
     if (!$title || !$content) {
-      $_SESSION['message'] = 'All fields are required!';
-      $_SESSION['status'] = 'danger';
+      $_SESSION["message"] = "All fields are required!";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
-
-    $imgFilename = '';
+    $imgFilename = "";
 
     if ($thumbnail) {
       $uniqId = uniqid(date("YmdhisU"));
-      $ext = pathinfo($thumbnail['name'], PATHINFO_EXTENSION);
+      $ext = pathinfo($thumbnail["name"], PATHINFO_EXTENSION);
       $imgFilename = "$uniqId.$ext";
 
       $imgDir = "../assets/uploads/$imgFilename";
-      move_uploaded_file($thumbnail['tmp_name'], $imgDir);
+      move_uploaded_file($thumbnail["tmp_name"], $imgDir);
     }
 
     $result = $db
-      ->insert('announcements')
-      ->values(array(
-        'title' => $title,
-        'content' => $content,
-        'thumbnail' => $imgFilename,
-      ))
+      ->insert("announcements")
+      ->values([
+        "title" => $title,
+        "content" => $content,
+        "thumbnail" => $imgFilename,
+      ])
       ->exec();
 
-    if ($result['status'] !== true) {
-      $_SESSION['message'] = 'Internal Server Error';
-      $_SESSION['status'] = 'danger';
+    if ($result["status"] !== true) {
+      $_SESSION["message"] = "Internal Server Error";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
-    $_SESSION['message'] = 'Announcement published';
-    $_SESSION['status'] = 'success';
+    $_SESSION["message"] = "Announcement published";
+    $_SESSION["status"] = "success";
 
-    header('location: ../announcements.php');
+    header("location: ../announcements.php");
     $conn->close();
 
     return;
@@ -57,67 +56,65 @@ if (isset($_POST['register-announcement'])) {
   }
 }
 
-if (isset($_POST['edit-announcement'])) {
+if (isset($_POST["edit-announcement"])) {
   try {
-    $id = $conn->real_escape_string($_POST['id']);
-    $title = $conn->real_escape_string($_POST['title']);
-    $content = $conn->real_escape_string($_POST['content']);
-    $oldThumbnail = $conn->real_escape_string($_POST['old-thumbnail']);
-    $thumbnail  = $_FILES['thumbnail'];
+    $id = $conn->real_escape_string($_POST["id"]);
+    $title = $conn->real_escape_string($_POST["title"]);
+    $content = $conn->real_escape_string($_POST["content"]);
+    $oldThumbnail = $conn->real_escape_string($_POST["old-thumbnail"]);
+    $thumbnail = $_FILES["thumbnail"];
 
     if (!$id) {
-      $_SESSION['message'] = 'ID is required!';
-      $_SESSION['status'] = 'danger';
+      $_SESSION["message"] = "ID is required!";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
     if (!$title || !$content) {
-      $_SESSION['message'] = 'All fields are required!';
-      $_SESSION['status'] = 'danger';
+      $_SESSION["message"] = "All fields are required!";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
-
-    $imgDir = '';
+    $imgDir = "";
     $imgFilename = $oldThumbnail ?? $oldThumbnail;
 
     if ($thumbnail) {
       $uniqId = uniqid(date("YmdhisU"));
-      $ext = pathinfo($thumbnail['name'], PATHINFO_EXTENSION);
+      $ext = pathinfo($thumbnail["name"], PATHINFO_EXTENSION);
       $imgFilename = "$uniqId.$ext";
       $imgDir = "../assets/uploads/$imgFilename";
     }
 
     $result = $db
-      ->update('announcements')
-      ->where('id', $id)
-      ->set(array(
-        'title' => $title,
-        'content' => $content,
-        'thumbnail' => $imgFilename,
-      ))
+      ->update("announcements")
+      ->where("id", $id)
+      ->set([
+        "title" => $title,
+        "content" => $content,
+        "thumbnail" => $imgFilename,
+      ])
       ->exec();
 
-    if ($result['status'] !== true) {
-      $_SESSION['message'] = 'Internal Server Error';
-      $_SESSION['status'] = 'danger';
+    if ($result["status"] !== true) {
+      $_SESSION["message"] = "Internal Server Error";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
-
     if ($thumbnail) {
-      move_uploaded_file($thumbnail['tmp_name'], $imgDir);
+      move_uploaded_file($thumbnail["tmp_name"], $imgDir);
     }
 
-    $_SESSION['message'] = 'Announcement updated';
-    $_SESSION['status'] = 'success';
-    header('location: ../announcements.php');
+    $_SESSION["message"] = "Announcement updated";
+    $_SESSION["status"] = "success";
+    header("location: ../announcements.php");
     $conn->close();
 
     return;
@@ -126,26 +123,26 @@ if (isset($_POST['edit-announcement'])) {
   }
 }
 
-if (isset($_GET['delete-announcement'])) {
+if (isset($_GET["delete-announcement"])) {
   try {
-    $id = $conn->real_escape_string($_GET['id']);
+    $id = $conn->real_escape_string($_GET["id"]);
 
     $result = $db
-      ->delete('announcements')
-      ->where('id', $id)
+      ->delete("announcements")
+      ->where("id", $id)
       ->exec();
 
-    if ($result['status'] !== true) {
-      $_SESSION['message'] = 'Internal Server Error';
-      $_SESSION['status'] = 'danger';
+    if ($result["status"] !== true) {
+      $_SESSION["message"] = "Internal Server Error";
+      $_SESSION["status"] = "danger";
 
-      header('location: ../announcements.php');
+      header("location: ../announcements.php");
       return $conn->close();
     }
 
-    $_SESSION['message'] = 'Announcement deleted';
-    $_SESSION['status'] = 'success';
-    header('location: ../announcements.php');
+    $_SESSION["message"] = "Announcement deleted";
+    $_SESSION["status"] = "success";
+    header("location: ../announcements.php");
     $conn->close();
 
     return;
