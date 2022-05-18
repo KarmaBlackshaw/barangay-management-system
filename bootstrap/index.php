@@ -8,3 +8,4 @@ include PATH_ROOT . "/server/server.php";
 include PATH_ROOT . "/helpers/role.php";
 include PATH_ROOT . "/helpers/method-vars.php";
 include PATH_ROOT . "/helpers/array-helpers.php";
+include PATH_ROOT . "/helpers/view-helpers.php";
