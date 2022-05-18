@@ -149,9 +149,7 @@ $residentList = (function () use ($db) {
                                 <div class="row">
                                   <div class="col-2 d-flex justify-content-center align-items-center">
                                     <img
-                                      src="<?= preg_match("/data:image/i", $row["picture"])
-                                      	? $row["picture"]
-                                      	: "assets/uploads/" . $row["picture"] ?>"
+                                      src="<?= imgSrc($row["picture"]) ?>"
                                       alt="..."
                                       class="avatar-img rounded-circle avatar avatar-xs"
                                     >
@@ -169,10 +167,10 @@ $residentList = (function () use ($db) {
                               <td><?= $row["gender"] ?></td>
                               <td><?= $row["purok_name"] ?></td>
                               <?php if (isset($_SESSION["username"])): ?>
-                                <?php if ($_SESSION["role"] == "administrator"): ?>
+                                <?php if (isAdmin()): ?>
                                   <td><?= $row["voterstatus"] ?></td>
-
                                 <?php endif; ?>
+
                                 <td>
                                   <div class="form-button-action">
                                     <a
@@ -212,10 +210,7 @@ $residentList = (function () use ($db) {
                                         <i class="fa fa-eye"></i>
                                       <?php endif; ?>
                                     </a>
-                                    <?php if (
-                                    	isset($_SESSION["username"]) &&
-                                    	$_SESSION["role"] == "administrator"
-                                    ): ?>
+                                    <?php if (isAdmin()): ?>
                                       <a
                                         type="button"
                                         data-toggle="tooltip"
@@ -254,7 +249,7 @@ $residentList = (function () use ($db) {
                           <th scope="col">Gender</th>
                           <th scope="col">Purok</th>
                           <?php if (isset($_SESSION["username"])): ?>
-                            <?php if ($_SESSION["role"] == "administrator"): ?>
+                            <?php if (isAdmin()): ?>
                               <th scope="col">Voter Status</th>
                             <?php endif; ?>
                             <th scope="col">Action</th>
@@ -271,7 +266,7 @@ $residentList = (function () use ($db) {
       </div>
 
       <!-- Modal -->
-      <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="edit" >
         <div class="modal-dialog modal-xl" role="document">
           <div class="modal-content">
             <div class="modal-header">
