@@ -1,11 +1,11 @@
-<?php include 'bootstrap/index.php' ?>
+<?php include "bootstrap/index.php"; ?>
 <?php
-$query = "SELECT * FROM tblpurok ORDER BY `name`";
-$result = $conn->query($query);
+$query = "SELECT * FROM purok ORDER BY `name`";
 
-$purok = array();
+$result = $conn->query($query);
+$purok = [];
 while ($row = $result->fetch_assoc()) {
-    $purok[] = $row;
+	$purok[] = $row;
 }
 ?>
 
@@ -13,19 +13,19 @@ while ($row = $result->fetch_assoc()) {
 <html lang="en">
 
 <head>
-    <?php include 'templates/header.php' ?>
+    <?php include "templates/header.php"; ?>
     <title>Barangay Purok - Barangay Services Management System</title>
 </head>
 
 <body>
-    <?php include 'templates/loading_screen.php' ?>
+    <?php include "templates/loading_screen.php"; ?>
     <div class="wrapper">
         <!-- Main Header -->
-        <?php include 'templates/main-header.php' ?>
+        <?php include "templates/main-header.php"; ?>
         <!-- End Main Header -->
 
         <!-- Sidebar -->
-        <?php include 'templates/sidebar.php' ?>
+        <?php include "templates/sidebar.php"; ?>
         <!-- End Sidebar -->
 
         <div class="main-panel">
@@ -43,12 +43,16 @@ while ($row = $result->fetch_assoc()) {
                     <div class="row mt--2">
                         <div class="col-md-12">
 
-                            <?php if (isset($_SESSION['message'])) : ?>
-                                <div class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-                                    <?php echo $_SESSION['message']; ?>
+                            <?php if (isset($_SESSION["message"])): ?>
+                                <div class="alert alert-<?php echo $_SESSION[
+                                	"status"
+                                ]; ?> <?= $_SESSION["status"] == "danger"
+ 	? "bg-danger text-light"
+ 	: null ?>" role="alert">
+                                    <?php echo $_SESSION["message"]; ?>
                                 </div>
-                                <?php unset($_SESSION['message']); ?>
-                            <?php endif ?>
+                                <?php unset($_SESSION["message"]); ?>
+                            <?php endif; ?>
 
                             <div class="card">
                                 <div class="card-header">
@@ -74,31 +78,38 @@ while ($row = $result->fetch_assoc()) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php if (!empty($purok)) : ?>
-                                                    <?php $no = 1;
-                                                    foreach ($purok as $row) : ?>
+                                                <?php if (!empty($purok)): ?>
+                                                    <?php
+                                                    $no = 1;
+                                                    foreach ($purok as $row): ?>
                                                         <tr>
                                                             <td><?= $no ?></td>
-                                                            <td><?= $row['name'] ?></td>
-                                                            <td><?= $row['details'] ?></td>
+                                                            <td><?= $row["name"] ?></td>
+                                                            <td><?= $row["details"] ?></td>
                                                             <td>
                                                                 <div class="form-button-action">
-                                                                    <a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Purok" onclick="editPurok(this)" data-name="<?= $row['name'] ?>" data-details="<?= $row['details'] ?>" data-id="<?= $row['id'] ?>">
+                                                                    <a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Purok" onclick="editPurok(this)" data-name="<?= $row[
+                                                                    	"name"
+                                                                    ] ?>" data-details="<?= $row[
+	"details"
+] ?>" data-id="<?= $row["id"] ?>">
                                                                         <i class="fa fa-edit"></i>
                                                                     </a>
-                                                                    <a type="button" data-toggle="tooltip" href="model/remove_purok.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this purok?');" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                                    <a type="button" data-toggle="tooltip" href="model/remove_purok.php?id=<?= $row[
+                                                                    	"id"
+                                                                    ] ?>" onclick="return confirm('Are you sure you want to delete this purok?');" class="btn btn-link btn-danger" data-original-title="Remove">
                                                                         <i class="fa fa-times"></i>
                                                                     </a>
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    <?php $no++;
-                                                    endforeach ?>
-                                                <?php else : ?>
+                                                    <?php $no++;endforeach;
+                                                    ?>
+                                                <?php else: ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">No Available Data</td>
                                                     </tr>
-                                                <?php endif ?>
+                                                <?php endif; ?>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -181,14 +192,14 @@ while ($row = $result->fetch_assoc()) {
             </div>
 
             <!-- Main Footer -->
-            <?php include 'templates/main-footer.php' ?>
+            <?php include "templates/main-footer.php"; ?>
             <!-- End Main Footer -->
 
         </div>
 
     </div>
 
-    <?php include 'templates/footer.php' ?>
+    <?php include "templates/footer.php"; ?>
 </body>
 
 </html>
