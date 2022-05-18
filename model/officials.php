@@ -21,11 +21,14 @@ try {
     }
 
     if ($position == 4) {
-      $query = "SELECT id FROM tblofficials WHERE position = 4 AND status = 'Active'";
-
-      $hasCaptain = $conn
-        ->query($query)
-        ->fetch_assoc();
+      $hasCaptain = $db
+        ->from('tblofficials')
+        ->where('position', 4)
+        ->where('status', 'Active')
+        ->select(array(
+          'id' => 'tblofficials.id',
+        ))
+        ->exec();
 
       if (isset($hasCaptain)) {
         $_SESSION['message'] = 'A captain is already registered!';
@@ -36,12 +39,19 @@ try {
       }
     }
 
-    $result = $conn->query("
-      INSERT INTO tblofficials(name, chairmanship, position, termstart, termend, status)
-      VALUES('$name', '$chair', '$pos', '$start', '$end', '$status')
-    ");
+    $result = $db
+      ->insert('tblofficials')
+      ->values(array(
+        "name" => $name,
+        "chairmanship" => $chair,
+        "position" => $position,
+        "termstart" => $start,
+        "termend" => $end,
+        "status" => $status,
+      ))
+      ->exec();
 
-    if ($result !== true) {
+    if ($result['status'] !== true) {
       $_SESSION['message'] = 'Internal Server Error';
       $_SESSION['status'] = 'danger';
 

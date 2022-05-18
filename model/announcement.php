@@ -28,11 +28,14 @@ if (isset($_POST['register-announcement'])) {
       move_uploaded_file($thumbnail['tmp_name'], $imgDir);
     }
 
-    $result = $insertDB('announcements', array(
-      'title' => $title,
-      'content' => $content,
-      'thumbnail' => $imgFilename,
-    ));
+    $result = $db
+      ->insert('announcements')
+      ->values(array(
+        'title' => $title,
+        'content' => $content,
+        'thumbnail' => $imgFilename,
+      ))
+      ->exec();
 
     if ($result['status'] !== true) {
       $_SESSION['message'] = 'Internal Server Error';
@@ -89,16 +92,17 @@ if (isset($_POST['edit-announcement'])) {
       $imgDir = "../assets/uploads/$imgFilename";
     }
 
+    $result = $db
+      ->update('announcements')
+      ->where('id', $id)
+      ->set(array(
+        'title' => $title,
+        'content' => $content,
+        'thumbnail' => $imgFilename,
+      ))
+      ->exec();
 
-    $result = $conn->query("
-      UPDATE announcements SET
-        title = '$title',
-        content = '$content',
-        thumbnail = '$imgFilename'
-      WHERE id = $id
-    ");
-
-    if ($result !== TRUE) {
+    if ($result['status'] !== true) {
       $_SESSION['message'] = 'Internal Server Error';
       $_SESSION['status'] = 'danger';
 
@@ -126,12 +130,12 @@ if (isset($_GET['delete-announcement'])) {
   try {
     $id = $conn->real_escape_string($_GET['id']);
 
-    $result = $conn->query("
-      DELETE FROM announcements
-      WHERE id = $id
-    ");
+    $result = $db
+      ->delete('announcements')
+      ->where('id', $id)
+      ->exec();
 
-    if ($result !== TRUE) {
+    if ($result['status'] !== true) {
       $_SESSION['message'] = 'Internal Server Error';
       $_SESSION['status'] = 'danger';
 

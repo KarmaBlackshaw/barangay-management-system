@@ -38,17 +38,32 @@ $insertDB = function ($tbl, $payload) use ($conn) {
 // 	header('Location: login.php');
 // }
 
+function trimSpaces ($str) {
+	return trim(preg_replace('/\s+/', ' ', $str));
+}
+
 class DB {
+	private $_connection = null;
 	private $_table = '';
 	private $_select = '';
 	private $_where = '';
+	private $_update = '';
+	private $_set = '';
+	private $_delete = '';
+	private $_from = '';
+	private $_insert = '';
+	private $_values = '';
 
-	public function from ($table) {
-		$this->_table = $table;
+	public function __construct ($connection) {
+		$this->_connection = $connection;
+	}
+
+	public function from (string $table) {
+		$this->_from = " FROM $table ";
 		return $this;
 	}
 
-	public function select ($cols) {
+	public function select (array $cols) {
 		$selectArr = [];
 
 		foreach ($cols as $alias => $col) {
@@ -63,12 +78,10 @@ class DB {
 			$this->_select .= " {$select} ";
 		}
 
-		echo $this->_select;
-
 		return $this;
 	}
 
-	public function where ($key, $valueOrOperand, $value = false) {
+	public function where (string $key, string $valueOrOperand, $value = false) {
 		if (!$value) {
 			if ($this->_where === '') {
 				$this->_where = " WHERE {$key} = '{$valueOrOperand}' ";
@@ -85,19 +98,160 @@ class DB {
 
 		return $this;
 	}
+
+	public function update (string $table) {
+		$this->_update = " UPDATE {$table} ";
+
+		return $this;
+	}
+
+	public function set (array $cols) {
+		$updateArr = [];
+
+		foreach ($cols as $col => $value) {
+			$updateArr[] = "{$col} = '{$value}'";
+		}
+
+		$update = join(", ", $updateArr);
+
+		if ($this->_set === '') {
+			$this->_set = " SET {$update} ";
+		} else {
+			$this->_set .= " {$update} ";
+		}
+
+		return $this;
+	}
+
+	public function delete ($table) {
+		$this->_delete = " DELETE FROM {$table} ";
+
+		return $this;
+	}
+
+	public function insert ($table) {
+		$this->_insert = " INSERT INTO {$table} ";
+
+		return $this;
+	}
+
+	public function values (array $payload) {
+		$wrapQuote = fn($str) => '"' . $str . '"';
+		$wrapTicks = fn($str) => '`' . $str . '`';
+
+		$filteredPayload = array_filter($payload);
+		$columns = join(", ", array_map($wrapTicks, array_keys($filteredPayload)));
+		$values = join(", ", array_map($wrapQuote, array_values($filteredPayload)));
+
+		if ($this->_values === '') {
+			$this->_values = " ($columns) VALUES ($values)";
+		} else {
+			$this->_values .= ", ($values) ";
+		}
+
+		return $this;
+	}
+
+	public function toString () {
+
+		if (!empty($this->_update)) {
+			return trimSpaces($this->_update . $this->_set . $this->_where);
+		}
+
+		if (!empty($this->_select)) {
+			return trimSpaces($this->_select . $this->_from . $this->_where);
+		}
+
+		if (!empty($this->_delete)) {
+			return trimSpaces($this->_delete . $this->_where);
+		}
+
+		if (!empty($this->_insert)) {
+			return trimSpaces($this->_insert . $this->_values);
+		}
+	}
+
+	private function clear () {
+		$this->_table = '';
+		$this->_select = '';
+		$this->_where = '';
+		$this->_update = '';
+		$this->_set = '';
+		$this->_delete = '';
+		$this->_from = '';
+		$this->_insert = '';
+		$this->_values = '';
+	}
+
+	public function exec () {
+		$result = $this
+			->_connection
+			->query($this->toString());
+
+		if ($this->_select) {
+			$this->clear();
+			return $result
+				->fetch_assoc();
+		}
+
+		if ($this->_insert) {
+			$this->clear();
+			return array(
+				'id' => mysqli_insert_id($this->_connection),
+				'status' => $result
+			);
+		}
+
+		$this->clear();
+		return array(
+			'status' => $result
+		);
+	}
 }
 
-$db = new DB();
+$db = new DB($conn);
 
-$db
-	->from('users')
-	->where('id', 2)
-	->select(array(
-		'id' => 'users.id',
-		'name' => 'users.name',
-		'username' => 'users.username',
-	))
-	;
-// echo '<pre>';
-// var_dump($db);
-// echo '</pre>';
+// ==== UPDATE ====
+// $string = $db
+// 	->update('users')
+// 	->where('id', 2)
+// 	->set(array(
+// 		'id' => '2',
+// 		'name' => '3',
+// 		'username' => '4',
+// 	))
+// 	->toString()
+// 	;
+
+// ==== SELECT ====
+// $string = $db
+// 	->from('users')
+// 	->where('id', 2)
+// 	->select(array(
+// 		'id' => '2',
+// 		'name' => '3',
+// 		'username' => '4',
+// 	))
+// 	->toString()
+// 	;
+
+// ==== DELETE ====
+// $string = $db
+// 	->delete('users')
+// 	->where('id', 2)
+// 	->toString()
+// 	;
+
+// ==== INSERT ====
+// $string = $db
+// 	->insert('announcements')
+// 	->values(array(
+// 		"title" => "title1",
+// 		"content" => "content1",
+// 	))
+// 	->values(array(
+// 		"title" => "title2",
+// 		"content" => "content2",
+// 	))
+// 	->exec()
+// 	;

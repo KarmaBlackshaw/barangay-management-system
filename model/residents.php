@@ -69,42 +69,48 @@ if (isset($_POST['register-resident']) && isAdmin()) {
 		/**
 		 * Create account
 		 */
-		$accountId = (function () use ($insertDB, $imgFilename) {
+		$accountId = (function () use ($db, $imgFilename) {
 			$username = uniqid();
 			$password = sha1($username);
 
-			$result = $insertDB('tbl_users', array(
-				'username' => $username,
-				'password' => $password,
-				'user_type' => 'user',
-				'avatar' => $imgFilename,
-			));
+			$result = $db
+				->insert('tbl_users')
+				->values(array(
+					"username" => $username,
+					"password" => $password,
+					"user_type" => "user",
+					"avatar" => $imgFilename,
+				))
+				->exec();
 
 			return $result['id'];
 		})();
 
-		$insertDB('residents', array(
-			"national_id" => $national,
-			"citizenship" => $citizenship,
-			"firstname" => $fname,
-			"middlename" => $mname,
-			"lastname" => $lname,
-			"alias" => $alias,
-			"birthplace" => $bplace,
-			"birthdate" => $bdate,
-			"age" => $age,
-			"civilstatus" => $cstatus,
-			"gender" => $gender,
-			"purok" => $purok,
-			"voterstatus" => $vstatus,
-			"identified_as" => $indetity,
-			"phone" => $number,
-			"email" => $email,
-			"occupation" => $occupation,
-			"address" => $address,
-			"picture" => $imgFilename,
-			"account_id" => $accountId
-		));
+		$result = $db
+			->insert('residents')
+			->values(array(
+				"national_id" => $national,
+				"citizenship" => $citizenship,
+				"firstname" => $fname,
+				"middlename" => $mname,
+				"lastname" => $lname,
+				"alias" => $alias,
+				"birthplace" => $bplace,
+				"birthdate" => $bdate,
+				"age" => $age,
+				"civilstatus" => $cstatus,
+				"gender" => $gender,
+				"purok" => $purok,
+				"voterstatus" => $vstatus,
+				"identified_as" => $indetity,
+				"phone" => $number,
+				"email" => $email,
+				"occupation" => $occupation,
+				"address" => $address,
+				"picture" => $imgFilename,
+				"account_id" => $accountId
+			))
+			->exec();
 
 		$_SESSION['message'] = 'Resident registered';
 		$_SESSION['status'] = 'success';

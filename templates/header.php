@@ -42,11 +42,11 @@
     text-align: center;
   }
 
-  body,
+  /* body,
   html,
   .preloader {
     background-color: #18181b !important;
-    color: #a1a1aa;
+    color: #a1a1aa!important;
   }
 
   .card {
@@ -81,5 +81,5 @@
   .sidebar-wrapper {
     background-color: #18181b !important;
     border-right: 1px solid #27272a;
-  }
+  } */
 </style>
