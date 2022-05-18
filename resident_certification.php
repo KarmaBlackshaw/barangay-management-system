@@ -102,7 +102,7 @@ $residentList = (function () use ($db) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION["username"])): ?>
+													<?php if (isAuthenticated()): ?>
 														<?php if (isAdmin()): ?>
 															<th scope="col">Voter Status</th>
 														<?php endif; ?>
@@ -135,7 +135,7 @@ $residentList = (function () use ($db) {
 															<td><?= $row["civilstatus"] ?></td>
 															<td><?= $row["gender"] ?></td>
                               <td><?= $row["purok_name"] ?></td>
-															<?php if (isset($_SESSION["username"])): ?>
+															<?php if (isAuthenticated()): ?>
 																<?php if (isAdmin()): ?>
 																	<td><?= $row["voterstatus"] ?></td>
 																<?php endif; ?>
@@ -168,7 +168,7 @@ $residentList = (function () use ($db) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION["username"])): ?>
+													<?php if (isAuthenticated()): ?>
 														<?php if (isAdmin()): ?>
 															<th scope="col">Voter Status</th>
 														<?php endif; ?>
