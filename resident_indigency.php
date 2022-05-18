@@ -1,5 +1,5 @@
-<?php include "bootstrap/index.php"; ?>
 <?php
+include "bootstrap/index.php";
 $query = "SELECT * FROM residents";
 
 $result = $conn->query($query);
@@ -7,12 +7,41 @@ $resident = [];
 while ($row = $result->fetch_assoc()) {
 	$resident[] = $row;
 }
-$query1 = "SELECT * FROM purok ORDER BY `name`";
-$result1 = $conn->query($query1);
-$purok = [];
-while ($row = $result1->fetch_assoc()) {
-	$purok[] = $row;
-}
+
+$residentList = (function () use ($db) {
+	// prettier-ignore
+	return $db
+    ->from("residents")
+    ->join("purok", "purok.id", "residents.purok_id")
+    ->select([
+      "id" => "residents.id",
+      "national_id" => "residents.national_id",
+      "account_id" => "residents.account_id",
+      "citizenship" => "residents.citizenship",
+      "picture" => "residents.picture",
+      "firstname" => "residents.firstname",
+      "middlename" => "residents.middlename",
+      "lastname" => "residents.lastname",
+      "alias" => "residents.alias",
+      "birthplace" => "residents.birthplace",
+      "birthdate" => "residents.birthdate",
+      "age" => "residents.age",
+      "civilstatus" => "residents.civilstatus",
+      "gender" => "residents.gender",
+      "voterstatus" => "residents.voterstatus",
+      "identified_as" => "residents.identified_as",
+      "phone" => "residents.phone",
+      "email" => "residents.email",
+      "occupation" => "residents.occupation",
+      "address" => "residents.address",
+      "resident_type" => "residents.resident_type",
+      "remarks" => "residents.remarks",
+      "purok_id" => "purok.id",
+      "purok_name" => "purok.name",
+      "purok_details" => "purok.details",
+    ])
+    ->exec();
+})();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,16 +77,7 @@ while ($row = $result1->fetch_assoc()) {
 					<div class="row mt--2">
 						<div class="col-md-12">
 
-							<?php if (isset($_SESSION["message"])): ?>
-								<div class="alert alert-<?php echo $_SESSION["status"]; ?> <?= $_SESSION[
- 	"status"
- ] == "danger"
- 	? "bg-danger text-light"
- 	: null ?>" role="alert">
-									<?php echo $_SESSION["message"]; ?>
-								</div>
-								<?php unset($_SESSION["message"]); ?>
-							<?php endif; ?>
+              <?php include "templates/alert.php"; ?>
 
 							<div class="card">
 								<div class="card-header">
@@ -78,8 +98,8 @@ while ($row = $result1->fetch_assoc()) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION["username"])): ?>
-														<?php if ($_SESSION["role"] == "administrator"): ?>
+													<?php if (isAuthenticated()): ?>
+														<?php if (isAdmin()): ?>
 															<th scope="col">Voter Status</th>
 														<?php endif; ?>
 														<th scope="col">Action</th>
@@ -87,44 +107,43 @@ while ($row = $result1->fetch_assoc()) {
 												</tr>
 											</thead>
 											<tbody>
-												<?php if (!empty($resident)): ?>
-													<?php
-             $no = 1;
-             foreach ($resident as $row): ?>
+												<?php if (!empty($residentList)): ?>
+													<?php foreach ($residentList as $row): ?>
 														<tr>
-															<td>
-																<div class="avatar avatar-xs">
-																	<img src="<?= preg_match("/data:image/i", $row["picture"])
-                 	? $row["picture"]
-                 	: "assets/uploads/resident_profile/" .
-                 		$row[
-                 			"picture"
-                 		] ?>" alt="Resident Profile" class="avatar-img rounded-circle">
-																</div>
-																<?= ucwords(
-                	$row["lastname"] .
-                		", " .
-                		$row["firstname"] .
-                		" " .
-                		$row["middlename"]
-                ) ?>
-															</td>
+                              <td>
+                                <div class="row">
+                                  <div class="col-2 d-flex justify-content-center align-items-center">
+                                    <img
+                                      src="<?= imgSrc($row["picture"]) ?>"
+                                      alt="..."
+                                      class="avatar-img rounded-circle avatar avatar-xs"
+                                    >
+                                  </div>
+                                  <div class="col text-truncate">
+                                    <?= ucwords($row["lastname"] . ", " . $row["firstname"]) ?>
+                                  </div>
+                                </div>
+                              </td>
 															<td><?= $row["national_id"] ?></td>
 															<td><?= $row["alias"] ?></td>
-															<td><?= $row["birthdate"] ?></td>
+                              <td><?= empty($row["birthdate"]) ? "-" : $row["birthdate"] ?></td>
 															<td><?= $row["age"] ?></td>
 															<td><?= $row["civilstatus"] ?></td>
 															<td><?= $row["gender"] ?></td>
-															<td><?= $row["purok"] ?></td>
-															<?php if (isset($_SESSION["username"])): ?>
-																<?php if ($_SESSION["role"] == "administrator"): ?>
+															<td><?= $row["purok_name"] ?></td>
+															<?php if (isAuthenticated()): ?>
+																<?php if (isAdmin()): ?>
 																	<td><?= $row["voterstatus"] ?></td>
 																<?php endif; ?>
 																<td>
 																	<div class="form-button-action">
-																		<a type="button" data-toggle="tooltip" href="generate_indi_cert.php?id=<?= $row[
-                  	"id"
-                  ] ?>" class="btn btn-link btn-primary" data-original-title="Generate Certificate">
+																		<a
+																			type="button"
+																			data-toggle="tooltip"
+																			href="generate_indi_cert.php?id=<?= $row["id"] ?>"
+																			class="btn btn-link btn-primary"
+																			data-original-title="Generate Certificate"
+																		>
 																			<i class="fas fa-file-alt"></i>
 																		</a>
 																	</div>
@@ -132,8 +151,7 @@ while ($row = $result1->fetch_assoc()) {
 															<?php endif; ?>
 
 														</tr>
-													<?php $no++;endforeach;
-             ?>
+													<?php endforeach; ?>
 												<?php endif; ?>
 											</tbody>
 											<tfoot>
@@ -146,8 +164,8 @@ while ($row = $result1->fetch_assoc()) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION["username"])): ?>
-														<?php if ($_SESSION["role"] == "administrator"): ?>
+													<?php if (isAuthenticated()): ?>
+														<?php if (isAdmin()): ?>
 															<th scope="col">Voter Status</th>
 														<?php endif; ?>
 														<th scope="col">Action</th>
