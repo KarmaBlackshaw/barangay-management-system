@@ -56,10 +56,7 @@ if (isset($_POST["register-resident"])) {
 		/**
 		 * Check required fields
 		 */
-		$emptyRequiredField = array_find_key(
-			$requiredFields,
-			fn($item) => empty($item)
-		);
+		$emptyRequiredField = array_find_key($requiredFields, fn($item) => empty($item));
 
 		if ($emptyRequiredField) {
 			$_SESSION["message"] = "<b>$emptyRequiredField</b> is required!";
@@ -99,7 +96,7 @@ if (isset($_POST["register-resident"])) {
 			$password = sha1($username);
 
 			$result = $db
-				->insert("tbl_users")
+				->insert("users")
 				->values([
 					"username" => $username,
 					"password" => $password,
