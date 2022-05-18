@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-if (isset($_SESSION['username'])) {
-	header('Location: dashboard.php');
+if (isset($_SESSION["username"])) {
+	header("Location: dashboard.php");
 }
 ?>
 
@@ -10,18 +10,18 @@ if (isset($_SESSION['username'])) {
 <html lang="en">
 
 <head>
-	<?php include 'templates/header.php' ?>
+	<?php include "templates/header.php"; ?>
 
 	<title>Login - Barangay Services Management System</title>
 </head>
 
 <body class="login">
-	<?php include 'templates/loading_screen.php' ?>
+	<?php include "templates/loading_screen.php"; ?>
 	<div class="wrapper wrapper-login">
 
 		<div class="container container-login animated fadeIn">
 
-			<?php include 'templates/alert.php' ?>
+			<?php include "templates/alert.php"; ?>
 
 			<h3 class="text-center">Sign In Here</h3>
 			<div class="login-form">
@@ -37,14 +37,14 @@ if (isset($_SESSION['username'])) {
 					</div>
 					<div class="form-action mb-3">
 						<button type="submit" class="btn btn-primary btn-block fw-bold">Sign In</button>
-						<a href="user-register.php" class="btn btn-success btn-block text-white fw-bold">Create New Account</a>
+						<a href="resident-register.php" class="btn btn-success btn-block text-white fw-bold">Create New Account</a>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 
-	<?php include 'templates/footer.php' ?>
+	<?php include "templates/footer.php"; ?>
 </body>
 
 </html>

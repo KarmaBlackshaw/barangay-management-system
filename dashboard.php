@@ -1,50 +1,33 @@
-<?php include 'bootstrap/index.php' ?>
+<?php include "bootstrap/index.php"; ?>
 <?php
-
 $query = "SELECT * FROM residents WHERE resident_type=1";
 $result = $conn->query($query);
 $total = $result->num_rows;
-
 $query1 = "SELECT * FROM residents WHERE gender='Male' AND resident_type=1";
 $result1 = $conn->query($query1);
 $male = $result1->num_rows;
-
 $query2 = "SELECT * FROM residents WHERE gender='Female' AND resident_type=1";
 $result2 = $conn->query($query2);
 $female = $result2->num_rows;
-
 $totalVoters = (function ($conn) {
 	$query = "SELECT * FROM residents WHERE voterstatus='Yes' AND resident_type=1";
-
-	return  $conn
-		->query($query)
-		->num_rows;
+	return $conn->query($query)->num_rows;
 })($conn);
-
 $query4 = "SELECT * FROM residents WHERE voterstatus='No' AND resident_type=1";
 $non = $conn->query($query4)->num_rows;
-
-$query5 = "SELECT * FROM tblpurok";
+$query5 = "SELECT * FROM purok";
 $purok = $conn->query($query5)->num_rows;
-
 $query6 = "SELECT * FROM tblprecinct";
 $precinct = $conn->query($query6)->num_rows;
-
 $query7 = "SELECT * FROM tblblotter";
 $blotter = $conn->query($query7)->num_rows;
-
 $revenue = (function ($conn) {
-	$date = date('Y-m-d');
+	$date = date("Y-m-d");
 	$query = "SELECT IFNULL(SUM(amounts), 0) as am FROM tblpayments WHERE `date`='$date'";
-
-	return $conn
-		->query($query)
-		->fetch_assoc();
+	return $conn->query($query)->fetch_assoc();
 })($conn);
-
 $query9 = "SELECT * FROM tbldocuments";
 $documents = $conn->query($query9)->num_rows;
-
 $query10 = "SELECT * FROM tbldocuments";
 $documents = $conn->query($query9)->num_rows;
 ?>
@@ -53,20 +36,20 @@ $documents = $conn->query($query9)->num_rows;
 <html lang="en">
 
 <head>
-	<?php include 'templates/header.php' ?>
+	<?php include "templates/header.php"; ?>
 	<title>Dashboard - Barangay Services Management System</title>
 </head>
 
 <body>
-	<?php include 'templates/loading_screen.php' ?>
+	<?php include "templates/loading_screen.php"; ?>
 
 	<div class="wrapper">
 		<!-- Main Header -->
-		<?php include 'templates/main-header.php' ?>
+		<?php include "templates/main-header.php"; ?>
 		<!-- End Main Header -->
 
 		<!-- Sidebar -->
-		<?php include 'templates/sidebar.php' ?>
+		<?php include "templates/sidebar.php"; ?>
 		<!-- End Sidebar -->
 
 		<div class="main-panel">
@@ -81,12 +64,15 @@ $documents = $conn->query($query9)->num_rows;
 					</div>
 				</div>
 				<div class="page-inner mt--2">
-					<?php if (isset($_SESSION['message'])) : ?>
-						<div class="alert alert-<?= $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-							<?php echo $_SESSION['message']; ?>
+					<?php if (isset($_SESSION["message"])): ?>
+						<div class="alert alert-<?= $_SESSION["status"] ?> <?= $_SESSION["status"] ==
+ "danger"
+ 	? "bg-danger text-light"
+ 	: null ?>" role="alert">
+							<?php echo $_SESSION["message"]; ?>
 						</div>
-						<?php unset($_SESSION['message']); ?>
-					<?php endif ?>
+						<?php unset($_SESSION["message"]); ?>
+					<?php endif; ?>
 					<div class="row">
 						<div class="col-md-4">
 							<div class="card card-stats card-primary card-round">
@@ -161,7 +147,7 @@ $documents = $conn->query($query9)->num_rows;
 							</div>
 						</div>
 					</div>
-					<?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'administrator') : ?>
+					<?php if (isset($_SESSION["role"]) && $_SESSION["role"] == "administrator"): ?>
 						<div class="row">
 							<div class="col-md-4">
 								<div class="card card-stats card-success card-round">
@@ -299,7 +285,10 @@ $documents = $conn->query($query9)->num_rows;
 											<div class="col-6 col-stats">
 												<div class="numbers mt-4">
 													<h7 class="fw-bold text-uppercase">Collection - by day</h7>
-													<h7 class="fw-bold text-uppercase">P <?= number_format($revenue['am'], 2) ?></h7>
+													<h7 class="fw-bold text-uppercase">P <?= number_format(
+             	$revenue["am"],
+             	2
+             ) ?></h7>
 												</div>
 											</div>
 										</div>
@@ -324,7 +313,7 @@ $documents = $conn->query($query9)->num_rows;
 											<div class="col-6 col-stats">
 												<div class="numbers mt-4">
 													<h7 class="fw-bold text-uppercase">4ps Member</h7>
-													<h7 class="fw-bold text-uppercase"><?= number_format($revenue['am'], 2) ?></h7>
+													<h7 class="fw-bold text-uppercase"><?= number_format($revenue["am"], 2) ?></h7>
 												</div>
 											</div>
 										</div>
@@ -360,7 +349,7 @@ $documents = $conn->query($query9)->num_rows;
 								</div>
 							</div>
 
-						<?php endif ?>
+						<?php endif; ?>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="card">
@@ -370,14 +359,18 @@ $documents = $conn->query($query9)->num_rows;
 										</div>
 									</div>
 									<div class="card-body">
-										<p><?= !empty($db_txt) ? $db_txt : 'Office of the President
+										<p><?= !empty($db_txt)
+          	? $db_txt
+          	: 'Office of the President
 Office of the Vice President
 Senate of the Philippines
 House of Representatives
 Supreme Court
 Court of Appeals' ?></p>
 										<div class="text-center">
-											<img class="img-fluid" src="<?= !empty($db_img) ? 'assets/uploads/' . $db_img : 'assets/img/bg-abstract.png' ?>" />
+											<img class="img-fluid" src="<?= !empty($db_img)
+           	? "assets/uploads/" . $db_img
+           	: "assets/img/bg-abstract.png" ?>" />
 										</div>
 									</div>
 								</div>
@@ -386,13 +379,13 @@ Court of Appeals' ?></p>
 						</div>
 				</div>
 				<!-- Main Footer -->
-				<?php include 'templates/main-footer.php' ?>
+				<?php include "templates/main-footer.php"; ?>
 				<!-- End Main Footer -->
 
 			</div>
 
 		</div>
-		<?php include 'templates/footer.php' ?>
+		<?php include "templates/footer.php"; ?>
 </body>
 
 </html>

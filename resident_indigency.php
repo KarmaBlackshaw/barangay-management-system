@@ -1,17 +1,15 @@
-<?php include 'bootstrap/index.php' ?>
+<?php include "bootstrap/index.php"; ?>
 <?php
 $query = "SELECT * FROM residents";
-$result = $conn->query($query);
 
-$resident = array();
+$result = $conn->query($query);
+$resident = [];
 while ($row = $result->fetch_assoc()) {
 	$resident[] = $row;
 }
-
-$query1 = "SELECT * FROM tblpurok ORDER BY `name`";
+$query1 = "SELECT * FROM purok ORDER BY `name`";
 $result1 = $conn->query($query1);
-
-$purok = array();
+$purok = [];
 while ($row = $result1->fetch_assoc()) {
 	$purok[] = $row;
 }
@@ -20,19 +18,19 @@ while ($row = $result1->fetch_assoc()) {
 <html lang="en">
 
 <head>
-	<?php include 'templates/header.php' ?>
+	<?php include "templates/header.php"; ?>
 	<title>Certificate of Indigency - Barangay Services Management System</title>
 </head>
 
 <body>
-	<?php include 'templates/loading_screen.php' ?>
+	<?php include "templates/loading_screen.php"; ?>
 	<div class="wrapper">
 		<!-- Main Header -->
-		<?php include 'templates/main-header.php' ?>
+		<?php include "templates/main-header.php"; ?>
 		<!-- End Main Header -->
 
 		<!-- Sidebar -->
-		<?php include 'templates/sidebar.php' ?>
+		<?php include "templates/sidebar.php"; ?>
 		<!-- End Sidebar -->
 
 		<div class="main-panel">
@@ -50,12 +48,16 @@ while ($row = $result1->fetch_assoc()) {
 					<div class="row mt--2">
 						<div class="col-md-12">
 
-							<?php if (isset($_SESSION['message'])) : ?>
-								<div class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-									<?php echo $_SESSION['message']; ?>
+							<?php if (isset($_SESSION["message"])): ?>
+								<div class="alert alert-<?php echo $_SESSION["status"]; ?> <?= $_SESSION[
+ 	"status"
+ ] == "danger"
+ 	? "bg-danger text-light"
+ 	: null ?>" role="alert">
+									<?php echo $_SESSION["message"]; ?>
 								</div>
-								<?php unset($_SESSION['message']); ?>
-							<?php endif ?>
+								<?php unset($_SESSION["message"]); ?>
+							<?php endif; ?>
 
 							<div class="card">
 								<div class="card-header">
@@ -76,49 +78,63 @@ while ($row = $result1->fetch_assoc()) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION['username'])) : ?>
-														<?php if ($_SESSION['role'] == 'administrator') : ?>
+													<?php if (isset($_SESSION["username"])): ?>
+														<?php if ($_SESSION["role"] == "administrator"): ?>
 															<th scope="col">Voter Status</th>
-														<?php endif ?>
+														<?php endif; ?>
 														<th scope="col">Action</th>
-													<?php endif ?>
+													<?php endif; ?>
 												</tr>
 											</thead>
 											<tbody>
-												<?php if (!empty($resident)) : ?>
-													<?php $no = 1;
-													foreach ($resident as $row) : ?>
+												<?php if (!empty($resident)): ?>
+													<?php
+             $no = 1;
+             foreach ($resident as $row): ?>
 														<tr>
 															<td>
 																<div class="avatar avatar-xs">
-																	<img src="<?= preg_match('/data:image/i', $row['picture']) ? $row['picture'] : 'assets/uploads/resident_profile/' . $row['picture'] ?>" alt="Resident Profile" class="avatar-img rounded-circle">
+																	<img src="<?= preg_match("/data:image/i", $row["picture"])
+                 	? $row["picture"]
+                 	: "assets/uploads/resident_profile/" .
+                 		$row[
+                 			"picture"
+                 		] ?>" alt="Resident Profile" class="avatar-img rounded-circle">
 																</div>
-																<?= ucwords($row['lastname'] . ', ' . $row['firstname'] . ' ' . $row['middlename']) ?>
+																<?= ucwords(
+                	$row["lastname"] .
+                		", " .
+                		$row["firstname"] .
+                		" " .
+                		$row["middlename"]
+                ) ?>
 															</td>
-															<td><?= $row['national_id'] ?></td>
-															<td><?= $row['alias'] ?></td>
-															<td><?= $row['birthdate'] ?></td>
-															<td><?= $row['age'] ?></td>
-															<td><?= $row['civilstatus'] ?></td>
-															<td><?= $row['gender'] ?></td>
-															<td><?= $row['purok'] ?></td>
-															<?php if (isset($_SESSION['username'])) : ?>
-																<?php if ($_SESSION['role'] == 'administrator') : ?>
-																	<td><?= $row['voterstatus'] ?></td>
-																<?php endif ?>
+															<td><?= $row["national_id"] ?></td>
+															<td><?= $row["alias"] ?></td>
+															<td><?= $row["birthdate"] ?></td>
+															<td><?= $row["age"] ?></td>
+															<td><?= $row["civilstatus"] ?></td>
+															<td><?= $row["gender"] ?></td>
+															<td><?= $row["purok"] ?></td>
+															<?php if (isset($_SESSION["username"])): ?>
+																<?php if ($_SESSION["role"] == "administrator"): ?>
+																	<td><?= $row["voterstatus"] ?></td>
+																<?php endif; ?>
 																<td>
 																	<div class="form-button-action">
-																		<a type="button" data-toggle="tooltip" href="generate_indi_cert.php?id=<?= $row['id'] ?>" class="btn btn-link btn-primary" data-original-title="Generate Certificate">
+																		<a type="button" data-toggle="tooltip" href="generate_indi_cert.php?id=<?= $row[
+                  	"id"
+                  ] ?>" class="btn btn-link btn-primary" data-original-title="Generate Certificate">
 																			<i class="fas fa-file-alt"></i>
 																		</a>
 																	</div>
 																</td>
-															<?php endif ?>
+															<?php endif; ?>
 
 														</tr>
-													<?php $no++;
-													endforeach ?>
-												<?php endif ?>
+													<?php $no++;endforeach;
+             ?>
+												<?php endif; ?>
 											</tbody>
 											<tfoot>
 												<tr>
@@ -130,12 +146,12 @@ while ($row = $result1->fetch_assoc()) {
 													<th scope="col">Civil Status</th>
 													<th scope="col">Gender</th>
 													<th scope="col">Purok</th>
-													<?php if (isset($_SESSION['username'])) : ?>
-														<?php if ($_SESSION['role'] == 'administrator') : ?>
+													<?php if (isset($_SESSION["username"])): ?>
+														<?php if ($_SESSION["role"] == "administrator"): ?>
 															<th scope="col">Voter Status</th>
-														<?php endif ?>
+														<?php endif; ?>
 														<th scope="col">Action</th>
-													<?php endif ?>
+													<?php endif; ?>
 												</tr>
 											</tfoot>
 										</table>
@@ -148,13 +164,13 @@ while ($row = $result1->fetch_assoc()) {
 			</div>
 
 			<!-- Main Footer -->
-			<?php include 'templates/main-footer.php' ?>
+			<?php include "templates/main-footer.php"; ?>
 			<!-- End Main Footer -->
 
 		</div>
 
 	</div>
-	<?php include 'templates/footer.php' ?>
+	<?php include "templates/footer.php"; ?>
 	<script src="assets/js/plugin/datatables/datatables.min.js"></script>
 	<script>
 		$(document).ready(function() {
