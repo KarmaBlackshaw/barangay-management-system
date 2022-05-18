@@ -1,10 +1,10 @@
 <?php
-$database	= 'bsms';
-$username	= 'root';
-$host		= 'localhost';
-$password	= 'admin1234';
+$database = "bsms";
+$username = "root";
+$host = "localhost";
+$password = "admin1234";
 
-ini_set('display_errors', 1);
+ini_set("display_errors", 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ERROR | E_DEPRECATED | E_STRICT);
 
@@ -20,7 +20,7 @@ if (!isset($_SESSION)) {
 
 $insertDB = function ($tbl, $payload) use ($conn) {
 	$wrapQuote = fn($str) => '"' . $str . '"';
-	$wrapTicks = fn($str) => '`' . $str . '`';
+	$wrapTicks = fn($str) => "`" . $str . "`";
 
 	$filteredPayload = array_filter($payload);
 	$columns = join(", ", array_map($wrapTicks, array_keys($filteredPayload)));
@@ -28,42 +28,64 @@ $insertDB = function ($tbl, $payload) use ($conn) {
 
 	$status = $conn->query("INSERT INTO `${tbl}` ($columns) VALUES ($values)");
 
-	return array(
-		'status' => $status,
-		'id' => mysqli_insert_id($conn)
-	);
+	return [
+		"status" => $status,
+		"id" => mysqli_insert_id($conn),
+	];
 };
 
 // if (!isset($_SESSION['username'])) {
 // 	header('Location: login.php');
 // }
 
-function trimSpaces ($str) {
-	return trim(preg_replace('/\s+/', ' ', $str));
+function trimSpaces($str)
+{
+	return trim(preg_replace("/\s+/", " ", $str));
 }
 
-class DB {
+class DB
+{
 	private $_connection = null;
-	private $_table = '';
-	private $_select = '';
-	private $_where = '';
-	private $_update = '';
-	private $_set = '';
-	private $_delete = '';
-	private $_from = '';
-	private $_insert = '';
-	private $_values = '';
+	private $_table = "";
+	private $_select = "";
+	private $_where = "";
+	private $_join = "";
+	private $_update = "";
+	private $_set = "";
+	private $_delete = "";
+	private $_from = "";
+	private $_insert = "";
+	private $_values = "";
+	private $_order = "";
 
-	public function __construct ($connection) {
+	private function _tableNameAlias($table)
+	{
+		if (is_array($table)) {
+			$tableName = array_key_first($table);
+			$alias = $table[$tableName];
+
+			return " $tableName AS $alias ";
+		}
+
+		return " $table ";
+	}
+
+	public function __construct($connection)
+	{
 		$this->_connection = $connection;
 	}
 
-	public function from (string $table) {
-		$this->_from = " FROM $table ";
+	public function from($table)
+	{
+		$tableName = $this->_tableNameAlias($table);
+
+		$this->_from = " FROM $tableName ";
+
 		return $this;
 	}
 
-	public function select (array $cols) {
+	public function select(array $cols)
+	{
 		$selectArr = [];
 
 		foreach ($cols as $alias => $col) {
@@ -72,7 +94,7 @@ class DB {
 
 		$select = join(", ", $selectArr);
 
-		if ($this->_select === '') {
+		if ($this->_select === "") {
 			$this->_select = " SELECT {$select} ";
 		} else {
 			$this->_select .= " {$select} ";
@@ -81,15 +103,47 @@ class DB {
 		return $this;
 	}
 
-	public function where (string $key, string $valueOrOperand, $value = false) {
+	public function orderBy($col, $order)
+	{
+		$upperOrder = strtoupper($order);
+
+		if ($this->_order === "") {
+			$this->_order = " ORDER BY {$col} {$upperOrder} ";
+		} else {
+			$this->_order .= ",{$col} {$upperOrder} ";
+		}
+
+		return $this;
+	}
+
+	public function join($table, $firstCondition, $secondCondition)
+	{
+		$tableName = $this->_tableNameAlias($table);
+
+		$this->_join .= " INNER JOIN {$tableName} ON {$firstCondition} = {$secondCondition} ";
+
+		return $this;
+	}
+
+	public function leftJoin($table, $firstCondition, $secondCondition)
+	{
+		$tableName = $this->_tableNameAlias($table);
+
+		$this->_join .= " LEFT JOIN {$tableName} ON {$firstCondition} = {$secondCondition} ";
+
+		return $this;
+	}
+
+	public function where(string $key, string $valueOrOperand, $value = false)
+	{
 		if (!$value) {
-			if ($this->_where === '') {
+			if ($this->_where === "") {
 				$this->_where = " WHERE {$key} = '{$valueOrOperand}' ";
 			} else {
 				$this->_where .= " AND {$key} = '{$valueOrOperand}' ";
 			}
 		} else {
-			if ($this->_where === '') {
+			if ($this->_where === "") {
 				$this->_where = " WHERE {$key} {$valueOrOperand} {$value} ";
 			} else {
 				$this->_where .= " AND {$key} {$valueOrOperand} {$value}";
@@ -99,13 +153,15 @@ class DB {
 		return $this;
 	}
 
-	public function update (string $table) {
+	public function update(string $table)
+	{
 		$this->_update = " UPDATE {$table} ";
 
 		return $this;
 	}
 
-	public function set (array $cols) {
+	public function set(array $cols)
+	{
 		$updateArr = [];
 
 		foreach ($cols as $col => $value) {
@@ -114,7 +170,7 @@ class DB {
 
 		$update = join(", ", $updateArr);
 
-		if ($this->_set === '') {
+		if ($this->_set === "") {
 			$this->_set = " SET {$update} ";
 		} else {
 			$this->_set .= " {$update} ";
@@ -123,27 +179,30 @@ class DB {
 		return $this;
 	}
 
-	public function delete ($table) {
+	public function delete($table)
+	{
 		$this->_delete = " DELETE FROM {$table} ";
 
 		return $this;
 	}
 
-	public function insert ($table) {
+	public function insert($table)
+	{
 		$this->_insert = " INSERT INTO {$table} ";
 
 		return $this;
 	}
 
-	public function values (array $payload) {
+	public function values(array $payload)
+	{
 		$wrapQuote = fn($str) => '"' . $str . '"';
-		$wrapTicks = fn($str) => '`' . $str . '`';
+		$wrapTicks = fn($str) => "`" . $str . "`";
 
 		$filteredPayload = array_filter($payload);
 		$columns = join(", ", array_map($wrapTicks, array_keys($filteredPayload)));
 		$values = join(", ", array_map($wrapQuote, array_values($filteredPayload)));
 
-		if ($this->_values === '') {
+		if ($this->_values === "") {
 			$this->_values = " ($columns) VALUES ($values)";
 		} else {
 			$this->_values .= ", ($values) ";
@@ -152,60 +211,95 @@ class DB {
 		return $this;
 	}
 
-	public function toString () {
-
+	public function toString()
+	{
 		if (!empty($this->_update)) {
-			return trimSpaces($this->_update . $this->_set . $this->_where);
+			// prettier-ignore
+			return trimSpaces(
+				join(" ", [
+					$this->_update,
+					$this->_set,
+					$this->_where
+				])
+			);
 		}
 
 		if (!empty($this->_select)) {
-			return trimSpaces($this->_select . $this->_from . $this->_where);
+			// prettier-ignore
+			return trimSpaces(
+				join(" ", [
+					$this->_select,
+					$this->_from,
+					$this->_join,
+					$this->_where,
+					$this->_order,
+				])
+			);
 		}
 
 		if (!empty($this->_delete)) {
-			return trimSpaces($this->_delete . $this->_where);
+			// prettier-ignore
+			return trimSpaces(
+				join(" ", [
+					$this->_delete,
+					$this->_where,
+				])
+			);
 		}
 
 		if (!empty($this->_insert)) {
-			return trimSpaces($this->_insert . $this->_values);
+			// prettier-ignore
+			return trimSpaces(
+				join(" ", [
+					$this->_insert,
+					$this->_values,
+				])
+			);
 		}
 	}
 
-	private function clear () {
-		$this->_table = '';
-		$this->_select = '';
-		$this->_where = '';
-		$this->_update = '';
-		$this->_set = '';
-		$this->_delete = '';
-		$this->_from = '';
-		$this->_insert = '';
-		$this->_values = '';
+	private function clear()
+	{
+		$this->_table = "";
+		$this->_select = "";
+		$this->_where = "";
+		$this->_update = "";
+		$this->_set = "";
+		$this->_join = "";
+		$this->_delete = "";
+		$this->_from = "";
+		$this->_insert = "";
+		$this->_values = "";
+		$this->_order = "";
 	}
 
-	public function exec () {
-		$result = $this
-			->_connection
-			->query($this->toString());
+	public function exec()
+	{
+		$result = $this->_connection->query($this->toString());
 
 		if ($this->_select) {
 			$this->clear();
-			return $result
-				->fetch_assoc();
+
+			$array = [];
+			while ($row = $result->fetch_assoc()) {
+				$array[] = $row;
+			}
+
+			return $array;
 		}
 
 		if ($this->_insert) {
 			$this->clear();
-			return array(
-				'id' => mysqli_insert_id($this->_connection),
-				'status' => $result
-			);
+			return [
+				"id" => mysqli_insert_id($this->_connection),
+				"status" => $result,
+			];
 		}
 
 		$this->clear();
-		return array(
-			'status' => $result
-		);
+		return [
+			"status" => $result,
+		];
 	}
 }
 
@@ -225,15 +319,29 @@ $db = new DB($conn);
 
 // ==== SELECT ====
 // $string = $db
-// 	->from('users')
-// 	->where('id', 2)
-// 	->select(array(
-// 		'id' => '2',
-// 		'name' => '3',
-// 		'username' => '4',
-// 	))
-// 	->toString()
-// 	;
+// 	->from(["users" => "u"])
+// 	->where("id", 2)
+// 	->orderBy("id", "desc")
+// 	->select([
+// 		"id" => "2",
+// 		"name" => "3",
+// 		"username" => "4",
+// 	])
+// 	->toString();
+
+// ==== SELECT JOIN ====
+// $string = $db
+// 	->from(["users" => "u"])
+// 	->join(["type" => "ut"], "ut.id", "u.id")
+// 	->join(["transactions" => "txn"], "txn.id", "u.id")
+// 	->where("id", 2)
+// 	->orderBy("id", "desc")
+// 	->select([
+// 		"id" => "2",
+// 		"name" => "3",
+// 		"username" => "4",
+// 	])
+// 	->toString();
 
 // ==== DELETE ====
 // $string = $db
