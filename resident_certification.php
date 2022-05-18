@@ -81,7 +81,7 @@ $residentList = (function () use ($db) {
 				<div class="page-inner">
 					<div class="row mt--2">
 						<div class="col-md-12">
-    					<?php include "templates/sidebar.php"; ?>
+							<?php include "templates/sidebar.php"; ?>
 
 							<div class="card">
 								<div class="card-header">
@@ -192,8 +192,9 @@ $residentList = (function () use ($db) {
 		</div>
 
 	</div>
+
 	<?php include "templates/footer.php"; ?>
-	<script src="assets/js/plugin/datatables/datatables.min.js"></script>
+
 	<script>
 		$(document).ready(function() {
 			$('#residenttable').DataTable();
