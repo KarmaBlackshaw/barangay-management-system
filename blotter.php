@@ -1,21 +1,17 @@
-<?php include 'bootstrap/index.php' ?>
+<?php include "bootstrap/index.php"; ?>
 <?php
 $query = "SELECT * FROM tblblotter";
 $result = $conn->query($query);
-
-$blotter = array();
+$blotter = [];
 while ($row = $result->fetch_assoc()) {
 	$blotter[] = $row;
 }
-
 $query1 = "SELECT * FROM tblblotter WHERE `status`='Active'";
 $result1 = $conn->query($query1);
 $active = $result1->num_rows;
-
 $query2 = "SELECT * FROM tblblotter WHERE `status`='Scheduled'";
 $result2 = $conn->query($query2);
 $scheduled = $result2->num_rows;
-
 $query3 = "SELECT * FROM tblblotter WHERE `status`='Settled'";
 $result3 = $conn->query($query3);
 $settled = $result3->num_rows;
@@ -24,19 +20,19 @@ $settled = $result3->num_rows;
 <html lang="en">
 
 <head>
-	<?php include 'templates/header.php' ?>
+	<?php include "templates/header.php"; ?>
 	<title>Blotter/Incident Complaint - Barangay Services Management System</title>
 </head>
 
 <body>
-	<?php include 'templates/loading_screen.php' ?>
+	<?php include "templates/loading_screen.php"; ?>
 	<div class="wrapper">
 		<!-- Main Header -->
-		<?php include 'templates/main-header.php' ?>
+		<?php include "templates/main-header.php"; ?>
 		<!-- End Main Header -->
 
 		<!-- Sidebar -->
-		<?php include 'templates/sidebar.php' ?>
+		<?php include "templates/sidebar.php"; ?>
 		<!-- End Sidebar -->
 
 		<div class="main-panel">
@@ -51,26 +47,22 @@ $settled = $result3->num_rows;
 					</div>
 				</div>
 				<div class="page-inner">
-					<?php if (isset($_SESSION['message'])) : ?>
-						<div class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>" role="alert">
-							<?php echo $_SESSION['message']; ?>
-						</div>
-						<?php unset($_SESSION['message']); ?>
-					<?php endif ?>
+					<?php include "templates/alert.php"; ?>
+
 					<div class="row mt--2">
 						<div class="col-md-9">
 							<div class="card">
 								<div class="card-header">
 									<div class="card-head-row">
 										<div class="card-title">All Resident</div>
-										<?php if (isset($_SESSION['username'])) : ?>
+										<?php if (isset($_SESSION["username"])): ?>
 											<div class="card-tools">
 												<a href="#add" data-toggle="modal" class="btn btn-info btn-border btn-round btn-sm">
 													<i class="fa fa-plus"></i>
 													Blotter/Incident
 												</a>
 											</div>
-										<?php endif ?>
+										<?php endif; ?>
 									</div>
 								</div>
 								<div class="card-body">
@@ -83,50 +75,80 @@ $settled = $result3->num_rows;
 													<th scope="col">Victim(s)</th>
 													<th scope="col">Blotter/Incident</th>
 													<th scope="col">Status</th>
-													<?php if (isset($_SESSION['username'])) : ?>
+													<?php if (isset($_SESSION["username"])): ?>
 														<th scope="col">Action</th>
-													<?php endif ?>
+													<?php endif; ?>
 												</tr>
 											</thead>
 											<tbody>
-												<?php if (!empty($blotter)) : ?>
-													<?php foreach ($blotter as $row) : ?>
+												<?php if (!empty($blotter)): ?>
+													<?php foreach ($blotter as $row): ?>
 														<tr>
-															<td><?= ucwords($row['complainant']) ?></td>
-															<td><?= ucwords($row['respondent']) ?></td>
-															<td><?= ucwords($row['victim']) ?></td>
-															<td><?= ucwords($row['type']) ?></td>
+															<td><?= ucwords($row["complainant"]) ?></td>
+															<td><?= ucwords($row["respondent"]) ?></td>
+															<td><?= ucwords($row["victim"]) ?></td>
+															<td><?= ucwords($row["type"]) ?></td>
 															<td>
-																<?php if ($row['status'] == 'Scheduled') : ?>
+																<?php if ($row["status"] == "Scheduled"): ?>
 																	<span class="badge badge-warning">Scheduled</span>
-																<?php elseif ($row['status'] == 'Active') : ?>
+																<?php elseif ($row["status"] == "Active"): ?>
 																	<span class="badge badge-danger">Active</span>
-																<?php else : ?>
+																<?php else: ?>
 																	<span class="badge badge-success">Settled</span>
-																<?php endif ?>
+																<?php endif; ?>
 															</td>
-															<?php if (isset($_SESSION['username'])) : ?>
+															<?php if (isset($_SESSION["username"])): ?>
 																<td>
-																	<a type="button" href="#edit" data-toggle="modal" class="btn btn-link btn-primary" title="Edit Blotter" onclick="editBlotter1(this)" data-id="<?= $row['id'] ?>" data-complainant="<?= $row['complainant'] ?>" data-respondent="<?= $row['respondent'] ?>" data-victim="<?= $row['victim'] ?>" data-type="<?= $row['type'] ?>" data-l="<?= $row['location'] ?>" data-date="<?= $row['date'] ?>" data-time="<?= $row['time'] ?>" data-details="<?= $row['details'] ?>" data-status="<?= $row['status'] ?>">
-																		<?php if (isset($_SESSION['username'])) : ?>
+																	<a
+																		type="button"
+																		href="#edit"
+																		data-toggle="modal"
+																		class="btn btn-link btn-primary"
+																		title="Edit Blotter"
+																		onclick="editBlotter1(this)"
+																		data-id="<?= $row["id"] ?>"
+																		data-complainant="<?= $row["complainant"] ?>"
+																		data-respondent="<?= $row["respondent"] ?>"
+																		data-victim="<?= $row["victim"] ?>"
+																		data-type="<?= $row["type"] ?>"
+																		data-l="<?= $row["location"] ?>"
+																		data-date="<?= $row["date"] ?>"
+																		data-time="<?= $row["time"] ?>"
+																		data-details="<?= $row["details"] ?>"
+																		data-status="<?= $row["status"] ?>"
+																	>
+																		<?php if (isset($_SESSION["username"])): ?>
 																			<i class="fa fa-edit"></i>
-																		<?php else : ?>
+																		<?php else: ?>
 																			<i class="fa fa-eye"></i>
-																		<?php endif ?>
+																		<?php endif; ?>
 																	</a>
-																	<a type="button" data-toggle="tooltip" href="generate_blotter_report.php?id=<?= $row['id'] ?>" class="btn btn-link btn-primary" data-original-title="Generate Report">
+																	<a
+																		type="button"
+																		data-toggle="tooltip"
+																		href="generate_blotter_report.php?id=<?= $row["id"] ?>"
+																		class="btn btn-link btn-primary"
+																		data-original-title="Generate Report"
+																	>
 																		<i class="fas fa-file-alt"></i>
 																	</a>
-																	<?php if (isset($_SESSION['username']) && $_SESSION['role'] == 'administrator') : ?>
-																		<a type="button" data-toggle="tooltip" href="model/remove_blotter.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to delete this blotter?');" class="btn btn-link btn-danger" data-original-title="Remove">
+																	<?php if (isAdmin()): ?>
+																		<a
+																			type="button"
+																			data-toggle="tooltip"
+																			href="model/remove_blotter.php?id=<?= $row["id"] ?>"
+																			onclick="confirm('Are you sure you want to delete this blotter?');"
+																			class="btn btn-link btn-danger"
+																			data-original-title="Remove"
+																		>
 																			<i class="fa fa-times"></i>
 																		</a>
-																	<?php endif ?>
+																	<?php endif; ?>
 																</td>
-															<?php endif ?>
+															<?php endif; ?>
 														</tr>
-													<?php endforeach ?>
-												<?php endif ?>
+													<?php endforeach; ?>
+												<?php endif; ?>
 											</tbody>
 											<tfoot>
 												<tr>
@@ -135,9 +157,9 @@ $settled = $result3->num_rows;
 													<th scope="col">Victim(s)</th>
 													<th scope="col">Blotter/Incident</th>
 													<th scope="col">Status</th>
-													<?php if (isset($_SESSION['username'])) : ?>
+													<?php if (isset($_SESSION["username"])): ?>
 														<th scope="col">Action</th>
-													<?php endif ?>
+													<?php endif; ?>
 												</tr>
 											</tfoot>
 										</table>
@@ -218,7 +240,7 @@ $settled = $result3->num_rows;
 			</div>
 
 			<!-- Modal -->
-			<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" id="add">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -271,7 +293,7 @@ $settled = $result3->num_rows;
 									<div class="col-md-6">
 										<div class="form-group">
 											<label>Date</label>
-											<input type="date" class="form-control" name="date" value="<?= date('Y-m-d'); ?>" required>
+											<input type="date" class="form-control" name="date" value="<?= date("Y-m-d") ?>" required>
 										</div>
 									</div>
 								</div>
@@ -395,22 +417,22 @@ $settled = $result3->num_rows;
 						<div class="modal-footer">
 							<input type="hidden" id="blotter_id" name="id">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<?php if (isset($_SESSION['username'])) : ?>
+							<?php if (isset($_SESSION["username"])): ?>
 								<button type="submit" class="btn btn-primary">Update</button>
-							<?php endif ?>
+							<?php endif; ?>
 						</div>
 						</form>
 					</div>
 				</div>
 			</div>
 			<!-- Main Footer -->
-			<?php include 'templates/main-footer.php' ?>
+			<?php include "templates/main-footer.php"; ?>
 			<!-- End Main Footer -->
 
 		</div>
 
 	</div>
-	<?php include 'templates/footer.php' ?>
+	<?php include "templates/footer.php"; ?>
 	<script src="assets/js/plugin/datatables/datatables.min.js"></script>
 	<script>
 		$(document).ready(function() {
