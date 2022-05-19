@@ -2,7 +2,6 @@
 <?php
 $user = $_SESSION["username"];
 $query = "SELECT * FROM users WHERE NOT username='$user' ORDER BY `created_at` DESC";
-
 $result = $conn->query($query);
 $users = [];
 while ($row = $result->fetch_assoc()) {
@@ -85,10 +84,11 @@ while ($row = $result->fetch_assoc()) {
 															<td><?= $no ?></td>
 															<td>
 																<div class="avatar avatar-xs">
-																	<img src="<?= preg_match("/data:image/i", $row["avatar"])
-                 	? $row["avatar"]
-                 	: "assets/uploads/avatar/" .
-                 		$row["avatar"] ?>" alt="User Profile" class="avatar-img rounded-circle">
+																	<img
+                                      src="<?= imgSrc($row["avatar"], "img/person.png") ?>"
+																			alt="User Profile"
+																			class="avatar-img rounded-circle"
+																		>
 																</div>
 																<?= ucwords($row["username"]) ?>
 															</td>
@@ -96,9 +96,14 @@ while ($row = $result->fetch_assoc()) {
 															<td><?= $row["created_at"] ?></td>
 															<td>
 																<div class="form-button-action">
-																	<a type="button" data-toggle="tooltip" href="model/remove_user.php?id=<?= $row[
-                 	"id"
-                 ] ?>" onclick="return confirm('Are you sure you want to delete this user?');" class="btn btn-link btn-danger" data-original-title="Remove">
+																	<a
+																		type="button"
+																		data-toggle="tooltip"
+																		href="model/remove_user.php?id=<?= $row["id"] ?>"
+																		onclick="confirm('Are you sure you want to delete this user?');"
+																		class="btn btn-link btn-danger"
+																		data-original-title="Remove"
+																	>
 																		<i class="fa fa-times"></i>
 																	</a>
 																</div>

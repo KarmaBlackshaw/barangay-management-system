@@ -36,7 +36,6 @@ $resident = (function () use ($db) {
       "national_id" => "residents.national_id",
       "account_id" => "residents.account_id",
       "citizenship" => "residents.citizenship",
-      "picture" => "residents.picture",
       "firstname" => "residents.firstname",
       "middlename" => "residents.middlename",
       "lastname" => "residents.lastname",
@@ -112,6 +111,7 @@ $resident = (function () use ($db) {
         <div class="page-inner">
 					<div class="fadeIn card">
 						<div class="login-form card-body">
+
 							<?php include "templates/alert.php"; ?>
 
 							<form
@@ -128,10 +128,12 @@ $resident = (function () use ($db) {
 											id="my_camera"
 										>
 											<img
-												src="<?= imgSrc($resident["picture"]) ?? "assets/img/person.png" ?>"
+												src="<?= imgSrc($resident["avatar"]) ?? "assets/img/person.png" ?>"
 												alt="..."
-												class="img img-fluid"
+												class="img "
 												width="250"
+												height="250"
+												style="max-height: 250; object-fit: cover;"
 											>
 										</div>
 
@@ -196,8 +198,9 @@ $resident = (function () use ($db) {
 												name="address"
 												required
 												placeholder="Enter Address"
-												value="<?= $resident["address"] ?>"
-											></textarea>
+											>
+												<?= $resident["address"] ?>
+											</textarea>
 										</div>
 									</div>
 
@@ -303,15 +306,34 @@ $resident = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Civil Status</label>
+
 													<select
 														class="form-control"
 														name="civil_status"
 														value="<?= $resident["civilstatus"] ?>"
 													>
 														<option disabled selected>Select Civil Status</option>
-														<option value="Single">Single</option>
-														<option value="Married">Married</option>
-														<option value="Widow">Widow</option>
+
+														<option
+															value="Single"
+															<?= ifThen($resident["civilstatus"] == "Single", 'selected="true"') ?>
+														>
+															Single
+														</option>
+
+														<option
+															value="Married"
+															<?= ifThen($resident["civilstatus"] == "Married", 'selected="true"') ?>
+														>
+															Married
+														</option>
+
+														<option
+															value="Widow"
+															<?= ifThen($resident["civilstatus"] == "Widow", 'selected="true"') ?>
+														>
+															Widow
+														</option>
 													</select>
 												</div>
 											</div>
@@ -325,9 +347,21 @@ $resident = (function () use ($db) {
 														required
 														value="<?= $resident["gender"] ?>"
 													>
-														<option disabled selected value="">Select Gender</option>
-														<option value="Male">Male</option>
-														<option value="Female">Female</option>
+														<option disabled selected>Select Gender</option>
+
+														<option
+															<?= ifThen($resident["gender"] == "Male", 'selected="true"') ?>
+															value="Male"
+														>
+															Male
+														</option>
+
+														<option
+															<?= ifThen($resident["gender"] == "Female", 'selected="true"') ?>
+															value="Female"
+														>
+															Female
+														</option>
 													</select>
 												</div>
 											</div>
@@ -341,11 +375,15 @@ $resident = (function () use ($db) {
 														required
 														class="form-control"
 														name="purok_id"
-														value="<?= $resident["purok_id"] ?>"
 													>
 														<option disabled selected>Select Purok Name</option>
 														<?php foreach ($purokList as $purok): ?>
-															<option value="<?= $purok["id"] ?>"><?= $purok["name"] ?></option>
+															<option
+																value="<?= $purok["id"] ?>"
+																<?= ifThen($resident["purok_id"] == $purok["id"], 'selected="true"') ?>
+															>
+																<?= $purok["name"] ?>
+															</option>
 														<?php endforeach; ?>
 													</select>
 												</div>
@@ -361,8 +399,20 @@ $resident = (function () use ($db) {
 														value="<?= $resident["voterstatus"] ?>"
 													>
 														<option disabled selected>Select Voters Status</option>
-														<option value="Yes">Yes</option>
-														<option value="No">No</option>
+
+														<option
+															value="Yes"
+															<?= ifThen($resident["voterstatus"] == "Yes", 'selected="true"') ?>
+														>
+															Yes
+														</option>
+
+														<option
+															value="No"
+															<?= ifThen($resident["voterstatus"] == "No", 'selected="true"') ?>
+														>
+															No
+														</option>
 													</select>
 												</div>
 											</div>
@@ -429,7 +479,7 @@ $resident = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Email"
 														name="username"
-														value="<?= $resident["occupation"] ?>"
+														value="<?= $resident["username"] ?>"
 													>
 												</div>
 											</div>
@@ -476,23 +526,32 @@ $resident = (function () use ($db) {
 								</div>
 
 								<div class="form-action mb-3 d-flex justify-content-end gap-3">
-									<input type="hidden" name="register-resident" value="1">
+									<input
+										type="hidden"
+										name="update-resident"
+										value="1"
+									>
+
+									<input
+										type="hidden"
+										name="resident_id"
+										value="<?= $_GET["resident_id"] ?>"
+									>
+
+									<a
+										type="submit"
+										href="resident.php"
+										class="btn btn-dark btn-block text-white fw-bold"
+									>
+										Back
+									</a>
 
 									<button
 										type="submit"
 										class="btn btn-success btn-block text-white fw-bold"
 									>
-										Register
+										Update
 									</button>
-
-									<?php if (!isAuthenticated()): ?>
-										<a
-											href="login.php"
-											class="btn btn-dark btn-block text-white fw-bold"
-										>
-											Back to Login
-										</a>
-									<?php endif; ?>
 								</div>
 							</form>
 						</div>

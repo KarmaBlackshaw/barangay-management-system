@@ -396,6 +396,16 @@ $purokList = (function () use ($db) {
 								<div class="form-action mb-3 d-flex justify-content-end gap-3">
 									<input type="hidden" name="register-resident" value="1">
 
+									<?php if (isAdmin()): ?>
+									<a
+										type="button"
+										href="resident.php"
+										class="btn btn-dark btn-block text-white fw-bold"
+									>
+										Back
+									</a>
+									<?php endif; ?>
+
 									<button
 										type="submit"
 										class="btn btn-success btn-block text-white fw-bold"
