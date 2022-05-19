@@ -126,7 +126,9 @@ if (isset($_POST["register-resident"])) {
 			return $conn->close();
 		}
 
-		$account_id = (function () use ($db, $imgFilename, $username) {
+		$account_id = (function () use ($db) {
+			$imgFilename = $GLOBALS["imgFilename"];
+			$username = $GLOBALS["username"];
 			$password = sha1($username);
 
 			$result = $db
