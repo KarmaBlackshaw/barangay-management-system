@@ -47,7 +47,7 @@ class DB
 {
 	private $_connection = null;
 	private $_table = "";
-	private $_select = "";
+	private $_select = "SELECT *";
 	private $_where = "";
 	private $_join = "";
 	private $_update = "";
@@ -95,7 +95,7 @@ class DB
 
 		$select = join(", ", $selectArr);
 
-		if ($this->_select === "") {
+		if ($this->_select === "SELECT *") {
 			$this->_select = " SELECT {$select} ";
 		} else {
 			$this->_select .= " {$select} ";
@@ -156,6 +156,38 @@ class DB
 			} else {
 				$this->_where .= " AND {$key} {$valueOrOperand} {$value}";
 			}
+		}
+
+		return $this;
+	}
+
+	public function whereNot(string $key, string $valueOrOperand, $value = false)
+	{
+		if (!$value) {
+			if ($this->_where === "") {
+				$this->_where = " WHERE NOT {$key} = '{$valueOrOperand}' ";
+			} else {
+				$this->_where .= " AND NOT {$key} = '{$valueOrOperand}' ";
+			}
+		} else {
+			if ($this->_where === "") {
+				$this->_where = " WHERE NOT {$key} {$valueOrOperand} {$value} ";
+			} else {
+				$this->_where .= " AND NOT {$key} {$valueOrOperand} {$value}";
+			}
+		}
+
+		return $this;
+	}
+
+	public function whereIn(string $key, array $values)
+	{
+		$joined_values = join(",", $values);
+
+		if ($this->_where === "") {
+			$this->_where = " WHERE IN ($joined_values) ";
+		} else {
+			$this->_where .= " AND IN ($joined_values) ";
 		}
 
 		return $this;
@@ -232,20 +264,6 @@ class DB
 			);
 		}
 
-		if (!empty($this->_select)) {
-			// prettier-ignore
-			return trimSpaces(
-				join(" ", [
-					$this->_select,
-					$this->_from,
-					$this->_join,
-					$this->_where,
-					$this->_first,
-					$this->_order,
-				])
-			);
-		}
-
 		if (!empty($this->_delete)) {
 			// prettier-ignore
 			return trimSpaces(
@@ -265,12 +283,26 @@ class DB
 				])
 			);
 		}
+
+		if (!empty($this->_select) && !empty($this->_from)) {
+			// prettier-ignore
+			return trimSpaces(
+				join(" ", [
+					$this->_select,
+					$this->_from,
+					$this->_join,
+					$this->_where,
+					$this->_first,
+					$this->_order,
+				])
+			);
+		}
 	}
 
 	private function clear()
 	{
 		$this->_table = "";
-		$this->_select = "";
+		$this->_select = "SELECT *";
 		$this->_where = "";
 		$this->_update = "";
 		$this->_set = "";
@@ -287,12 +319,27 @@ class DB
 	{
 		$result = $this->_connection->query($this->toString());
 
-		if ($this->_first) {
+		if ($this->_insert) {
+			$this->clear();
+			return [
+				"id" => mysqli_insert_id($this->_connection),
+				"status" => $result,
+			];
+		}
+
+		if ($this->_delete || $this->_update) {
+			$this->clear();
+			return [
+				"status" => $result,
+			];
+		}
+
+		if (!empty($this->_first) && !empty($this->_from)) {
 			$this->clear();
 			return $result->fetch_assoc();
 		}
 
-		if ($this->_select) {
+		if (!empty($this->_select) && !empty($this->_from)) {
 			$this->clear();
 
 			$array = [];
@@ -301,14 +348,6 @@ class DB
 			}
 
 			return $array;
-		}
-
-		if ($this->_insert) {
-			$this->clear();
-			return [
-				"id" => mysqli_insert_id($this->_connection),
-				"status" => $result,
-			];
 		}
 
 		$this->clear();
