@@ -8,7 +8,15 @@ function showModal (ctx) {
 
   attributeArray.forEach(attr => {
     const currModalAttr = `#${attr.name.replace('data-value', id)}`
-    $(currModalAttr).val(attr.value)
+
+    const el = $(currModalAttr)
+    const nodeName = el.prop("nodeName").toLowerCase()
+
+    if (nodeName === 'img') {
+      el.attr('src', attr.value)
+    } else {
+      el.val(attr.value)
+    }
   })
 
   $(modal).modal({
