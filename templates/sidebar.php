@@ -28,9 +28,7 @@ function appendActiveClass(array $pages)
         <div class="avatar-sm float-left mr-2">
           <?php if (!empty($_SESSION["avatar"])): ?>
             <img
-              src="<?= preg_match("/data:image/i", $_SESSION["avatar"])
-              	? $_SESSION["avatar"]
-              	: "assets/uploads/" . $_SESSION["avatar"] ?>"
+              src="<?= imgSrc($_SESSION["avatar"]) ?>"
               alt="..."
               class="avatar-img rounded-circle"
             >
@@ -93,41 +91,47 @@ function appendActiveClass(array $pages)
           <h4 class="text-section">Menu</h4>
         </li>
 
-        <li
-          class="
-            nav-item
-            <?= appendActiveClass(["officials"]) ?>
-          "
-        >
-          <a href="officials.php">
-            <i class="fas fa-user-tie"></i>
-            <p>Brgy Officials and Staff</p>
-          </a>
-        </li>
+        <?php if (role(["administrator", "staff"])): ?>
+          <li
+            class="
+              nav-item
+              <?= appendActiveClass(["officials"]) ?>
+            "
+          >
+            <a href="officials.php">
+              <i class="fas fa-user-tie"></i>
+              <p>Brgy Officials and Staff</p>
+            </a>
+          </li>
+        <?php endif; ?>
 
-        <li
-          class="
-            nav-item
-            <?= appendActiveClass(["resident", "generate_resident"]) ?>
-          "
-        >
-          <a href="resident.php">
-            <i class="icon-people"></i>
-            <p>Resident Information</p>
-          </a>
-        </li>
+        <?php if (role(["administrator", "staff"])): ?>
+          <li
+            class="
+              nav-item
+              <?= appendActiveClass(["resident", "generate_resident"]) ?>
+            "
+          >
+            <a href="resident.php">
+              <i class="icon-people"></i>
+              <p>Resident Information</p>
+            </a>
+          </li>
+        <?php endif; ?>
 
-        <li
-          class="
-            nav-item
-            <?= appendActiveClass(["resident_certification", "generate_brgy_cert"]) ?>
-          "
-        >
-          <a href="resident_certification.php">
-            <i class="icon-badge"></i>
-            <p>Barangay Certificates</p>
-          </a>
-        </li>
+        <?php if (role(["administrator", "staff"])): ?>
+          <li
+            class="
+              nav-item
+              <?= appendActiveClass(["resident_certification", "generate_brgy_cert"]) ?>
+            "
+          >
+            <a href="resident_certification.php">
+              <i class="icon-badge"></i>
+              <p>Barangay Certificates</p>
+            </a>
+          </li>
+        <?php endif; ?>
 
         <li
           class="
