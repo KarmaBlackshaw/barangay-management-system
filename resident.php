@@ -1,6 +1,10 @@
 <?php
 include "bootstrap/index.php";
 
+if (!isAdmin() || !isStaff()) {
+	header("Location: login.php");
+}
+
 $purokList = (function () use ($db) {
 	// prettier-ignore
 	return $db
@@ -60,7 +64,7 @@ $residentList = (function () use ($db) {
 <body>
   <?php include "templates/loading_screen.php"; ?>
   <div class="wrapper">
-    <?php isAdmin() and (include "templates/main-header.php"); ?>
+    <?php include "templates/main-header.php"; ?>
 
     <?php include "templates/sidebar.php"; ?>
 
@@ -85,7 +89,7 @@ $residentList = (function () use ($db) {
                 <div class="card-header">
                   <div class="card-head-row">
                     <div class="card-title">Resident Information</div>
-                    <?php if (isAuthenticated()): ?>
+                    <?php if (isAdmin()): ?>
                       <div class="card-tools">
                         <a
                           href="resident-register.php"
