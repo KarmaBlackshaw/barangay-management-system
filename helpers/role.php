@@ -1,26 +1,31 @@
 <?php
 
-function userRoleTransformer($role)
+function _userRoleTransformer($role)
 {
-  return isset($_SESSION["role"]) && $_SESSION["role"] === $role;
+	return isset($_SESSION["role"]) && $_SESSION["role"] === $role;
 }
 
 function isAuthenticated()
 {
-  return isset($_SESSION["role"]);
+	return isset($_SESSION["role"]);
 }
 
 function isAdmin()
 {
-  return userRoleTransformer("administrator");
+	return _userRoleTransformer("administrator");
 }
 
 function isStaff()
 {
-  return userRoleTransformer("staff");
+	return _userRoleTransformer("staff");
 }
 
 function isUser()
 {
-  return userRoleTransformer("user");
+	return _userRoleTransformer("user");
+}
+
+function role(array $roles)
+{
+	return in_array($_SESSION["role"], $roles);
 }
