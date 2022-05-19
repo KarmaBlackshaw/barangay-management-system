@@ -1,21 +1,17 @@
 <?php
 include "bootstrap/index.php";
 
-$query = "SELECT * FROM residents";
-$result = $conn->query($query);
-
-$resident = [];
-while ($row = $result->fetch_assoc()) {
-	$resident[] = $row;
-}
-
-$query1 = "SELECT * FROM purok ORDER BY `name`";
-$result1 = $conn->query($query1);
-
-$purok = [];
-while ($row = $result1->fetch_assoc()) {
-	$purok[] = $row;
-}
+$purokList = (function () use ($db) {
+	// prettier-ignore
+	return $db
+    ->from("purok")
+    ->select([
+      "id" => "purok.id",
+      "name" => "purok.name",
+      "details" => "purok.details",
+    ])
+    ->exec();
+})();
 
 $residentList = (function () use ($db) {
 	// prettier-ignore
@@ -163,34 +159,9 @@ $residentList = (function () use ($db) {
                                   <div class="form-button-action">
                                     <a
                                       type="button"
-                                      href="#edit"
-                                      data-toggle="modal"
+                                      href="resident-view.php?resident_id=<?= $row["id"] ?>"
                                       class="btn btn-link btn-primary"
                                       title="View Resident"
-                                      onclick="editResident(this)"
-                                      data-id="<?= $row["id"] ?>"
-                                      data-national="<?= $row["national_id"] ?>"
-                                      data-fname="<?= $row["firstname"] ?>"
-                                      data-mname="<?= $row["middlename"] ?>"
-                                      data-lname="<?= $row["lastname"] ?>"
-                                      data-alias="<?= $row["alias"] ?>"
-                                      data-bplace="<?= $row["birthplace"] ?>"
-                                      data-bdate="<?= $row["birthdate"] ?>"
-                                      data-age="<?= $row["age"] ?>"
-                                      data-cstatus="<?= $row["civilstatus"] ?>"
-                                      data-gender="<?= $row["gender"] ?>"
-                                      data-purok_id="<?= $row["purok_id"] ?>"
-                                      data-purok_name="<?= $row["purok_name"] ?>"
-                                      data-vstatus="<?= $row["voterstatus"] ?>"
-                                      data-indetity="<?= $row["identified_as"] ?>"
-                                      data-number="<?= $row["phone"] ?>"
-                                      data-email="<?= $row["email"] ?>"
-                                      data-address="<?= $row["address"] ?>"
-                                      data-img="<?= $row["picture"] ?>"
-                                      data-citi="<?= $row["citizenship"] ?>"
-                                      data-occu="<?= $row["occupation"] ?>"
-                                      data-dead="<?= $row["resident_type"] ?>"
-                                      data-remarks="<?= $row["remarks"] ?>"
                                     >
                                       <?php if (isAuthenticated()): ?>
                                         <i class="fa fa-edit"></i>
@@ -382,7 +353,7 @@ $residentList = (function () use ($db) {
                           <label>Purok</label>
                           <select class="form-control" required name="purok" id="purok">
                             <option disabled selected>Select Purok Name</option>
-                            <?php foreach ($purok as $row): ?>
+                            <?php foreach ($purokList as $row): ?>
                               <option value="<?= ucwords($row["name"]) ?>">
                                 <?= $row["name"] ?>
                               </option>

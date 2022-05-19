@@ -3,16 +3,65 @@ session_start();
 
 include "bootstrap/index.php";
 
+if (!isAuthenticated()) {
+	header("Location: login.php");
+}
+
+if (!isset($_GET["resident_id"])) {
+	header("Location: resident.php");
+}
+
 $purokList = (function () use ($db) {
 	// prettier-ignore
 	return $db
-		->from("purok")
-		->select([
-			"id" => "purok.id",
-			"name" => "purok.name",
-			"details" => "purok.details",
-		])
-		->exec();
+    ->from("purok")
+    ->select([
+      "id" => "purok.id",
+      "name" => "purok.name",
+      "details" => "purok.details",
+    ])
+    ->exec();
+})();
+
+$resident = (function () use ($db) {
+	// prettier-ignore
+	return $db
+    ->from("residents")
+    ->join("purok", "purok.id", "residents.purok_id")
+		->join("users", "users.id", "residents.account_id")
+		->where("residents.id", $_GET["resident_id"])
+		->first()
+    ->select([
+      "id" => "residents.id",
+      "national_id" => "residents.national_id",
+      "account_id" => "residents.account_id",
+      "citizenship" => "residents.citizenship",
+      "picture" => "residents.picture",
+      "firstname" => "residents.firstname",
+      "middlename" => "residents.middlename",
+      "lastname" => "residents.lastname",
+      "alias" => "residents.alias",
+      "birthplace" => "residents.birthplace",
+      "birthdate" => "residents.birthdate",
+      "age" => "residents.age",
+      "civilstatus" => "residents.civilstatus",
+      "gender" => "residents.gender",
+      "voterstatus" => "residents.voterstatus",
+      "identified_as" => "residents.identified_as",
+      "phone" => "residents.phone",
+      "email" => "residents.email",
+      "occupation" => "residents.occupation",
+      "address" => "residents.address",
+      "resident_type" => "residents.resident_type",
+      "remarks" => "residents.remarks",
+      "username" => "users.username",
+      "user_type" => "users.user_type",
+      "avatar" => "users.avatar",
+      "purok_id" => "purok.id",
+      "purok_name" => "purok.name",
+      "purok_details" => "purok.details",
+    ])
+    ->exec();
 })();
 ?>
 
@@ -39,9 +88,9 @@ $purokList = (function () use ($db) {
 
     <?php isAdmin() and (include "templates/sidebar.php"); ?>
 
+
     <div
 			class="
-
 				<?= isAdmin() ? "main-panel" : "" ?>
 				<?= isAuthenticated() ? "" : "container" ?>
 				<?= isAuthenticated() ? "" : "d-flex flex-column justify-content-center" ?>
@@ -53,7 +102,7 @@ $purokList = (function () use ($db) {
 						<div class="page-inner">
 							<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 								<div>
-									<h2 class="text-white fw-bold">Resident Registration</h2>
+									<h2 class="text-white fw-bold">Resident Details</h2>
 								</div>
 							</div>
 						</div>
@@ -63,10 +112,6 @@ $purokList = (function () use ($db) {
         <div class="page-inner">
 					<div class="fadeIn card">
 						<div class="login-form card-body">
-							<?php if (!isAuthenticated()): ?>
-								<h3 class="card-title text-center fw-bold mb-3">Register</h3>
-							<?php endif; ?>
-
 							<?php include "templates/alert.php"; ?>
 
 							<form
@@ -83,7 +128,7 @@ $purokList = (function () use ($db) {
 											id="my_camera"
 										>
 											<img
-												src="assets/img/person.png"
+												src="<?= imgSrc($resident["picture"]) ?? "assets/img/person.png" ?>"
 												alt="..."
 												class="img img-fluid"
 												width="250"
@@ -126,6 +171,7 @@ $purokList = (function () use ($db) {
 												type="text"
 												class="form-control"
 												name="national_id"
+												value="<?= $resident["national_id"] ?>"
 												placeholder="Enter National ID No."
 												required
 											>
@@ -137,6 +183,7 @@ $purokList = (function () use ($db) {
 												type="text"
 												class="form-control"
 												name="citizenship"
+												value="<?= $resident["citizenship"] ?>"
 												placeholder="Enter citizenship"
 												required
 											>
@@ -149,6 +196,7 @@ $purokList = (function () use ($db) {
 												name="address"
 												required
 												placeholder="Enter Address"
+												value="<?= $resident["address"] ?>"
 											></textarea>
 										</div>
 									</div>
@@ -162,6 +210,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter First name"
 														name="fname"
+														value="<?= $resident["firstname"] ?>"
 														required
 													>
 												</div>
@@ -174,6 +223,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Middle name"
 														name="mname"
+														value="<?= $resident["middlename"] ?>"
 														required
 													>
 												</div>
@@ -187,6 +237,7 @@ $purokList = (function () use ($db) {
 														placeholder="Enter Last name"
 														name="lname"
 														required
+														value="<?= $resident["lastname"] ?>"
 													>
 												</div>
 											</div>
@@ -200,6 +251,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Alias"
 														name="alias"
+														value="<?= $resident["alias"] ?>"
 													>
 												</div>
 											</div>
@@ -212,6 +264,7 @@ $purokList = (function () use ($db) {
 														placeholder="Enter Birthplace"
 														name="birthplace"
 														required
+														value="<?= $resident["birthplace"] ?>"
 													>
 												</div>
 											</div>
@@ -225,6 +278,7 @@ $purokList = (function () use ($db) {
 														placeholder="Enter Birthdate"
 														name="birthdate"
 														required
+														value="<?= $resident["birthdate"] ?>"
 													>
 												</div>
 											</div>
@@ -241,6 +295,7 @@ $purokList = (function () use ($db) {
 														min="1"
 														name="age"
 														required
+														value="<?= $resident["age"] ?>"
 													>
 												</div>
 											</div>
@@ -248,7 +303,11 @@ $purokList = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Civil Status</label>
-													<select class="form-control" name="civil_status">
+													<select
+														class="form-control"
+														name="civil_status"
+														value="<?= $resident["civilstatus"] ?>"
+													>
 														<option disabled selected>Select Civil Status</option>
 														<option value="Single">Single</option>
 														<option value="Married">Married</option>
@@ -260,7 +319,12 @@ $purokList = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Gender</label>
-													<select class="form-control" required name="gender">
+													<select
+														class="form-control"
+														name="gender"
+														required
+														value="<?= $resident["gender"] ?>"
+													>
 														<option disabled selected value="">Select Gender</option>
 														<option value="Male">Male</option>
 														<option value="Female">Female</option>
@@ -273,7 +337,12 @@ $purokList = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Purok</label>
-													<select class="form-control" required name="purok_id">
+													<select
+														required
+														class="form-control"
+														name="purok_id"
+														value="<?= $resident["purok_id"] ?>"
+													>
 														<option disabled selected>Select Purok Name</option>
 														<?php foreach ($purokList as $purok): ?>
 															<option value="<?= $purok["id"] ?>"><?= $purok["name"] ?></option>
@@ -285,7 +354,12 @@ $purokList = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Voters Status</label>
-													<select class="form-control vstatus" required name="voter_status">
+													<select
+														class="form-control vstatus"
+														required
+														name="voter_status"
+														value="<?= $resident["voterstatus"] ?>"
+													>
 														<option disabled selected>Select Voters Status</option>
 														<option value="Yes">Yes</option>
 														<option value="No">No</option>
@@ -296,7 +370,11 @@ $purokList = (function () use ($db) {
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Identified As</label>
-													<select class="form-control indetity" name="identified_as">
+													<select
+														class="form-control indetity"
+														name="identified_as"
+														value="<?= $resident["identified_as"] ?>"
+													>
 														<option value="Positive">Positive</option>
 														<option value="Negative">Negative</option>
 														<option value="Unidentified" selected>Unidentified</option>
@@ -314,6 +392,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Email"
 														name="email"
+														value="<?= $resident["email"] ?>"
 													>
 												</div>
 											</div>
@@ -325,6 +404,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Contact Number"
 														name="number"
+														value="<?= $resident["phone"] ?>"
 													>
 												</div>
 											</div>
@@ -335,6 +415,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Occupation"
 														name="occupation"
+														value="<?= $resident["occupation"] ?>"
 													>
 												</div>
 											</div>
@@ -348,6 +429,7 @@ $purokList = (function () use ($db) {
 														class="form-control"
 														placeholder="Enter Email"
 														name="username"
+														value="<?= $resident["occupation"] ?>"
 													>
 												</div>
 											</div>
