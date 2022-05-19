@@ -18,12 +18,13 @@ $residentList = (function () use ($db) {
 	return $db
     ->from("residents")
     ->join("purok", "purok.id", "residents.purok_id")
+    ->join("users", "users.id", "residents.account_id")
     ->select([
       "id" => "residents.id",
       "national_id" => "residents.national_id",
       "account_id" => "residents.account_id",
       "citizenship" => "residents.citizenship",
-      "picture" => "residents.picture",
+      "avatar" => "users.avatar",
       "firstname" => "residents.firstname",
       "middlename" => "residents.middlename",
       "lastname" => "residents.lastname",
@@ -133,7 +134,7 @@ $residentList = (function () use ($db) {
                                 <div class="row">
                                   <div class="col-2 d-flex justify-content-center align-items-center">
                                     <img
-                                      src="<?= imgSrc($row["picture"]) ?>"
+                                      src="<?= imgSrc($row["avatar"], "img/person.png") ?>"
                                       alt="..."
                                       class="avatar-img rounded-circle avatar avatar-xs"
                                     >
