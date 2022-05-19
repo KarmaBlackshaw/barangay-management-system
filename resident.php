@@ -1,8 +1,8 @@
 <?php
 include "bootstrap/index.php";
 
-if (!isAdmin() || !isStaff()) {
-	header("Location: login.php");
+if (isUser()) {
+	header("Location: dashboard.php");
 }
 
 $purokList = (function () use ($db) {
@@ -23,6 +23,7 @@ $residentList = (function () use ($db) {
     ->from("residents")
     ->join("purok", "purok.id", "residents.purok_id")
     ->join("users", "users.id", "residents.account_id")
+    ->orderBy("residents.id", "desc")
     ->select([
       "id" => "residents.id",
       "national_id" => "residents.national_id",
@@ -446,7 +447,9 @@ $residentList = (function () use ($db) {
 
   <script>
     $(document).ready(function() {
-      $('#residenttable').DataTable();
+      $('#residenttable').DataTable({
+        order: []
+      });
     });
   </script>
 </body>
