@@ -64,10 +64,6 @@ $residentList = (function () use ($db) {
 		<?php include "templates/main-header.php"; ?>
 		<!-- End Main Header -->
 
-		<!-- Sidebar -->
-		<?php include "templates/sidebar.php"; ?>
-		<!-- End Sidebar -->
-
 		<div class="main-panel">
 			<div class="content">
 				<div class="panel-header bg-primary-gradient">
