@@ -57,6 +57,7 @@ class DB
 	private $_insert = "";
 	private $_values = "";
 	private $_order = "";
+	private $_first = "";
 
 	private function _tableNameAlias($table)
 	{
@@ -99,6 +100,13 @@ class DB
 		} else {
 			$this->_select .= " {$select} ";
 		}
+
+		return $this;
+	}
+
+	public function first()
+	{
+		$this->_first = " LIMIT 1 ";
 
 		return $this;
 	}
@@ -232,6 +240,7 @@ class DB
 					$this->_from,
 					$this->_join,
 					$this->_where,
+					$this->_first,
 					$this->_order,
 				])
 			);
@@ -271,11 +280,17 @@ class DB
 		$this->_insert = "";
 		$this->_values = "";
 		$this->_order = "";
+		$this->_first = "";
 	}
 
 	public function exec()
 	{
 		$result = $this->_connection->query($this->toString());
+
+		if ($this->_first) {
+			$this->clear();
+			return $result->fetch_assoc();
+		}
 
 		if ($this->_select) {
 			$this->clear();
