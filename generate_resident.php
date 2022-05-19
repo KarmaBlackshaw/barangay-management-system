@@ -103,15 +103,15 @@ $resident = $db
                   </div>
 
                   <div class="row mt-2">
-                    <div class="col-md-3">
+                    <div class="col-md-4 d-flex justify-content-center">
                       <img
                         src="<?= imgSrc($resident["avatar"]) ?>"
                         alt="Resident Profile"
                         class="img-fluid"
-                        style="width: 100%; height: 200px; object-fit: cover"
+                        style="width: 200px; height: 200px; object-fit: cover"
                       >
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                       <div class="row">
                         <div class="col">
                           <div class="form-group row">
@@ -163,7 +163,7 @@ $resident = $db
                   </div>
 
                   <div class="row">
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                         <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Birthdate:</h7>
                       </div>
@@ -176,7 +176,7 @@ $resident = $db
                         >
                       </div>
                     </div>
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                         <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Age:</h7>
                       </div>
@@ -189,7 +189,7 @@ $resident = $db
                         >
                       </div>
                     </div>
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                         <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Civil Status:</h7>
                       </div>
@@ -205,7 +205,7 @@ $resident = $db
                   </div>
 
                   <div class="row">
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                           <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Gender:</h7>
                       </div>
@@ -218,7 +218,7 @@ $resident = $db
                         >
                       </div>
                     </div>
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                           <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Purok:</h7>
                       </div>
@@ -231,7 +231,7 @@ $resident = $db
                         >
                       </div>
                     </div>
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                         <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Voters Status:</h7>
                       </div>
@@ -247,7 +247,7 @@ $resident = $db
                   </div>
 
                   <div class="row">
-                      <div class="col">
+                      <div class="col-md-4">
                         <div class="form-group row">
                           <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Identified as:</h7>
                         </div>
@@ -260,7 +260,7 @@ $resident = $db
                           >
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col-md-4">
                         <div class="form-group row">
                           <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Phone number:</h7>
                         </div>
@@ -274,7 +274,7 @@ $resident = $db
                         </div>
                       </div>
 
-                      <div class="col">
+                      <div class="col-md-4">
                         <div class="form-group row">
                           <h7 class="mt-5 col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-left">Email Address:</h7>
                         </div>
