@@ -1,20 +1,20 @@
-- [ ] Add PWD information for each user
+- [x] Add PWD information for each user
 
-- [ ] Add 4Ps information for each user
+- [x] Add 4Ps information for each user
 
 - [ ] User dashboard
 
-- [ ] Request certificate
+- [x] Request certificate
 
-- [ ] Add payment details
+- [x] Add payment details
 
 - [ ] Add request certificate to each user
 
 - [ ] Add user date since in barangay
 
-- [ ] Add user is PWD, is 4Ps beneficiary
+- [x] Add user is PWD, is 4Ps beneficiary
 
-- [ ] Add user is senior
+- [x] Add user is senior
 
 - [x] View announcement
 
