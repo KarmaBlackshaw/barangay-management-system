@@ -1,3 +1,15 @@
 {
-  "liveServer.settings.port": 5501
+	"liveServer.settings.port": 5501,
+	"html.format.contentUnformatted": "pre,code,textarea",
+	"html.format.endWithNewline": true,
+	"html.format.extraLiners": "head, body, /html",
+	"html.format.indentHandlebars": true,
+	"html.format.indentInnerHtml": true,
+	"html.format.maxPreserveNewLines": null,
+	"html.format.preserveNewLines": true,
+	"html.format.wrapLineLength": 120,
+	"html.format.wrapAttributes": "auto",
+	"[php]": {
+		"editor.tabSize": 2
+	}
 }
