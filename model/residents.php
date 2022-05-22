@@ -4,6 +4,13 @@ include "../bootstrap/index.php";
 
 use function _\camelCase as _camelCase;
 
+function toNumberOrZero($val) {
+  if (is_numeric($val)) {
+    return $val + 0;
+  }
+  return 0;
+}
+
 if (isset($_POST["register-resident"])) {
 	try {
 		$national_id = getBody("national_id", $_POST);
@@ -15,7 +22,7 @@ if (isset($_POST["register-resident"])) {
 		$alias = getBody("alias", $_POST);
 		$birthplace = getBody("birthplace", $_POST);
 		$birthdate = getBody("birthdate", $_POST);
-		$age = getBody("age", $_POST);
+		$age = toNumberOrZero(getBody("age", $_POST));
 		$civil_status = getBody("civil_status", $_POST);
 		$gender = getBody("gender", $_POST);
 		$purokId = getBody("purok_id", $_POST);
@@ -27,6 +34,9 @@ if (isset($_POST["register-resident"])) {
 		$username = getBody("username", $_POST);
 		$password = getBody("password", $_POST);
 		$password_confirm = getBody("password_confirm", $_POST);
+		$is_4ps = toNumberOrZero(getBody("is_4ps", $_POST));
+		$is_pwd = toNumberOrZero(getBody("is_pwd", $_POST));
+		$is_senior = $age > 60;
 
 		$profileimg = getBody("profileimg", $_POST);
 
@@ -166,6 +176,9 @@ if (isset($_POST["register-resident"])) {
 				"occupation" => $occupation,
 				"address" => $address,
 				"account_id" => $account_id,
+				"is_4ps" => $is_4ps,
+				"is_pwd" => $is_pwd,
+				"is_senior" => $is_senior,
 			])
 			->exec();
 
