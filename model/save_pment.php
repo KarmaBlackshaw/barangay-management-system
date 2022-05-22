@@ -14,11 +14,13 @@ if (isset($_POST['create-payment'])) {
   $date = getBody('date', $_POST);
   $mode = getBody('mode', $_POST);
   $resident_id = getBody('resident_id', $_POST);
+  $certificate_id = getBody('certificate_id', $_POST);
 
   $requiredFields = [
     "Amount" => $amount,
     "Resident ID" => $resident_id,
     "Payment Mode" => $mode,
+    "Certificate ID" => $certificate_id,
   ];
 
   /**
@@ -34,18 +36,18 @@ if (isset($_POST['create-payment'])) {
     return $conn->close();
   }
 
-  $result = $db
-  ->insert("payments")
-  ->values([
-    "user_id" => $_SESSION['id'],
-    "details" => $details,
-    "resident_id" => $resident_id,
-    "amount" => $amount,
-    "mode" => $mode,
-  ])
-  ->exec();
+  $paymentResult = $db
+    ->insert("payments")
+    ->values([
+      "user_id" => $_SESSION['id'],
+      "details" => $details,
+      "resident_id" => $resident_id,
+      "amount" => $amount,
+      "mode" => $mode,
+    ])
+    ->exec();
 
-  if ($result['status'] !== true) {
+  if ($paymentResult['status'] !== true) {
     $_SESSION["message"] = "Internal server error";
     $_SESSION["status"] = "danger";
 
@@ -53,9 +55,29 @@ if (isset($_POST['create-payment'])) {
     return $conn->close();
   }
 
-    $_SESSION["message"] = "Successfully stored payment";
-    $_SESSION["status"] = "success";
 
-    header("Location: " . $_SERVER["HTTP_REFERER"] . "&closeModal=1");
+  $requestResult = $db
+    ->insert('certificate_requests')
+    ->values([
+      "resident_id" => $resident_id,
+      "payment_id" => $paymentResult['id'],
+      "certificate_id" => $certificate_id,
+      "status" => "resolved",
+      "memo" => $details,
+    ])
+    ->exec();
+
+  if ($requestResult['status'] !== true) {
+    $_SESSION["message"] = "Internal server error";
+    $_SESSION["status"] = "danger";
+
+    header("Location: " . $_SERVER["HTTP_REFERER"]);
     return $conn->close();
+  }
+
+  $_SESSION["message"] = "Successfully stored payment";
+  $_SESSION["status"] = "success";
+
+  header("Location: " . $_SERVER["HTTP_REFERER"] . "&closeModal=1");
+  return $conn->close();
 }

@@ -1,5 +1,5 @@
-<?php include 'bootstrap/index.php' ?>
 <?php
+require 'bootstrap/index.php';
 $id = $_GET['id'];
 $query = "SELECT * FROM tblblotter WHERE id='$id'";
 $result = $conn->query($query);
@@ -13,10 +13,26 @@ while ($row = $result1->fetch_assoc()) {
     $officials[] = $row;
 }
 
-$c = "SELECT * FROM tblofficials JOIN tblposition ON tblofficials.position=tblposition.id WHERE tblposition.position='Captain'";
-$captain = $conn->query($c)->fetch_assoc();
-$s = "SELECT * FROM tblofficials JOIN tblposition ON tblofficials.position=tblposition.id WHERE tblposition.position='Secretary'";
-$sec = $conn->query($s)->fetch_assoc();
+$captain = $db
+  ->from(["tblofficials" => "officials"])
+  ->join(["tblposition" => "positions"], "positions.id", "officials.position")
+  ->where("positions.id", 4)
+  ->first()
+  ->select([
+    "name" => "officials.name"
+  ])
+  ->exec();
+
+$sec = $db
+  ->from(["tblofficials" => "officials"])
+  ->join(["tblposition" => "positions"], "positions.id", "officials.position")
+  ->where("positions.id", 15)
+  ->first()
+  ->select([
+    "name" => "officials.name"
+  ])
+  ->exec();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

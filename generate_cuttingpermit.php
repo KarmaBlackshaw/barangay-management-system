@@ -76,6 +76,7 @@ $captain = $db
                       </div>
                     </div>
                   </div>
+
                   <div class="card-body m-5" id="printThis">
                     <div class="d-flex flex-wrap justify-content-around" style="border-bottom:1px solid red">
                       <div class="text-center">
@@ -148,34 +149,90 @@ $captain = $db
                     <!-- Main Footer -->
                     <?php include 'templates/main-footer.php' ?>
                     <!-- End Main Footer -->
-                    <?php if (!isset($_GET['closeModal'])) { ?>
-
-                    <script>
-                    setTimeout(function() {
-                      openModal();
-                    }, 1000);
-                    </script>
-                    <?php } ?>
                   </div>
 
                 </div>
-                <?php include 'templates/footer.php' ?>
-                <script>
-                function openModal() {
-                  $('#pment').modal('show');
-                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                function printDiv(divName) {
-                  var printContents = document.getElementById(divName).innerHTML;
-                  var originalContents = document.body.innerHTML;
 
-                  document.body.innerHTML = printContents;
+    <!-- Modal -->
+    <div class="modal fade" id="pment" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create
+              Payment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="model/save_pment.php">
+              <div class="form-group">
+                <label>Amount</label>
+                <input type="number" class="form-control" name="amount" placeholder="Enter amount to pay" required>
+              </div>
 
-                  window.print();
+              <div class="form-group">
+                <label>Date Issued</label>
+                <input type="date" class="form-control" name="date" value="<?= date("Y-m-d") ?>">
+              </div>
 
-                  document.body.innerHTML = originalContents;
-                }
-                </script>
+              <div class="form-group">
+                <label>Mode</label>
+                <select class="form-control" name="mode" required>
+                  <option selected disabled>Choose payment mode</option>
+                  <option value="online">Online</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Payment Details(Optional)</label>
+                <textarea class="form-control" placeholder="Enter Payment Details"
+                  name="details">Cutting Permit Payment</textarea>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <input type="hidden" name="resident_id" value="<?= $_GET['id'] ?>">
+            <input type="hidden" name="create-payment" value="<?= $_GET['id'] ?>">
+            <input type="hidden" name="certificate_id" value="6">
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Close</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <?php include 'templates/footer.php' ?>
+
+    <script>
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+
+    if (!params['closeModal']) {
+      setTimeout(() => {
+        $('#pment').modal('show');
+      }, 1000);
+    }
+
+    function printDiv(divName) {
+      var printContents = document.getElementById(divName).innerHTML;
+      var originalContents = document.body.innerHTML;
+
+      document.body.innerHTML = printContents;
+
+      window.print();
+
+      document.body.innerHTML = originalContents;
+    }
+    </script>
   </body>
 
 </html>
