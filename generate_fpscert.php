@@ -65,14 +65,7 @@ $captain = $db
             <div class="row mt--2">
               <div class="col-md-12">
 
-                <?php if (isset($_SESSION['message'])) : ?>
-                <div
-                  class="alert alert-<?php echo $_SESSION['status']; ?> <?= $_SESSION['status'] == 'danger' ? 'bg-danger text-light' : null ?>"
-                  role="alert">
-                  <?php echo $_SESSION['message']; ?>
-                </div>
-                <?php unset($_SESSION['message']); ?>
-                <?php endif ?>
+                <?php include "templates/alert.php"; ?>
 
                 <div class="card">
                   <div class="card-header">
