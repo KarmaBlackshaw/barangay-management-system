@@ -1,48 +1,61 @@
 <?php
-include('../server/server.php');
 
-if (!isset($_SESSION['username'])) {
-    if (isset($_SERVER["HTTP_REFERER"])) {
-        header("Location: " . $_SERVER["HTTP_REFERER"]);
-    }
+include "../bootstrap/index.php";
+
+if (isset($_POST['create-payment'])) {
+
+  if (!isset($_SERVER["HTTP_REFERER"])) {
+    header("Location: ../dashboard.php");
+    return $conn->close();
+  }
+
+  $amount = getBody('amount', $_POST);
+  $details = getBody('details', $_POST);
+  $date = getBody('date', $_POST);
+  $mode = getBody('mode', $_POST);
+  $resident_id = getBody('resident_id', $_POST);
+
+  $requiredFields = [
+    "Amount" => $amount,
+    "Resident ID" => $resident_id,
+    "Payment Mode" => $mode,
+  ];
+
+  /**
+   * Check required fields
+   */
+  $emptyRequiredField = array_find_key($requiredFields, fn($item) => empty($item));
+
+  if ($emptyRequiredField) {
+    $_SESSION["message"] = "<b>$emptyRequiredField</b> is required!";
+    $_SESSION["status"] = "danger";
+
+    header("Location: " . $_SERVER["HTTP_REFERER"]);
+    return $conn->close();
+  }
+
+  $result = $db
+  ->insert("payments")
+  ->values([
+    "user_id" => $_SESSION['id'],
+    "details" => $details,
+    "resident_id" => $resident_id,
+    "amount" => $amount,
+    "mode" => $mode,
+  ])
+  ->exec();
+
+  if ($result['status'] !== true) {
+    $_SESSION["message"] = "Internal server error";
+    $_SESSION["status"] = "danger";
+
+    header("Location: " . $_SERVER["HTTP_REFERER"]);
+    return $conn->close();
+  }
+
+    $_SESSION["message"] = "Successfully stored payment";
+    $_SESSION["status"] = "success";
+
+    header("Location: " . $_SERVER["HTTP_REFERER"] . "&closeModal=1");
+    return $conn->close();
 }
-
-$user           = $_SESSION['username'];
-$name           = $conn->real_escape_string($_POST['name']);
-$amount         = $conn->real_escape_string($_POST['amount']);
-$date           = $conn->real_escape_string($_POST['date']);
-$details         = $conn->real_escape_string($_POST['details']);
-
-if (!empty($user) && !empty($name)) {
-
-    $insert  = "INSERT INTO tblpayments (`details`,`amounts`, `date`, `user`, `name`) VALUES ('$details', $amount, '$date', '$user',' $name')";
-    $result  = $conn->query($insert);
-
-    if ($result === true) {
-        $_SESSION['message'] = 'Payment has been saved!';
-        $_SESSION['status'] = 'success';
-
-        if (isset($_SERVER["HTTP_REFERER"])) {
-            header("Location: " . $_SERVER["HTTP_REFERER"] . '&closeModal');
-        }
-    } else {
-        $_SESSION['message'] = 'Something went wrong!';
-        $_SESSION['status'] = 'danger';
-
-        if (isset($_SERVER["HTTP_REFERER"])) {
-            header("Location: " . $_SERVER["HTTP_REFERER"]);
-        }
-    }
-} else {
-
-    $_SESSION['message'] = 'Please fill up the form completely!';
-    $_SESSION['status'] = 'danger';
-
-    if (isset($_SERVER["HTTP_REFERER"])) {
-        header("Location: " . $_SERVER["HTTP_REFERER"]);
-    }
-}
-
-
-
-$conn->close();
