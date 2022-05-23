@@ -23,29 +23,54 @@ $certificates = $db
   ])
   ->exec();
 
-$residentDetails = $db
-  ->from('residents')
-  ->where('account_id', $_SESSION['id'])
-  ->first()
-  ->select([
-    "id" => "residents.id"
-  ])
-  ->exec();
 
-$requestList = $db
-  ->from(["certificate_requests" => "cr"])
-  ->join("certificates", "certificates.id", "cr.certificate_id")
-  ->where("resident_id", $residentDetails['id'])
-  ->select([
-    "id" => "cr.id",
-    "certificate_id" => "cr.certificate_id",
-    "status" => "cr.status",
-    "memo" => "cr.memo",
-    "created_at" => "cr.created_at",
-    "certificate_id" => "certificates.id",
-    "certificate_name" => "certificates.name",
-  ])
-  ->exec();
+$requestList = (function () use ($db) {
+  if (isUser()) {
+    $residentDetails = $db
+      ->from('residents')
+      ->where('account_id', $_SESSION['id'])
+      ->first()
+      ->select([
+        "id" => "residents.id"
+      ])
+      ->exec();
+
+    return $db
+      ->from(["certificate_requests" => "cr"])
+      ->join("certificates", "certificates.id", "cr.certificate_id")
+      ->where("certificates.resident_id", $residentDetails['id'])
+      ->select([
+        "id" => "cr.id",
+        "certificate_id" => "cr.certificate_id",
+        "status" => "cr.status",
+        "memo" => "cr.memo",
+        "created_at" => "cr.created_at",
+        "certificate_id" => "certificates.id",
+        "certificate_name" => "certificates.name",
+      ])
+      ->exec();
+  }
+
+  if (isAdmin()) {
+    return $db
+      ->from(["certificate_requests" => "cr"])
+      ->join("certificates", "certificates.id", "cr.certificate_id")
+      ->join("residents", "residents.id", "cr.resident_id")
+      ->select([
+        "id" => "cr.id",
+        "certificate_id" => "cr.certificate_id",
+        "status" => "cr.status",
+        "memo" => "cr.memo",
+        "created_at" => "cr.created_at",
+        "certificate_id" => "certificates.id",
+        "certificate_name" => "certificates.name",
+        "firstname" => "residents.firstname",
+        "middlename" => "residents.middlename",
+        "lastname" => "residents.lastname",
+      ])
+      ->exec();
+  }
+})();
 
 ?>
 
@@ -103,6 +128,9 @@ $requestList = $db
                         <thead>
                           <tr>
                             <th scope="col">Certificate</th>
+                            <?php if (isAdmin()): ?>
+                            <th scope="col">Requested By</th>
+                            <?php endif; ?>
                             <th scope="col">Memo</th>
                             <th scope="col">Status</th>
                             <th scope="col">Request Date</th>
@@ -113,10 +141,13 @@ $requestList = $db
                           <?php foreach ($requestList as $request): ?>
                           <tr>
                             <td><?= $request["certificate_name"] ?></td>
+                            <?php if (isAdmin()): ?>
+                            <td><?= fullname($request) ?></td>
+                            <?php endif; ?>
                             <td><?= $request["memo"] ?></td>
                             <td><?= ucwords($request["status"]) ?></td>
                             <td><?= Carbon::create($request["created_at"])->toDayDateTimeString() ?></td>
-                            <td>
+                            <td class="d-flex justify-content-center align-items-center gap-3">
                               <?php if (isUser()): ?>
                               <a href="javascript:void(0)" data-target="#edit-request"
                                 data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
@@ -126,16 +157,18 @@ $requestList = $db
                               <?php endif; ?>
 
                               <?php if (isAdmin()): ?>
-                              <a href="announcements-view.php?id=<?= $request["id"] ?>">
+                              <a href="javascript:void(0)" data-target="#edit-request"
+                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
+                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
                                 <i class="fa fa-eye"></i>
                               </a>
                               <?php endif; ?>
 
                               <?php if (role(["user", "administrator"])): ?>
-                              <a type="button" data-toggle="tooltip" data-original-title="Remove"
+                              <a href="javascript:void" data-toggle="tooltip" data-original-title="Remove"
                                 href="model/certificate-request.php?id=<?= $request["id"] ?>&delete-request=1"
                                 onclick="return confirm('Are you sure you want to delete this blotter?');"
-                                class="btn btn-link btn-danger">
+                                class=" btn-link btn-danger">
                                 <i class="fa fa-times"></i>
                               </a>
                               <?php endif; ?>
@@ -199,7 +232,7 @@ $requestList = $db
 
         <!-- Modal -->
         <div class="modal fade" id="edit-request">
-          <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <form method="POST" action="model/certificate-request.php" enctype="multipart/form-data">
                 <div class="modal-header">
@@ -216,7 +249,8 @@ $requestList = $db
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Certificate</label>
-                      <select name="certificate_id" id="edit-request-certificate_id" class="form-control">
+                      <select name="certificate_id" id="edit-request-certificate_id" class="form-control"
+                        <?= ifThen(!isUser(), "disabled") ?>>
                         <option selected disabled>Select Certificate</option>
                         <?php foreach ($certificates as $certificate): ?>
                         <option value="<?= $certificate['id'] ?>"><?= $certificate['name'] ?></option>
@@ -258,9 +292,7 @@ $requestList = $db
     <script>
     $(document).ready(function() {
       var oTable = $('#announcement-table').DataTable({
-        "order": [
-          [1, "asc"]
-        ]
+        "order": []
       });
     });
     </script>
