@@ -12,6 +12,8 @@
 
 - [ ] Add user date since in barangay
 
+- [ ] Add monthly request certificate count
+
 - [x] Add user is PWD, is 4Ps beneficiary
 
 - [x] Add user is senior
