@@ -126,6 +126,7 @@ function appendActiveClass(array $pages)
         </li>
         <?php endif; ?>
 
+        <?php if (isAdmin()): ?>
         <li class="
             nav-item
             <?= appendActiveClass(["resident_cuttingpermit", "generate_cuttingpermit"]) ?>
@@ -135,7 +136,9 @@ function appendActiveClass(array $pages)
             <p>Cutting permit</p>
           </a>
         </li>
+        <?php endif; ?>
 
+        <?php if (isAdmin()): ?>
         <li class="
             nav-item
             <?= appendActiveClass(["resident_fpscert", "generate_fpscert"]) ?>
@@ -145,7 +148,9 @@ function appendActiveClass(array $pages)
             <p>4ps Certification</p>
           </a>
         </li>
+        <?php endif; ?>
 
+        <?php if (isAdmin()): ?>
         <li class="
             nav-item
             <?= appendActiveClass(["resident_indigency", "generate_indi_cert"]) ?>
@@ -155,7 +160,9 @@ function appendActiveClass(array $pages)
             <p>Certificate of Indigency</p>
           </a>
         </li>
+        <?php endif; ?>
 
+        <?php if (isAdmin()): ?>
         <li class="
             nav-item
             <?= appendActiveClass(["business_permit", "generate_business_permit"]) ?>
@@ -165,7 +172,9 @@ function appendActiveClass(array $pages)
             <p>Brgy Business Clearance</p>
           </a>
         </li>
+        <?php endif; ?>
 
+        <?php if (isAdmin()): ?>
         <li class="
             nav-item
             <?= appendActiveClass(["blotter", "generate_blotter_report"]) ?>
@@ -175,6 +184,7 @@ function appendActiveClass(array $pages)
             <p>Blotter Records</p>
           </a>
         </li>
+        <?php endif; ?>
 
         <li class="
             nav-item

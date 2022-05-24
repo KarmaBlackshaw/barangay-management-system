@@ -2,17 +2,17 @@
 
 - [x] Add 4Ps information for each user
 
-- [ ] User dashboard
+- [x] User dashboard
 
 - [x] Request certificate
 
 - [x] Add payment details
 
-- [ ] Add request certificate to each user
+- [x] Add request certificate to each user
 
 - [ ] Add user date since in barangay
 
-- [ ] Add monthly request certificate count
+- [x] Add monthly request certificate count
 
 - [x] Add user is PWD, is 4Ps beneficiary
 
