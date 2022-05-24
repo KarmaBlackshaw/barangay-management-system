@@ -161,6 +161,17 @@ class DB
 		return $this;
 	}
 
+	public function whereRaw(string $query)
+	{
+			if ($this->_where === "") {
+				$this->_where = " WHERE {$query} ";
+			} else {
+				$this->_where .= " AND {$query} ";
+			}
+
+		return $this;
+	}
+
 	public function whereNot(string $key, string $valueOrOperand, $value = false)
 	{
 		if (!$value) {

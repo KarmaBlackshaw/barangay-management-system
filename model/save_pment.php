@@ -15,6 +15,7 @@ if (isset($_POST['create-payment'])) {
   $mode = getBody('mode', $_POST);
   $resident_id = getBody('resident_id', $_POST);
   $certificate_id = getBody('certificate_id', $_POST);
+  $request_id = getBody('request_id', $_POST);
 
   $requiredFields = [
     "Amount" => $amount,
@@ -55,17 +56,31 @@ if (isset($_POST['create-payment'])) {
     return $conn->close();
   }
 
+  $requestResult = ["status" => false];
 
-  $requestResult = $db
-    ->insert('certificate_requests')
-    ->values([
-      "resident_id" => $resident_id,
-      "payment_id" => $paymentResult['id'],
-      "certificate_id" => $certificate_id,
-      "status" => "resolved",
-      "memo" => $details,
-    ])
-    ->exec();
+  if ($request_id) {
+    $requestResult = $db
+      ->update("certificate_requests")
+      ->where('id', $request_id)
+      ->set([
+        "payment_id" => $paymentResult["id"],
+        "status" => "Resolved"
+      ])
+      ->exec();
+  } else {
+    $requestResult = $db
+      ->insert('certificate_requests')
+      ->values([
+        "resident_id" => $resident_id,
+        "payment_id" => $paymentResult['id'],
+        "certificate_id" => $certificate_id,
+        "status" => "resolved",
+        "memo" => $details,
+      ])
+      ->exec();
+  }
+
+
 
   if ($requestResult['status'] !== true) {
     $_SESSION["message"] = "Internal server error";

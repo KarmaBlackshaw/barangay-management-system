@@ -19,14 +19,13 @@ $certificates = $db
   ->select([
     "id" => "certificates.id",
     "name" => "certificates.name",
-    "create_url" => "certificates.create_url",
+    "url" => "certificates.url",
   ])
   ->exec();
 
-
-$requestList = (function () use ($db) {
+$resident_details = (function () use ($db) {
   if (isUser()) {
-    $residentDetails = $db
+    return $db
       ->from('residents')
       ->where('account_id', $_SESSION['id'])
       ->first()
@@ -34,11 +33,19 @@ $requestList = (function () use ($db) {
         "id" => "residents.id"
       ])
       ->exec();
+  }
+
+  return [];
+})();
+
+$request_list = (function () use ($db) {
+  if (isUser()) {
+    $resident_details = $GLOBALS['resident_details'];
 
     return $db
       ->from(["certificate_requests" => "cr"])
       ->join("certificates", "certificates.id", "cr.certificate_id")
-      ->where("certificates.resident_id", $residentDetails['id'])
+      ->where("cr.resident_id", $resident_details['id'])
       ->select([
         "id" => "cr.id",
         "certificate_id" => "cr.certificate_id",
@@ -64,6 +71,8 @@ $requestList = (function () use ($db) {
         "created_at" => "cr.created_at",
         "certificate_id" => "certificates.id",
         "certificate_name" => "certificates.name",
+        "certificate_url" => "cr.url",
+        "resident_id" => "residents.id",
         "firstname" => "residents.firstname",
         "middlename" => "residents.middlename",
         "lastname" => "residents.lastname",
@@ -138,7 +147,7 @@ $requestList = (function () use ($db) {
                           </tr>
                         </thead>
                         <tbody>
-                          <?php foreach ($requestList as $request): ?>
+                          <?php foreach ($request_list as $request): ?>
                           <tr>
                             <td><?= $request["certificate_name"] ?></td>
                             <?php if (isAdmin()): ?>
@@ -164,10 +173,16 @@ $requestList = (function () use ($db) {
                               </a>
                               <?php endif; ?>
 
+                              <?php if (isAdmin() && $request["status"] !== 'resolved'): ?>
+                              <a href="<?= $request["certificate_url"] ?>" class="btn-link btn-info">
+                                <i class="fa fa-file"></i>
+                              </a>
+                              <?php endif; ?>
+
                               <?php if (role(["user", "administrator"])): ?>
-                              <a href="javascript:void" data-toggle="tooltip" data-original-title="Remove"
+                              <a data-toggle=" tooltip" data-original-title="Remove"
                                 href="model/certificate-request.php?id=<?= $request["id"] ?>&delete-request=1"
-                                onclick="return confirm('Are you sure you want to delete this blotter?');"
+                                onclick="confirm('Are you sure you want to delete this blotter?');"
                                 class=" btn-link btn-danger">
                                 <i class="fa fa-times"></i>
                               </a>
@@ -220,7 +235,7 @@ $requestList = (function () use ($db) {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <input type="hidden" name="resident_id" value="<?= $residentDetails['id'] ?>">
+                  <input type="hidden" name="resident_id" value="<?= $resident_details['id'] ?>">
                   <input type="hidden" name="request-certificate" value="1">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Save</button>

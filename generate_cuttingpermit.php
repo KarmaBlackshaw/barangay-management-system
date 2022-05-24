@@ -201,6 +201,7 @@ $captain = $db
           <div class="modal-footer">
             <input type="hidden" name="resident_id" value="<?= $_GET['id'] ?>">
             <input type="hidden" name="create-payment" value="<?= $_GET['id'] ?>">
+            <input type="hidden" name="request_id" value="<?= $_GET['request_id'] ?>">
             <input type="hidden" name="certificate_id" value="6">
             <button type="button" class="btn btn-secondary" onclick="goBack()">Close</button>
             <button type="submit" class="btn btn-primary">Save</button>

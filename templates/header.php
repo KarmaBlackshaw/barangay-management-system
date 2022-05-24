@@ -48,49 +48,51 @@ a {
   text-decoration: none;
 }
 
-/* body,
-  html,
-  .preloader {
-    background-color: #18181b !important;
-    color: #a1a1aa!important;
-  }
 
-  th, td {
-    color: #a1a1aa!important;
-  }
+body,
+html,
+.preloader {
+  background-color: #18181b !important;
+  color: #a1a1aa !important;
+}
 
-  .card {
-    background-color: #27272a;
-  }
+th,
+td {
+  color: #a1a1aa !important;
+}
 
-  .card-title {
-    color: #d4d4d8;
-  }
+.card {
+  background-color: #27272a;
+}
 
-  .card-header {
-    border-bottom: 1px solid #27272a !important;
-  }
+.card-title {
+  color: #d4d4d8;
+}
 
-  .modal-content {
-    background-color: #27272a;
-  }
+.card-header {
+  border-bottom: 1px solid #27272a !important;
+}
 
-  input,
-  textarea,
-  select {
-    background-color: #18181b !important;
-    color: #d4d4d8 !important;
-    border-color: #27272a !important;
-  }
+.modal-content {
+  background-color: #27272a;
+}
 
-  .footer {
-    background-color: #18181b;
-    border-top: 1px solid #27272a;
-  }
+input,
+textarea,
+select {
+  background-color: #18181b !important;
+  color: #d4d4d8 !important;
+  border-color: #27272a !important;
+}
 
-  .sidebar-wrapper {
-    background-color: #18181b !important;
-    border-right: 1px solid #27272a;
-  } */
+.footer {
+  background-color: #18181b;
+  border-top: 1px solid #27272a;
+}
+
+.sidebar-wrapper {
+  background-color: #18181b !important;
+  border-right: 1px solid #27272a;
+}
 
 </style>

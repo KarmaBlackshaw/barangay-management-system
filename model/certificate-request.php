@@ -25,7 +25,16 @@ if (isset($_POST["request-certificate"])) {
     return $conn->close();
   }
 
-  $paymentResult = $db
+  $certificateDetails = $db
+  ->from("certificates")
+  ->where("id", $certificate_id)
+  ->first()
+  ->select([
+    "url" => "url"
+  ])
+  ->exec();
+
+  $result = $db
     ->insert("certificate_requests")
     ->values([
       "resident_id" => $resident_id,
@@ -35,13 +44,21 @@ if (isset($_POST["request-certificate"])) {
     ])
     ->exec();
 
-  if ($paymentResult['status'] !== true) {
+  if ($result['status'] !== true) {
     $_SESSION["message"] = "Internal server error";
     $_SESSION["status"] = "danger";
 
     header("Location: ../certificate-requests.php");
     return $conn->close();
   }
+
+  $test = $db
+    ->update('certificate_requests')
+    ->where('id', $result['id'])
+    ->set([
+      'url' => $certificateDetails['url'] . "?id=$resident_id&request_id={$result['id']}"
+    ])
+    ->exec();
 
   $_SESSION["message"] = "Certificate request sent!";
   $_SESSION["status"] = "success";
