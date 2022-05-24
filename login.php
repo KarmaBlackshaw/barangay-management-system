@@ -35,8 +35,9 @@ if (isset($_SESSION["username"])) {
 						<label for="password" class="placeholder">Password</label>
 						<span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 					</div>
-					<div class="form-action mb-3">
+					<div class="form-action mb-3 d-flex flex-column gap-2">
 						<button type="submit" class="btn btn-primary btn-block fw-bold">Sign In</button>
+
 						<a href="resident-register.php" class="btn btn-success btn-block text-white fw-bold">Create New Account</a>
 					</div>
 				</form>
