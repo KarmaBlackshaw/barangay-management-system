@@ -15,72 +15,71 @@ while ($row = $result->fetch_assoc()) {
 $announcementList = [];
 
 $certificates = $db
-  ->from('certificates')
-  ->select([
-    "id" => "certificates.id",
-    "name" => "certificates.name",
-    "url" => "certificates.url",
-  ])
-  ->exec();
+	->from("certificates")
+	->select([
+		"id" => "certificates.id",
+		"name" => "certificates.name",
+		"url" => "certificates.url",
+	])
+	->exec();
 
 $resident_details = (function () use ($db) {
-  if (isUser()) {
-    return $db
-      ->from('residents')
-      ->where('account_id', $_SESSION['id'])
-      ->first()
-      ->select([
-        "id" => "residents.id"
-      ])
-      ->exec();
-  }
+	if (isUser()) {
+		return $db
+			->from("residents")
+			->where("account_id", $_SESSION["id"])
+			->first()
+			->select([
+				"id" => "residents.id",
+			])
+			->exec();
+	}
 
-  return [];
+	return [];
 })();
 
 $request_list = (function () use ($db) {
-  if (isUser()) {
-    $resident_details = $GLOBALS['resident_details'];
+	if (isUser()) {
+		$resident_details = $GLOBALS["resident_details"];
 
-    return $db
-      ->from(["certificate_requests" => "cr"])
-      ->join("certificates", "certificates.id", "cr.certificate_id")
-      ->where("cr.resident_id", $resident_details['id'])
-      ->select([
-        "id" => "cr.id",
-        "certificate_id" => "cr.certificate_id",
-        "status" => "cr.status",
-        "memo" => "cr.memo",
-        "created_at" => "cr.created_at",
-        "certificate_id" => "certificates.id",
-        "certificate_name" => "certificates.name",
-      ])
-      ->exec();
-  }
+		return $db
+			->from(["certificate_requests" => "cr"])
+			->join("certificates", "certificates.id", "cr.certificate_id")
+			->where("cr.resident_id", $resident_details["id"])
+			->select([
+				"id" => "cr.id",
+				"certificate_id" => "cr.certificate_id",
+				"status" => "cr.status",
+				"memo" => "cr.memo",
+				"created_at" => "cr.created_at",
+				"certificate_id" => "certificates.id",
+				"certificate_name" => "certificates.name",
+			])
+			->exec();
+	}
 
-  if (isAdmin()) {
-    return $db
-      ->from(["certificate_requests" => "cr"])
-      ->join("certificates", "certificates.id", "cr.certificate_id")
-      ->join("residents", "residents.id", "cr.resident_id")
-      ->select([
-        "id" => "cr.id",
-        "certificate_id" => "cr.certificate_id",
-        "status" => "cr.status",
-        "memo" => "cr.memo",
-        "created_at" => "cr.created_at",
-        "certificate_id" => "certificates.id",
-        "certificate_name" => "certificates.name",
-        "certificate_url" => "cr.url",
-        "resident_id" => "residents.id",
-        "firstname" => "residents.firstname",
-        "middlename" => "residents.middlename",
-        "lastname" => "residents.lastname",
-      ])
-      ->exec();
-  }
+	if (role(["administrator", "staff"])) {
+		return $db
+			->from(["certificate_requests" => "cr"])
+			->join("certificates", "certificates.id", "cr.certificate_id")
+			->join("residents", "residents.id", "cr.resident_id")
+			->select([
+				"id" => "cr.id",
+				"certificate_id" => "cr.certificate_id",
+				"status" => "cr.status",
+				"memo" => "cr.memo",
+				"created_at" => "cr.created_at",
+				"certificate_id" => "certificates.id",
+				"certificate_name" => "certificates.name",
+				"certificate_url" => "cr.url",
+				"resident_id" => "residents.id",
+				"firstname" => "residents.firstname",
+				"middlename" => "residents.middlename",
+				"lastname" => "residents.lastname",
+			])
+			->exec();
+	}
 })();
-
 ?>
 
 <!DOCTYPE html>
@@ -155,33 +154,52 @@ $request_list = (function () use ($db) {
                             <?php endif; ?>
                             <td><?= $request["memo"] ?></td>
                             <td><?= ucwords($request["status"]) ?></td>
-                            <td><?= Carbon::create($request["created_at"])->toDayDateTimeString() ?></td>
+                            <td>
+                              <?= Carbon::create($request["created_at"])->toDayDateTimeString() ?>
+                            </td>
                             <td class="d-flex justify-content-center align-items-center gap-3">
                               <?php if (isUser()): ?>
-                              <a href="javascript:void(0)" data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
-                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
+                              <a
+                                href="javascript:void(0)"
+                                data-target="#edit-request"
+                                data-value-id="<?= $request["id"] ?>"
+                                data-value-memo="<?= $request["memo"] ?>"
+                                data-value-certificate_id="<?= $request["certificate_id"] ?>"
+                                onclick="showModal(this)"
+                              >
                                 <i class="fa fa-edit"></i>
                               </a>
                               <?php endif; ?>
 
                               <?php if (isAdmin()): ?>
-                              <a href="javascript:void(0)" data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
-                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
+                              <a
+                                href="javascript:void(0)"
+                                data-target="#edit-request"
+                                data-value-id="<?= $request["id"] ?>"
+                                data-value-memo="<?= $request["memo"] ?>"
+                                data-value-certificate_id="<?= $request["certificate_id"] ?>"
+                                onclick="showModal(this)"
+                              >
                                 <i class="fa fa-eye"></i>
                               </a>
                               <?php endif; ?>
 
-                              <?php if (isAdmin() && $request["status"] !== 'resolved'): ?>
-                              <a href="<?= $request["certificate_url"] ?>" class="btn-link btn-info">
+                              <?php if (isAdmin() && $request["status"] !== "resolved"): ?>
+                              <a
+                                href="<?= $request["certificate_url"] ?>"
+                                class="btn-link btn-info"
+                              >
                                 <i class="fa fa-file"></i>
                               </a>
                               <?php endif; ?>
 
                               <?php if (role(["user", "administrator"])): ?>
-                              <a data-toggle=" tooltip" data-original-title="Remove"
-                                href="model/certificate-request.php?id=<?= $request["id"] ?>&delete-request=1"
+                              <a
+                                data-toggle="tooltip"
+                                data-original-title="Remove"
+                                href="model/certificate-request.php?id=<?= $request[
+                                	"id"
+                                ] ?>&delete-request=1"
                                 onclick="confirm('Are you sure you want to delete this blotter?');"
                                 class=" btn-link btn-danger">
                                 <i class="fa fa-times"></i>
@@ -219,7 +237,9 @@ $request_list = (function () use ($db) {
                         <select name="certificate_id" class="form-control">
                           <option selected disabled>Select Certificate</option>
                           <?php foreach ($certificates as $certificate): ?>
-                          <option value="<?= $certificate['id'] ?>"><?= $certificate['name'] ?></option>
+                          <option value="<?= $certificate["id"] ?>"><?= $certificate[
+	"name"
+] ?></option>
                           <?php endforeach; ?>
                         </select>
                       </div>
@@ -235,7 +255,7 @@ $request_list = (function () use ($db) {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <input type="hidden" name="resident_id" value="<?= $resident_details['id'] ?>">
+                  <input type="hidden" name="resident_id" value="<?= $resident_details["id"] ?>">
                   <input type="hidden" name="request-certificate" value="1">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Save</button>
@@ -251,7 +271,7 @@ $request_list = (function () use ($db) {
             <div class="modal-content">
               <form method="POST" action="model/certificate-request.php" enctype="multipart/form-data">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Edit Blotter</h5>
+                  <h5 class="modal-title" id="exampleModalLabel">View Certificate</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -268,7 +288,9 @@ $request_list = (function () use ($db) {
                         <?= ifThen(!isUser(), "disabled") ?>>
                         <option selected disabled>Select Certificate</option>
                         <?php foreach ($certificates as $certificate): ?>
-                        <option value="<?= $certificate['id'] ?>"><?= $certificate['name'] ?></option>
+                        <option value="<?= $certificate["id"] ?>"><?= $certificate[
+	"name"
+] ?></option>
                         <?php endforeach; ?>
                       </select>
                     </div>
@@ -278,7 +300,10 @@ $request_list = (function () use ($db) {
                     <div class="form-group">
                       <label>Memo</label>
                       <textarea type="text" class="form-control" placeholder="Enter Complainant Name"
-                        id="edit-request-memo" name="memo" required <?= ifThen(!isUser(), "readonly") ?>></textarea>
+                        id="edit-request-memo" name="memo" required <?= ifThen(
+                        	!isUser(),
+                        	"readonly"
+                        ) ?>></textarea>
                     </div>
                   </div>
 
