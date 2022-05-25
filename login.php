@@ -13,6 +13,13 @@ if (isset($_SESSION["username"])) {
 	<?php include "templates/header.php"; ?>
 
 	<title>Login - Barangay Services Management System</title>
+
+	<style>
+		label.placeholder {
+			background: transparent;
+			cursor: auto;
+		}
+	</style>
 </head>
 
 <body class="login">
@@ -25,7 +32,7 @@ if (isset($_SESSION["username"])) {
 
 			<h3 class="text-center">Sign In Here</h3>
 			<div class="login-form">
-				<form method="POST" action="model/login.php">
+				<form method="POST" action="model/login.php" autocomplete="off">
 					<div class="form-group form-floating-label">
 						<input id="username" name="username" type="text" class="form-control input-border-bottom" required>
 						<label for="username" class="placeholder">Username</label>
