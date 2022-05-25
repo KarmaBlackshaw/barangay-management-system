@@ -35,7 +35,9 @@ function appendActiveClass(array $pages)
         </div>
         <div class="info">
           <a data-toggle="collapse"
-            href="<?= role(["user", "administrator"]) ? "#collapseExample" : "javascript:void(0)" ?>"
+            href="<?= role(["user", "administrator"])
+            	? "#collapseExample"
+            	: "javascript:void(0)" ?>"
             aria-expanded="true">
             <span>
               <?= isAuthenticated() ? ucfirst($_SESSION["username"]) : "Guest User" ?>
@@ -318,6 +320,54 @@ function appendActiveClass(array $pages)
         </li>
         <?php endif; ?>
       </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="edit_profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create System User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="model/edit_profile.php" enctype="multipart/form-data">
+        <div class="modal-body">
+          <input type="hidden" name="size" value="1000000">
+          <div class="text-center">
+            <div id="my_camera" style="height: 250;" class="text-center">
+              <?php if (empty($_SESSION["avatar"])): ?>
+              <img src="assets/img/person.png" alt="..." class="img img-fluid" width="250" >
+              <?php else: ?>
+              <img
+                src="<?= imgSrc($_SESSION["avatar"]) ?>"
+                alt="..."
+                class="img img-fluid"
+                width="250"
+                >
+              <?php endif; ?>
+            </div>
+            <div class="form-group d-flex justify-content-center">
+              <button type="button" class="btn btn-danger btn-sm mr-2" id="open_cam">Open Camera</button>
+              <button type="button" class="btn btn-secondary btn-sm ml-2" onclick="save_photo()">Capture</button>
+            </div>
+            <div id="profileImage">
+              <input type="hidden" name="profileimg">
+            </div>
+            <div class="form-group">
+              <input type="file" class="form-control" name="img" accept="image/*">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" value="<?= $_SESSION["id"] ?>" name="id">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
