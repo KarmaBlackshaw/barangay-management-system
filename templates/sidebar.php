@@ -141,9 +141,9 @@ function appendActiveClass(array $pages)
         <?php if (isAdmin()): ?>
         <li class="
             nav-item
-            <?= appendActiveClass(["resident_fpscert", "generate_fpscert"]) ?>
+            <?= appendActiveClass(["4ps-residents", "generate_fpscert"]) ?>
           ">
-          <a href="resident_fpscert.php">
+          <a href="4ps-residents.php">
             <i class="icon-doc"></i>
             <p>4ps Certification</p>
           </a>
