@@ -42,6 +42,10 @@ $purokList = (function () use ($db) {
       border: 1px solid #3f3f46;
     }
 
+    .wrapper {
+      height: 100% !important;
+    }
+
     </style>
   </head>
 
