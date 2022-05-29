@@ -34,11 +34,9 @@ function appendActiveClass(array $pages)
 
         </div>
         <div class="info">
-          <a data-toggle="collapse"
-            href="<?= role(["user", "administrator"])
+          <a data-toggle="collapse" href="<?= role(["user", "administrator"])
             	? "#collapseExample"
-            	: "javascript:void(0)" ?>"
-            aria-expanded="true">
+            	: "javascript:void(0)" ?>" aria-expanded="true">
             <span>
               <?= isAuthenticated() ? ucfirst($_SESSION["username"]) : "Guest User" ?>
 
@@ -296,12 +294,6 @@ function appendActiveClass(array $pages)
                 </a>
               </li>
 
-              <li class="<?= $currentPage == "requestdoc" ? "active" : null ?>">
-                <a href="requestdoc.php">
-                  <span class="sub-item">Requested Documents</span>
-                </a>
-              </li>
-
 
               <li>
                 <a href="backup/backup.php">
@@ -325,13 +317,14 @@ function appendActiveClass(array $pages)
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="edit_profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="edit_profile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Create System User</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <form method="POST" action="model/edit_profile.php" enctype="multipart/form-data">
@@ -340,14 +333,9 @@ function appendActiveClass(array $pages)
           <div class="text-center">
             <div id="my_camera" style="height: 250;" class="text-center">
               <?php if (empty($_SESSION["avatar"])): ?>
-              <img src="assets/img/person.png" alt="..." class="img img-fluid" width="250" >
+              <img src="assets/img/person.png" alt="..." class="img img-fluid" width="250">
               <?php else: ?>
-              <img
-                src="<?= imgSrc($_SESSION["avatar"]) ?>"
-                alt="..."
-                class="img img-fluid"
-                width="250"
-                >
+              <img src="<?= imgSrc($_SESSION["avatar"]) ?>" alt="..." class="img img-fluid" width="250">
               <?php endif; ?>
             </div>
             <div class="form-group d-flex justify-content-center">
