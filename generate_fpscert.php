@@ -2,12 +2,20 @@
 
 require 'bootstrap/index.php';
 
+use Carbon\Carbon;
+
 $id = $_GET['id'];
 
-$request = $db
-  ->from(["tblfpscert" => "cert"])
-  ->where("cert.id", $id)
+$resident = $db
+  ->from('residents')
+  ->where('residents.id', $id)
   ->first()
+  ->select([
+    "firstname" => "residents.firstname",
+    "middlename" => "residents.middlename",
+    "lastname" => "residents.lastname",
+    "address" => "residents.address",
+  ])
   ->exec();
 
 $captain = $db
@@ -106,22 +114,22 @@ $captain = $db
                         </div>
                         <h2 class="mt-5 fw-bold">TO WHOM IT MAY CONCERN;</h2><br>
                         <h3 class="mt-3" style="text-indent: 40px;">This is to certify that
-                          <b><u><?= ucfirst($request['name']) ?></u></b>, legal age, resident of <span class="fw-bold"
+                          <b><u><?= fullname($resident) ?></u></b>, legal age, resident of <span class="fw-bold"
                             style="font-size:18px"><?= ucwords($brgy) ?>, <span class="fw-bold"
                               style="font-size:18px"><?= ucwords($town) ?>,. <span class="fw-bold"
                                 style="font-size:18px"><?= ucwords($province) ?>.</span></span></span>
                         </h3><br>
 
                         <h3 class="mt-3" style="text-indent: 40px;">Also certify that <u><b>
-                              <?= ucfirst($request['name']) ?></b></u> is a Pantawid Pamilya Pilipino Program
+                              <?= fullname($resident) ?></b></u> is a Pantawid Pamilya Pilipino Program
                           beneficiary (4ps). </h3><br>
 
                         <h3 class="mt-3" style="text-indent: 40px;">Certified Further that the name stated above is now
-                          residing in <?= ucfirst($request['current_location']) ?>. </h3><br>
+                          residing in <?= ucfirst($resident['address']) ?>. </h3><br>
 
 
 
-                        <h3 class="mt-3" style="text-indent: 40px;">Issued this <?= ucfirst($request['applied']) ?> at
+                        <h3 class="mt-3" style="text-indent: 40px;">Issued this <?= Carbon::now()->toDateString() ?> at
                           <span class="fw-bold" style="font-size:18px"><?= ucwords($brgy) ?>, <span class="fw-bold"
                               style="font-size:18px"><?= ucwords($town) ?>,. <span class="fw-bold"
                                 style="font-size:18px"><?= ucwords($province) ?>.</span></span></span>
@@ -190,7 +198,7 @@ $captain = $db
                           <div class="modal-footer">
                             <input type="hidden" name="resident_id" value="<?= $_GET['id'] ?>">
                             <input type="hidden" name="create-payment" value="<?= $_GET['id'] ?>">
-                            <input type="hidden" name="request_id" value="<?= $_GET['request_id'] ?>">
+                            <input type="hidden" name="request_id" value="<?= getBody('request_id', $_GET) ?>">
                             <input type="hidden" name="certificate_id" value="3">
                             <button type="button" class="btn btn-secondary" onclick="goBack()">Close</button>
                             <button type="submit" class="btn btn-primary">Save</button>

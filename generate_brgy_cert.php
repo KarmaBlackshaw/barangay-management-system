@@ -285,7 +285,7 @@ $sec = $db
               </div>
               <div class="modal-footer">
                 <input type="hidden" name="resident_id" value="<?= $_GET['id'] ?>">
-                <input type="hidden" name="request_id" value="<?= $_GET['request_id'] ?>">
+                <input type="hidden" name="request_id" value="<?= getBody('request_id', $_GET) ?>">
                 <input type="hidden" name="create-payment" value="<?= $_GET['id'] ?>">
                 <input type="hidden" name="certificate_id" value="1">
                 <button type="button" class="btn btn-secondary" onclick="goBack()">Close</button>
