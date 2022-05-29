@@ -64,7 +64,7 @@ $announcementList = (function () use ($db) {
                   <div class="card-header">
                     <div class="card-head-row">
                       <div class="card-title">Announcement List</div>
-                      <?php if (isAdmin()): ?>
+                      <?php if (role(['administrator', 'staff'])): ?>
                       <div class="card-tools">
                         <a href="#add" data-toggle="modal" class="btn btn-info btn-border btn-round btn-sm">
                           <i class="fa fa-plus"></i>
@@ -94,14 +94,14 @@ $announcementList = (function () use ($db) {
                             <td><?= ucwords($announcement["content"]) ?></td>
                             <td><?= Carbon::create($announcement["created_at"])->toDayDateTimeString() ?></td>
                             <td>
-                              <?php if (isAdmin()): ?>
+                              <?php if (role(['administrator', 'staff'])): ?>
                               <a href="javascript:void(0)" data-target="#edit-announcement"
                                 data-value-id="<?= $announcement["id"] ?>"
                                 data-value-title="<?= $announcement["title"] ?>"
                                 data-value-content="<?= $announcement["content"] ?>"
                                 data-value-old-thumbnail="<?= $announcement["thumbnail"] ?>"
-                                data-value-preview="<?= imgSrc($announcement["thumbnail"]) ?>"
-                                onclick="showModal(this)">
+                                data-value-preview="<?= imgSrc($announcement["thumbnail"]) ?>" onclick="showModal(this)"
+                                class="btn btn-link btn-primary">
                                 <i class="fa fa-edit"></i>
                               </a>
                               <?php endif; ?>
@@ -112,7 +112,7 @@ $announcementList = (function () use ($db) {
                               </a>
                               <?php endif; ?>
 
-                              <?php if (isAdmin()): ?>
+                              <?php if (role(['administrator', 'staff'])): ?>
                               <a type="button" data-toggle="tooltip" data-original-title="Remove"
                                 href="model/announcement.php?id=<?= $announcement["id"] ?>&delete-announcement=1"
                                 onclick="return confirm('Are you sure you want to delete this blotter?');"
