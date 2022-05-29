@@ -220,6 +220,8 @@ if (isset($_POST["update-resident"])) {
 	$email = getBody("email", $_POST);
 	$number = getBody("number", $_POST);
 	$occupation = getBody("occupation", $_POST);
+	$is_pwd = getBody("is_pwd", $_POST);
+	$is_4ps = getBody("is_4ps", $_POST);
 	$username = getBody("username", $_POST);
 	$password = getBody("password", $_POST);
 	$password_confirm = getBody("password_confirm", $_POST);
@@ -364,6 +366,8 @@ if (isset($_POST["update-resident"])) {
 			"phone" => $number,
 			"email" => $email,
 			"occupation" => $occupation,
+			"is_4ps" => $is_4ps,
+			"is_pwd" => $is_pwd,
 			"address" => $address,
 		])
 		->exec();
@@ -373,4 +377,22 @@ if (isset($_POST["update-resident"])) {
 
 	header("location: ../resident-view.php?resident_id=$resident_id");
 	return $conn->close();
+}
+
+if (isset($_GET['unset-4ps'])) {
+	$resident_id = $_GET['id'];
+
+	$db
+	->update('residents')
+	->where('residents.id', $resident_id)
+	->set([
+		'is_4ps' => 0
+	])
+	->exec();
+
+		$_SESSION["message"] = "Resident removed from 4Ps";
+		$_SESSION["status"] = "success";
+
+		header("location: ../4ps-residents.php");
+		return $conn->close();
 }

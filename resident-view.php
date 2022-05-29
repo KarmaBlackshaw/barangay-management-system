@@ -65,6 +65,7 @@ $resident = (function () use ($db) {
     ])
     ->exec();
 })();
+
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +75,27 @@ $resident = (function () use ($db) {
     <?php include "templates/header.php"; ?>
 
     <title>Login - Barangay Services Management System</title>
+
+
+    <style>
+    .hidden {
+      display: none !important;
+    }
+
+    label.btn.active {
+      color: white !important;
+      background-color: #337BB6;
+    }
+
+    .form-check>.btn-group {
+      width: 100%;
+    }
+
+    .form-check>.btn-group>label {
+      border: 1px solid #3f3f46;
+    }
+
+    </style>
   </head>
 
   <body class="login">
@@ -331,6 +353,46 @@ $resident = (function () use ($db) {
                             <label>Occupation</label>
                             <input class="form-control" placeholder="Enter Occupation" name="occupation"
                               value="<?= $resident["occupation"] ?>">
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row g-0">
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <label>Are you a 4Ps Beneficiary?</label>
+
+                            <div class="form-check">
+                              <div class="btn-group btn-group-justified" data-toggle="buttons">
+                                <label class="btn <?= $resident['is_4ps'] == 1 ? 'active' : '' ?>">
+                                  <input type="radio" name="is_4ps" class="hidden"
+                                    <?= $resident['is_4ps'] == 1 ? 'checked' : null ?> value="1"> Yes
+                                </label>
+                                <label class="btn <?= $resident['is_4ps'] == 0 ? 'active' : '' ?>">
+                                  <input type="radio" name="is_4ps" class="hidden" value="0"
+                                    <?= $resident['is_4ps'] == 0 ? 'checked' : null ?>> No
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <label>Are you a PWD?</label>
+
+                            <div class="form-check">
+                              <div class="btn-group" data-toggle="buttons">
+                                <label class="btn <?= $resident['is_pwd'] == 1 ? 'active' : '' ?>">
+                                  <input type="radio" name="is_pwd" class="hidden"
+                                    <?= $resident['is_pwd'] == 1 ? 'checked' : null ?> value="1"> Yes
+                                </label>
+                                <label class="btn <?= $resident['is_pwd'] == 0 ? 'active' : '' ?>">
+                                  <input type="radio" name="is_pwd" class="hidden" value="0"
+                                    <?= $resident['is_pwd'] == 0 ? 'checked' : null ?>> No
+                                </label>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
