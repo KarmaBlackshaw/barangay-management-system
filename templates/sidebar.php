@@ -35,8 +35,8 @@ function appendActiveClass(array $pages)
         </div>
         <div class="info">
           <a data-toggle="collapse" href="<?= role(["user", "administrator"])
-            	? "#collapseExample"
-            	: "javascript:void(0)" ?>" aria-expanded="true">
+          	? "#collapseExample"
+          	: "javascript:void(0)" ?>" aria-expanded="true">
             <span>
               <?= isAuthenticated() ? ucfirst($_SESSION["username"]) : "Guest User" ?>
 
@@ -196,7 +196,7 @@ function appendActiveClass(array $pages)
           </a>
         </li>
 
-        <?php if (isStaff()): ?>
+        <?php if (role(["staff", "user"])): ?>
         <li class="nav-section">
           <span class="sidebar-mini-icon">
             <i class="fa fa-ellipsis-h"></i>
@@ -209,12 +209,14 @@ function appendActiveClass(array $pages)
             <p>Support</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="#requestdoc" data-toggle="modal">
-            <i class="fas fa-flag"></i>
-            <p>Requested Documents</p>
-          </a>
-        </li>
+        <?php if (isStaff()): ?>
+          <li class="nav-item">
+            <a href="#requestdoc" data-toggle="modal">
+              <i class="fas fa-flag"></i>
+              <p>Requested Documents</p>
+            </a>
+          </li>
+        <?php endif; ?>
         <?php endif; ?>
 
         <?php if (isAdmin()): ?>
@@ -335,7 +337,9 @@ function appendActiveClass(array $pages)
               <?php if (empty($_SESSION["avatar"])): ?>
               <img src="assets/img/person.png" alt="..." class="img img-fluid" width="250">
               <?php else: ?>
-              <img src="<?= imgSrc($_SESSION["avatar"]) ?>" alt="..." class="img img-fluid" width="250">
+              <img src="<?= imgSrc(
+              	$_SESSION["avatar"]
+              ) ?>" alt="..." class="img img-fluid" width="250">
               <?php endif; ?>
             </div>
             <div class="form-group d-flex justify-content-center">
