@@ -1,24 +1,24 @@
-<?php include "bootstrap/index.php"; ?>
 <?php
-$query = "SELECT * FROM residents WHERE resident_type=1";
-$result = $conn->query($query);
-$total = $result->num_rows;
-$query1 = "SELECT * FROM residents WHERE gender='Male' AND resident_type=1";
-$result1 = $conn->query($query1);
-$male = $result1->num_rows;
-$query2 = "SELECT * FROM residents WHERE gender='Female' AND resident_type=1";
-$result2 = $conn->query($query2);
-$female = $result2->num_rows;
-$totalVoters = (function ($conn) {
-	$query = "SELECT * FROM residents WHERE voterstatus='Yes' AND resident_type=1";
-	return $conn->query($query)->num_rows;
-})($conn);
-$query4 = "SELECT * FROM residents WHERE voterstatus='No' AND resident_type=1";
-$non = $conn->query($query4)->num_rows;
+require "bootstrap/index.php";
+
+$residents_summary = $db
+	->from("residents")
+	->first()
+	->select([
+		"total" => "COUNT(residents.id)",
+		"male" => "SUM(residents.gender = 'Male')",
+		"female" => "SUM(residents.gender = 'Female')",
+		"voters" => "SUM(residents.voterstatus = 'Yes')",
+		"non_voters" => "SUM(residents.voterstatus = 'No')",
+	])
+	->exec();
+
 $query5 = "SELECT * FROM purok";
 $purok = $conn->query($query5)->num_rows;
+
 $query6 = "SELECT * FROM tblprecinct";
 $precinct = $conn->query($query6)->num_rows;
+
 $query7 = "SELECT * FROM tblblotter";
 $blotter = $conn->query($query7)->num_rows;
 
@@ -29,20 +29,17 @@ $revenue = (function ($conn) {
 
 $query9 = "SELECT * FROM tbldocuments";
 $documents = $conn->query($query9)->num_rows;
-$query10 = "SELECT * FROM tbldocuments";
-$documents = $conn->query($query9)->num_rows;
 
 $certificate_requests = (function () use ($db) {
-  return $db
-    ->from('certificate_requests')
-    ->whereRaw('DATE(created_at) = CURDATE()')
-    ->select([
-      "total" => "COUNT(id)"
-    ])
-    ->first()
-    ->exec();
+	return $db
+		->from("certificate_requests")
+		->whereRaw("DATE(created_at) = CURDATE()")
+		->select([
+			"total" => "COUNT(id)",
+		])
+		->first()
+		->exec();
 })();
-
 ?>
 
 <!DOCTYPE html>
@@ -79,15 +76,9 @@ $certificate_requests = (function () use ($db) {
             </div>
           </div>
           <div class="page-inner mt--2">
-            <?php if (isset($_SESSION["message"])): ?>
-            <div class="alert alert-<?= $_SESSION["status"] ?> <?= $_SESSION["status"] ==
- "danger"
- 	? "bg-danger text-light"
- 	: null ?>" role="alert">
-              <?php echo $_SESSION["message"]; ?>
-            </div>
-            <?php unset($_SESSION["message"]); ?>
-            <?php endif; ?>
+
+              <?php include "templates/alert.php"; ?>
+
             <div class="row">
               <div class="col-md-4">
                 <div class="card card-stats card-primary card-round">
@@ -105,7 +96,7 @@ $certificate_requests = (function () use ($db) {
                           <h7 class="fw-bold text-uppercase">
                             Population</h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($total) ?>
+                            <?= number_format($residents_summary["total"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -133,7 +124,7 @@ $certificate_requests = (function () use ($db) {
                           <h7 class="fw-bold text-uppercase">
                             Male</h7>
                           <h3 class="fw-bold">
-                            <?= number_format($male) ?>
+                            <?= number_format($residents_summary["male"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -161,7 +152,7 @@ $certificate_requests = (function () use ($db) {
                           <h7 class="fw-bold text-uppercase">
                             Female</h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($female) ?>
+                            <?= number_format($residents_summary["female"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -192,7 +183,7 @@ $certificate_requests = (function () use ($db) {
                           <h7 class="fw-bold text-uppercase">
                             Voters</h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($totalVoters) ?>
+                            <?= number_format($residents_summary["voters"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -220,7 +211,7 @@ $certificate_requests = (function () use ($db) {
                           <h7 class="fw-bold text-uppercase">
                             Non Voters</h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($non) ?>
+                            <?= number_format($residents_summary["non_voters"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -333,10 +324,7 @@ $certificate_requests = (function () use ($db) {
                             Collection - by day
                           </h7>
                           <h7 class="fw-bold text-uppercase">
-                            P <?= number_format(
-             	$revenue["am"],
-             	2
-             ) ?></h7>
+                            P <?= number_format($revenue["am"], 2) ?></h7>
                         </div>
                       </div>
                     </div>
@@ -424,7 +412,7 @@ $certificate_requests = (function () use ($db) {
                             Requested Certificates
                           </h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($certificate_requests['total']) ?>
+                            <?= number_format($certificate_requests["total"]) ?>
                           </h3>
                         </div>
                       </div>
@@ -449,8 +437,8 @@ $certificate_requests = (function () use ($db) {
                     </div>
                     <div class="card-body">
                       <p><?= !empty($db_txt)
-          	? $db_txt
-          	: 'Office of the President
+                      	? $db_txt
+                      	: 'Office of the President
 Office of the Vice President
 Senate of the Philippines
 House of Representatives
@@ -458,8 +446,8 @@ Supreme Court
 Court of Appeals' ?></p>
                       <div class="text-center">
                         <img class="img-fluid" src="<?= !empty($db_img)
-           	? "assets/uploads/" . $db_img
-           	: "assets/img/bg-abstract.png" ?>" />
+                        	? "assets/uploads/" . $db_img
+                        	: "assets/img/bg-abstract.png" ?>" />
                       </div>
                     </div>
                   </div>
