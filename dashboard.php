@@ -30,7 +30,7 @@ $revenue = (function ($conn) {
 $query9 = "SELECT * FROM tbldocuments";
 $documents = $conn->query($query9)->num_rows;
 
-$certificate_requests = (function () use ($db) {
+$certificate_requests_summary = (function () use ($db) {
 	return $db
 		->from("certificate_requests")
 		->whereRaw("DATE(created_at) = CURDATE()")
@@ -41,7 +41,7 @@ $certificate_requests = (function () use ($db) {
 		->exec();
 })();
 
-$resident = (function () use ($db) {
+$resident_details = (function () use ($db) {
 	if (isUser()) {
 		return $db
 			->from("residents")
@@ -86,6 +86,44 @@ $resident = (function () use ($db) {
 
 	return [];
 })();
+
+$resident_request_list = (function () use ($db) {
+	if (isUser()) {
+		$resident_details = $GLOBALS["resident_details"];
+
+		return $db
+			->from(["certificate_requests" => "cr"])
+			->join("certificates", "certificates.id", "cr.certificate_id")
+			->where("cr.resident_id", $resident_details["id"])
+			->select([
+				"id" => "cr.id",
+				"certificate_id" => "cr.certificate_id",
+				"status" => "cr.status",
+				"memo" => "cr.memo",
+				"created_at" => "cr.created_at",
+				"certificate_id" => "certificates.id",
+				"certificate_name" => "certificates.name",
+			])
+			->exec();
+	}
+
+	return [];
+})();
+
+$resident_certificate_requests_summary = (function () use ($db) {
+	$resident_details = $GLOBALS["resident_details"];
+
+	return $db
+		->from("certificate_requests")
+		->whereRaw("MONTH(created_at) = MONTH(CURDATE())")
+		->whereRaw("YEAR(created_at) = YEAR(CURDATE())")
+		->where("resident_id", $resident_details["id"])
+		->select([
+			"total" => "COUNT(id)",
+		])
+		->first()
+		->exec();
+})();
 ?>
 
 <!DOCTYPE html>
@@ -111,15 +149,45 @@ $resident = (function () use ($db) {
       width: 100%;
     }
 
-    .form-check>.btn-group>label {
-      border: 1px solid #3f3f46;
+    .badge.badge-resolved {
+      background-color: #22c55e;
     }
 
+    .badge.badge-pending {
+      background-color: #525252;
+    }
 
-.form-control:disabled, .form-control[readonly] {
-  background: #171717!important;
-  border: 1px solid #262626!important;
-}
+    .badge.badge-rejected {
+      background-color: #ef4444;
+    }
+
+    .list-group .list-group-item {
+      border-width: 1px;
+    }
+
+    .request-list > .request-list__item {
+      justify-content: space-between;
+      align-items:  center;
+    }
+
+    .request-list > .request-list__item > div > p {
+      margin-bottom: 0;
+    }
+
+    .request-list > .request-list__item > div > .subtitle {
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    .card-certificate-requests > .card-header > .card-title {
+display: flex;
+justify-content: space-between;
+align-items: center;
+    }
+
+    .card-certificate-requests__summary{
+      font-size: 10px;
+    }
 
     </style>
   </head>
@@ -165,7 +233,7 @@ $resident = (function () use ($db) {
                       <div class="row g-5">
                         <div class="col-md-4">
                           <div style="height: 250;" class="text-center" id="my_camera">
-                            <img src="<?= imgSrc($resident["avatar"]) ??
+                            <img src="<?= imgSrc($resident_details["avatar"]) ??
                             	"assets/img/person.png" ?>" alt="..." class="img "
                               width="250" height="250" style="max-height: 250; object-fit: cover;">
                           </div>
@@ -173,7 +241,7 @@ $resident = (function () use ($db) {
                           <div class="form-group">
                             <label>National ID No.</label>
                             <input type="text" class="form-control" name="national_id" readonly
-                              value="<?= $resident[
+                              value="<?= $resident_details[
                               	"national_id"
                               ] ?>" placeholder="Enter National ID No." required>
                           </div>
@@ -181,14 +249,14 @@ $resident = (function () use ($db) {
                           <div class="form-group">
                             <label>Citizenship</label>
                             <input type="text" class="form-control" readonly name="citizenship"
-                              value="<?= $resident[
+                              value="<?= $resident_details[
                               	"citizenship"
                               ] ?>" placeholder="Enter citizenship" required>
                           </div>
 
                           <div class="form-group">
                             <label>Address</label>
-                            <textarea class="form-control" readonly name="address" required placeholder="Enter Address"><?= $resident[
+                            <textarea class="form-control" readonly name="address" required placeholder="Enter Address"><?= $resident_details[
                             	"address"
                             ] ?></textarea>
                           </div>
@@ -200,7 +268,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>First name</label>
                                 <input readonly class="form-control" placeholder="Enter First name" name="fname"
-                                  value="<?= $resident["firstname"] ?>" required>
+                                  value="<?= $resident_details["firstname"] ?>" required>
                               </div>
                             </div>
 
@@ -208,7 +276,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Middle name</label>
                                 <input readonly class="form-control" placeholder="Enter Middle name" name="mname"
-                                  value="<?= $resident["middlename"] ?>" required>
+                                  value="<?= $resident_details["middlename"] ?>" required>
                               </div>
                             </div>
 
@@ -216,7 +284,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Last name</label>
                                 <input readonly class="form-control" placeholder="Enter Last name" name="lname" required
-                                  value="<?= $resident["lastname"] ?>">
+                                  value="<?= $resident_details["lastname"] ?>">
                               </div>
                             </div>
                           </div>
@@ -226,7 +294,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Alias</label>
                                 <input readonly class="form-control" placeholder="Enter Alias" name="alias"
-                                  value="<?= $resident["alias"] ?>">
+                                  value="<?= $resident_details["alias"] ?>">
                               </div>
                             </div>
 
@@ -234,7 +302,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Place of Birth</label>
                                 <input readonly class="form-control" placeholder="Enter Birthplace" name="birthplace" required
-                                  value="<?= $resident["birthplace"] ?>">
+                                  value="<?= $resident_details["birthplace"] ?>">
                               </div>
                             </div>
 
@@ -242,7 +310,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Birthdate</label>
                                 <input readonly type="date" class="form-control" placeholder="Enter Birthdate" name="birthdate"
-                                  required value="<?= $resident["birthdate"] ?>">
+                                  required value="<?= $resident_details["birthdate"] ?>">
                               </div>
                             </div>
                           </div>
@@ -252,7 +320,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Age</label>
                                 <input readonly type="number" class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["age"] ?>">
+                                  required value="<?= $resident_details["age"] ?>">
                               </div>
                             </div>
 
@@ -261,7 +329,7 @@ $resident = (function () use ($db) {
                                 <label>Civil Status</label>
 
                                 <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["civilstatus"] ?>">
+                                  required value="<?= $resident_details["civilstatus"] ?>">
                               </div>
                             </div>
 
@@ -269,7 +337,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Gender</label>
                                 <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["gender"] ?>">
+                                  required value="<?= $resident_details["gender"] ?>">
                               </div>
                             </div>
                           </div>
@@ -279,7 +347,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Purok</label>
                                 <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["purok_name"] ?>">
+                                  required value="<?= $resident_details["purok_name"] ?>">
                               </div>
                             </div>
 
@@ -287,7 +355,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Voters Status</label>
                                 <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["voterstatus"] ?>">
+                                  required value="<?= $resident_details["voterstatus"] ?>">
                               </div>
                             </div>
 
@@ -295,7 +363,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Identified As</label>
                                 <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident["identified_as"] ?>">
+                                  required value="<?= $resident_details["identified_as"] ?>">
                               </div>
                             </div>
                           </div>
@@ -305,7 +373,7 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Email Address</label>
                                 <input readonly type="email" class="form-control" placeholder="Enter Email" name="email"
-                                  value="<?= $resident["email"] ?>">
+                                  value="<?= $resident_details["email"] ?>">
                               </div>
                             </div>
 
@@ -313,14 +381,14 @@ $resident = (function () use ($db) {
                               <div class="form-group">
                                 <label>Contact Number</label>
                                 <input readonly class="form-control" placeholder="Enter Contact Number" name="number"
-                                  value="<?= $resident["phone"] ?>">
+                                  value="<?= $resident_details["phone"] ?>">
                               </div>
                             </div>
                             <div class="col-sm-4">
                               <div class="form-group">
                                 <label>Occupation</label>
                                 <input readonly class="form-control" placeholder="Enter Occupation" name="occupation"
-                                  value="<?= $resident["occupation"] ?>">
+                                  value="<?= $resident_details["occupation"] ?>">
                               </div>
                             </div>
                           </div>
@@ -332,19 +400,21 @@ $resident = (function () use ($db) {
 
                                 <div class="form-check">
                                   <div class="btn-group btn-group-justified" data-toggle="buttons">
-                                    <label class="btn <?= $resident["is_4ps"] == 1
+                                    <label class="btn <?= $resident_details["is_4ps"] == 1
                                     	? "active"
                                     	: "" ?>">
                                       <input readonly type="radio" name="is_4ps" class="hidden"
-                                        <?= $resident["is_4ps"] == 1
+                                        <?= $resident_details["is_4ps"] == 1
                                         	? "checked"
                                         	: null ?> value="1"> Yes
                                     </label>
-                                    <label class="btn <?= $resident["is_4ps"] == 0
+                                    <label class="btn <?= $resident_details["is_4ps"] == 0
                                     	? "active"
                                     	: "" ?>">
                                       <input readonly type="radio" name="is_4ps" class="hidden" value="0"
-                                        <?= $resident["is_4ps"] == 0 ? "checked" : null ?>> No
+                                        <?= $resident_details["is_4ps"] == 0
+                                        	? "checked"
+                                        	: null ?>> No
                                     </label>
                                   </div>
                                 </div>
@@ -357,19 +427,21 @@ $resident = (function () use ($db) {
 
                                 <div class="form-check">
                                   <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn <?= $resident["is_pwd"] == 1
+                                    <label class="btn <?= $resident_details["is_pwd"] == 1
                                     	? "active"
                                     	: "" ?>">
                                       <input disabled type="radio" name="is_pwd" class="hidden"
-                                        <?= $resident["is_pwd"] == 1
+                                        <?= $resident_details["is_pwd"] == 1
                                         	? "checked"
                                         	: null ?> value="1"> Yes
                                     </label>
-                                    <label class="btn <?= $resident["is_pwd"] == 0
+                                    <label class="btn <?= $resident_details["is_pwd"] == 0
                                     	? "active"
                                     	: "" ?>">
                                       <input disabled type="radio" name="is_pwd" class="hidden" value="0"
-                                        <?= $resident["is_pwd"] == 0 ? "checked" : null ?>> No
+                                        <?= $resident_details["is_pwd"] == 0
+                                        	? "checked"
+                                        	: null ?>> No
                                     </label>
                                   </div>
                                 </div>
@@ -378,6 +450,54 @@ $resident = (function () use ($db) {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="card card-certificate-requests">
+                    <div class="card-header">
+                      <div class="card-title">
+                        Requests
+
+                        <div class="card-certificate-requests__summary">
+                          THIS MONTH: <br>
+                          <b><?= $resident_certificate_requests_summary["total"] ?></b>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card-body">
+                      <ul class="list-group request-list">
+                        <?php foreach ($resident_request_list as $curr_request): ?>
+                        <li class="list-group-item request-list__item">
+                          <div>
+                            <p><?= $curr_request["certificate_name"] ?></p>
+                            <small class="subtitle"><?= $curr_request["created_at"] ?></small>
+                          </div>
+
+                          <div>
+                            <span class="badge badge-<?= $curr_request["status"] ?>">
+                              <?= $curr_request["status"] ?>
+                            </span>
+                          </div>
+                        </li>
+                        <?php endforeach; ?>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <div class="card-title">
+                        Personal Information
+                      </div>
+                    </div>
+
+                    <div class="card-body">
+                      asdasd
                     </div>
                   </div>
                 </div>
@@ -716,7 +836,7 @@ $resident = (function () use ($db) {
                               Requested Certificates
                             </h7>
                             <h3 class="fw-bold text-uppercase">
-                              <?= number_format($certificate_requests["total"]) ?>
+                              <?= number_format($certificate_requests_summary["total"]) ?>
                             </h3>
                           </div>
                         </div>
