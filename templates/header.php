@@ -49,7 +49,7 @@ a {
 }
 
 
-body,
+/* body,
 html,
 .preloader {
   background-color: #18181b !important;
@@ -90,9 +90,19 @@ select {
   border-top: 1px solid #27272a;
 }
 
+    .form-check>.btn-group>label {
+      border: 1px solid #3f3f46;
+    }
+
+
+.form-control:disabled, .form-control[readonly] {
+  background: #171717!important;
+  border: 1px solid #262626!important;
+}
+
 .sidebar-wrapper {
   background-color: #18181b !important;
   border-right: 1px solid #27272a;
-}
+} */
 
 </style>
