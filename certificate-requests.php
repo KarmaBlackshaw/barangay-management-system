@@ -3,17 +3,6 @@ include "bootstrap/index.php";
 
 use Carbon\Carbon;
 
-$query = "SELECT * FROM tblblotter";
-$result = $conn->query($query);
-
-$blotter = [];
-
-while ($row = $result->fetch_assoc()) {
-	$blotter[] = $row;
-}
-
-$announcementList = [];
-
 $certificates = $db
 	->from("certificates")
 	->select([
@@ -160,30 +149,43 @@ $request_list = (function () use ($db) {
                             <td class="d-flex justify-content-center align-items-center gap-3">
                               <?php if (isUser()): ?>
                               <a href="javascript:void(0)" data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
-                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
+                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request[
+	"memo"
+] ?>"
+                                data-value-certificate_id="<?= $request[
+                                	"certificate_id"
+                                ] ?>" onclick="showModal(this)">
                                 <i class="fa fa-edit"></i>
                               </a>
                               <?php endif; ?>
 
-                              <?php if (role(['administrator', 'staff'])): ?>
+                              <?php if (role(["administrator", "staff"])): ?>
                               <a href="javascript:void(0)" data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
-                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
+                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request[
+	"memo"
+] ?>"
+                                data-value-certificate_id="<?= $request[
+                                	"certificate_id"
+                                ] ?>" onclick="showModal(this)">
                                 <i class="fa fa-eye"></i>
                               </a>
                               <?php endif; ?>
 
-                              <?php if (role(['administrator', 'staff']) && $request["status"] !== "resolved"): ?>
-                              <a href="<?= $request["certificate_url"] ?>" class="btn-link btn-info">
+                              <?php if (
+                              	role(["administrator", "staff"]) &&
+                              	$request["status"] !== "resolved"
+                              ): ?>
+                              <a href="<?= $request[
+                              	"certificate_url"
+                              ] ?>" class="btn-link btn-info">
                                 <i class="fa fa-file"></i>
                               </a>
                               <?php endif; ?>
 
                               <?php if (role(["user", "administrator"])): ?>
                               <a data-toggle="tooltip" data-original-title="Remove" href="model/certificate-request.php?id=<?= $request[
-                                	"id"
-                                ] ?>&delete-request=1"
+                              	"id"
+                              ] ?>&delete-request=1"
                                 onclick="confirm('Are you sure you want to delete this blotter?');"
                                 class=" btn-link btn-danger">
                                 <i class="fa fa-times"></i>
