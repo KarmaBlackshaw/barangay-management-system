@@ -111,19 +111,38 @@ $resident_request_list = (function () use ($db) {
 })();
 
 $resident_certificate_requests_summary = (function () use ($db) {
-	$resident_details = $GLOBALS["resident_details"];
+  if (isUser()) {
+    $resident_details = $GLOBALS["resident_details"];
 
+    return $db
+      ->from("certificate_requests")
+      ->whereRaw("MONTH(created_at) = MONTH(CURDATE())")
+      ->whereRaw("YEAR(created_at) = YEAR(CURDATE())")
+      ->where("resident_id", $resident_details["id"])
+      ->select([
+        "total" => "COUNT(id)",
+      ])
+      ->first()
+      ->exec();
+  }
+
+  return [];
+})();
+
+$announcements = (function () use ($db) {
 	return $db
-		->from("certificate_requests")
-		->whereRaw("MONTH(created_at) = MONTH(CURDATE())")
-		->whereRaw("YEAR(created_at) = YEAR(CURDATE())")
-		->where("resident_id", $resident_details["id"])
+		->from(["announcements" => "a"])
 		->select([
-			"total" => "COUNT(id)",
+			"id" => "a.id",
+			"title" => "a.title",
+			"content" => "a.content",
+			"thumbnail" => "a.thumbnail",
+			"created_at" => "a.created_at",
 		])
-		->first()
+    ->orderBy("a.created_at", "desc")
 		->exec();
 })();
+
 ?>
 
 <!DOCTYPE html>
@@ -165,27 +184,27 @@ $resident_certificate_requests_summary = (function () use ($db) {
       border-width: 1px;
     }
 
-    .request-list > .request-list__item {
+    .request-list>.request-list__item {
       justify-content: space-between;
-      align-items:  center;
+      align-items: center;
     }
 
-    .request-list > .request-list__item > div > p {
+    .request-list>.request-list__item>div>p {
       margin-bottom: 0;
     }
 
-    .request-list > .request-list__item > div > .subtitle {
+    .request-list>.request-list__item>div>.subtitle {
       font-size: 10px;
       opacity: 0.5;
     }
 
-    .card-certificate-requests > .card-header > .card-title {
-display: flex;
-justify-content: space-between;
-align-items: center;
+    .card-certificate-requests>.card-header>.card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .card-certificate-requests__summary{
+    .card-certificate-requests__summary {
       font-size: 10px;
     }
 
@@ -221,633 +240,636 @@ align-items: center;
             <?php include "templates/alert.php"; ?>
 
             <?php if (isUser()): ?>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card">
-                    <div class="card-header">
-                      <div class="card-title">
-                        Personal Information
-                      </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      Personal Information
                     </div>
-                    <div class="card-body">
-                      <div class="row g-5">
-                        <div class="col-md-4">
-                          <div style="height: 250;" class="text-center" id="my_camera">
-                            <img src="<?= imgSrc($resident_details["avatar"]) ??
-                            	"assets/img/person.png" ?>" alt="..." class="img "
-                              width="250" height="250" style="max-height: 250; object-fit: cover;">
-                          </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-5">
+                      <div class="col-md-4">
+                        <div style="height: 250;" class="text-center" id="my_camera">
+                          <img src="<?= imgSrc($resident_details["avatar"]) ??
+                            	"assets/img/person.png" ?>" alt="..." class="img " width="250" height="250"
+                            style="max-height: 250; object-fit: cover;">
+                        </div>
 
-                          <div class="form-group">
-                            <label>National ID No.</label>
-                            <input type="text" class="form-control" name="national_id" readonly
-                              value="<?= $resident_details[
+                        <div class="form-group">
+                          <label>National ID No.</label>
+                          <input type="text" class="form-control" name="national_id" readonly value="<?= $resident_details[
                               	"national_id"
                               ] ?>" placeholder="Enter National ID No." required>
-                          </div>
+                        </div>
 
-                          <div class="form-group">
-                            <label>Citizenship</label>
-                            <input type="text" class="form-control" readonly name="citizenship"
-                              value="<?= $resident_details[
+                        <div class="form-group">
+                          <label>Citizenship</label>
+                          <input type="text" class="form-control" readonly name="citizenship" value="<?= $resident_details[
                               	"citizenship"
                               ] ?>" placeholder="Enter citizenship" required>
-                          </div>
+                        </div>
 
-                          <div class="form-group">
-                            <label>Address</label>
-                            <textarea class="form-control" readonly name="address" required placeholder="Enter Address"><?= $resident_details[
+                        <div class="form-group">
+                          <label>Address</label>
+                          <textarea class="form-control" readonly name="address" required placeholder="Enter Address"><?= $resident_details[
                             	"address"
                             ] ?></textarea>
+                        </div>
+                      </div>
+
+                      <div class="col-md-8">
+                        <div class="row g-0">
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>First name</label>
+                              <input readonly class="form-control" placeholder="Enter First name" name="fname"
+                                value="<?= $resident_details["firstname"] ?>" required>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Middle name</label>
+                              <input readonly class="form-control" placeholder="Enter Middle name" name="mname"
+                                value="<?= $resident_details["middlename"] ?>" required>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Last name</label>
+                              <input readonly class="form-control" placeholder="Enter Last name" name="lname" required
+                                value="<?= $resident_details["lastname"] ?>">
+                            </div>
                           </div>
                         </div>
 
-                        <div class="col-md-8">
-                          <div class="row g-0">
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>First name</label>
-                                <input readonly class="form-control" placeholder="Enter First name" name="fname"
-                                  value="<?= $resident_details["firstname"] ?>" required>
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Middle name</label>
-                                <input readonly class="form-control" placeholder="Enter Middle name" name="mname"
-                                  value="<?= $resident_details["middlename"] ?>" required>
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Last name</label>
-                                <input readonly class="form-control" placeholder="Enter Last name" name="lname" required
-                                  value="<?= $resident_details["lastname"] ?>">
-                              </div>
+                        <div class="row g-0">
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Alias</label>
+                              <input readonly class="form-control" placeholder="Enter Alias" name="alias"
+                                value="<?= $resident_details["alias"] ?>">
                             </div>
                           </div>
 
-                          <div class="row g-0">
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Alias</label>
-                                <input readonly class="form-control" placeholder="Enter Alias" name="alias"
-                                  value="<?= $resident_details["alias"] ?>">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Place of Birth</label>
-                                <input readonly class="form-control" placeholder="Enter Birthplace" name="birthplace" required
-                                  value="<?= $resident_details["birthplace"] ?>">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Birthdate</label>
-                                <input readonly type="date" class="form-control" placeholder="Enter Birthdate" name="birthdate"
-                                  required value="<?= $resident_details["birthdate"] ?>">
-                              </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Place of Birth</label>
+                              <input readonly class="form-control" placeholder="Enter Birthplace" name="birthplace"
+                                required value="<?= $resident_details["birthplace"] ?>">
                             </div>
                           </div>
 
-                          <div class="row g-0">
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Age</label>
-                                <input readonly type="number" class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["age"] ?>">
-                              </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Birthdate</label>
+                              <input readonly type="date" class="form-control" placeholder="Enter Birthdate"
+                                name="birthdate" required value="<?= $resident_details["birthdate"] ?>">
                             </div>
+                          </div>
+                        </div>
 
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Civil Status</label>
-
-                                <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["civilstatus"] ?>">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Gender</label>
-                                <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["gender"] ?>">
-                              </div>
+                        <div class="row g-0">
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Age</label>
+                              <input readonly type="number" class="form-control" placeholder="Enter Age" min="1"
+                                name="age" required value="<?= $resident_details["age"] ?>">
                             </div>
                           </div>
 
-                          <div class="row g-0">
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Purok</label>
-                                <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["purok_name"] ?>">
-                              </div>
-                            </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Civil Status</label>
 
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Voters Status</label>
-                                <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["voterstatus"] ?>">
-                              </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Identified As</label>
-                                <input readonly class="form-control" placeholder="Enter Age" min="1" name="age"
-                                  required value="<?= $resident_details["identified_as"] ?>">
-                              </div>
+                              <input readonly class="form-control" placeholder="Enter Age" min="1" name="age" required
+                                value="<?= $resident_details["civilstatus"] ?>">
                             </div>
                           </div>
 
-                          <div class="row g-0">
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Email Address</label>
-                                <input readonly type="email" class="form-control" placeholder="Enter Email" name="email"
-                                  value="<?= $resident_details["email"] ?>">
-                              </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Gender</label>
+                              <input readonly class="form-control" placeholder="Enter Age" min="1" name="age" required
+                                value="<?= $resident_details["gender"] ?>">
                             </div>
+                          </div>
+                        </div>
 
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Contact Number</label>
-                                <input readonly class="form-control" placeholder="Enter Contact Number" name="number"
-                                  value="<?= $resident_details["phone"] ?>">
-                              </div>
-                            </div>
-                            <div class="col-sm-4">
-                              <div class="form-group">
-                                <label>Occupation</label>
-                                <input readonly class="form-control" placeholder="Enter Occupation" name="occupation"
-                                  value="<?= $resident_details["occupation"] ?>">
-                              </div>
+                        <div class="row g-0">
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Purok</label>
+                              <input readonly class="form-control" placeholder="Enter Age" min="1" name="age" required
+                                value="<?= $resident_details["purok_name"] ?>">
                             </div>
                           </div>
 
-                          <div class="row g-0">
-                            <div class="col-sm-6">
-                              <div class="form-group">
-                                <label>Are you a 4Ps Beneficiary?</label>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Voters Status</label>
+                              <input readonly class="form-control" placeholder="Enter Age" min="1" name="age" required
+                                value="<?= $resident_details["voterstatus"] ?>">
+                            </div>
+                          </div>
 
-                                <div class="form-check">
-                                  <div class="btn-group btn-group-justified" data-toggle="buttons">
-                                    <label class="btn <?= $resident_details["is_4ps"] == 1
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Identified As</label>
+                              <input readonly class="form-control" placeholder="Enter Age" min="1" name="age" required
+                                value="<?= $resident_details["identified_as"] ?>">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row g-0">
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Email Address</label>
+                              <input readonly type="email" class="form-control" placeholder="Enter Email" name="email"
+                                value="<?= $resident_details["email"] ?>">
+                            </div>
+                          </div>
+
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Contact Number</label>
+                              <input readonly class="form-control" placeholder="Enter Contact Number" name="number"
+                                value="<?= $resident_details["phone"] ?>">
+                            </div>
+                          </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                              <label>Occupation</label>
+                              <input readonly class="form-control" placeholder="Enter Occupation" name="occupation"
+                                value="<?= $resident_details["occupation"] ?>">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row g-0">
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <label>Are you a 4Ps Beneficiary?</label>
+
+                              <div class="form-check">
+                                <div class="btn-group btn-group-justified" data-toggle="buttons">
+                                  <label class="btn <?= $resident_details["is_4ps"] == 1
                                     	? "active"
                                     	: "" ?>">
-                                      <input readonly type="radio" name="is_4ps" class="hidden"
-                                        <?= $resident_details["is_4ps"] == 1
+                                    <input readonly type="radio" name="is_4ps" class="hidden" <?= $resident_details["is_4ps"] == 1
                                         	? "checked"
                                         	: null ?> value="1"> Yes
-                                    </label>
-                                    <label class="btn <?= $resident_details["is_4ps"] == 0
+                                  </label>
+                                  <label class="btn <?= $resident_details["is_4ps"] == 0
                                     	? "active"
                                     	: "" ?>">
-                                      <input readonly type="radio" name="is_4ps" class="hidden" value="0"
-                                        <?= $resident_details["is_4ps"] == 0
+                                    <input readonly type="radio" name="is_4ps" class="hidden" value="0" <?= $resident_details["is_4ps"] == 0
                                         	? "checked"
                                         	: null ?>> No
-                                    </label>
-                                  </div>
+                                  </label>
                                 </div>
                               </div>
                             </div>
+                          </div>
 
-                            <div class="col-sm-6">
-                              <div class="form-group">
-                                <label>Are you a PWD?</label>
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <label>Are you a PWD?</label>
 
-                                <div class="form-check">
-                                  <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn <?= $resident_details["is_pwd"] == 1
+                              <div class="form-check">
+                                <div class="btn-group" data-toggle="buttons">
+                                  <label class="btn <?= $resident_details["is_pwd"] == 1
                                     	? "active"
                                     	: "" ?>">
-                                      <input disabled type="radio" name="is_pwd" class="hidden"
-                                        <?= $resident_details["is_pwd"] == 1
+                                    <input disabled type="radio" name="is_pwd" class="hidden" <?= $resident_details["is_pwd"] == 1
                                         	? "checked"
                                         	: null ?> value="1"> Yes
-                                    </label>
-                                    <label class="btn <?= $resident_details["is_pwd"] == 0
+                                  </label>
+                                  <label class="btn <?= $resident_details["is_pwd"] == 0
                                     	? "active"
                                     	: "" ?>">
-                                      <input disabled type="radio" name="is_pwd" class="hidden" value="0"
-                                        <?= $resident_details["is_pwd"] == 0
+                                    <input disabled type="radio" name="is_pwd" class="hidden" value="0" <?= $resident_details["is_pwd"] == 0
                                         	? "checked"
                                         	: null ?>> No
-                                    </label>
-                                  </div>
+                                  </label>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="card card-certificate-requests">
-                    <div class="card-header">
-                      <div class="card-title">
-                        Requests
-
-                        <div class="card-certificate-requests__summary">
-                          THIS MONTH: <br>
-                          <b><?= $resident_certificate_requests_summary["total"] ?></b>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="card-body">
-                      <ul class="list-group request-list">
-                        <?php foreach ($resident_request_list as $curr_request): ?>
-                        <li class="list-group-item request-list__item">
-                          <div>
-                            <p><?= $curr_request["certificate_name"] ?></p>
-                            <small class="subtitle"><?= $curr_request["created_at"] ?></small>
-                          </div>
-
-                          <div>
-                            <span class="badge badge-<?= $curr_request["status"] ?>">
-                              <?= $curr_request["status"] ?>
-                            </span>
-                          </div>
-                        </li>
-                        <?php endforeach; ?>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="card">
-                    <div class="card-header">
-                      <div class="card-title">
-                        Personal Information
-                      </div>
-                    </div>
-
-                    <div class="card-body">
-                      asdasd
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div class="col-md-6">
+                <div class="card card-certificate-requests">
+                  <div class="card-header">
+                    <div class="card-title">
+                      Requests
+
+                      <div class="card-certificate-requests__summary">
+                        THIS MONTH: <br>
+                        <b><?= $resident_certificate_requests_summary["total"] ?></b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-body" style="max-height: 500px; overflow-y: auto">
+                    <ul class="list-group request-list">
+                      <?php foreach ($resident_request_list as $curr_request): ?>
+                      <li class="list-group-item request-list__item">
+                        <div>
+                          <p><?= $curr_request["certificate_name"] ?></p>
+                          <small class="subtitle"><?= $curr_request["created_at"] ?></small>
+                        </div>
+
+                        <div>
+                          <span class="badge badge-<?= $curr_request["status"] ?>">
+                            <?= $curr_request["status"] ?>
+                          </span>
+                        </div>
+                      </li>
+                      <?php endforeach; ?>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">
+                      Announcements
+                    </div>
+                  </div>
+
+                  <div class="card-body" style="max-height: 500px; overflow-y: auto">
+                    <ul class="list-group request-list">
+                      <?php foreach ($announcements as $curr_announcement): ?>
+                      <li class="list-group-item request-list__item">
+                        <div class="text-truncate">
+                          <p><?= $curr_announcement["title"] ?></p>
+                          <small class="subtitle"><?= $curr_announcement["content"] ?></small>
+                        </div>
+                      </li>
+                      <?php endforeach; ?>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
             <?php endif; ?>
 
             <?php if (isAdmin()): ?>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="card card-stats card-primary card-round">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="flaticon-users"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Population</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($residents_summary["total"]) ?>
-                            </h3>
-                          </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card card-stats card-primary card-round">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="flaticon-users"></i>
                         </div>
                       </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="resident_info.php?state=all" class="card-link text-light">Total
-                        Population </a>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Population</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($residents_summary["total"]) ?>
+                          </h3>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-secondary card-round">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="flaticon-user"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Male</h7>
-                            <h3 class="fw-bold">
-                              <?= number_format($residents_summary["male"]) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="resident_info.php?state=male" class="card-link text-light">Total
-                        Male </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-warning card-round">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="icon-user-female"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Female</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($residents_summary["female"]) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="resident_info.php?state=female" class="card-link text-light">Total
-                        Female </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <div class="card card-stats card-success card-round">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="fas fa-fingerprint"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Voters</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($residents_summary["voters"]) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="resident_info.php?state=voters" class="card-link text-light">Total
-                        Voters </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-info card-round">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="flaticon-users"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Non Voters</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($residents_summary["non_voters"]) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="resident_info.php?state=non_voters" class="card-link text-light">Total
-                        Non Voters </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-round" style="background-color:#a349a3; color:#fff">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="fas fa-phone"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Contact Number</h7>
-                            <h7 class="fw-bold">
-                              <?= number_format($precinct) ?>
-                            </h7>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="purok_info.php?state=precinct" class="card-link text-light">Contact
-                        Number Information</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-round" style="background-color:#880a14; color:#fff">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="icon-direction"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Purok Number</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($purok) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="purok_info.php?state=purok" class="card-link text-light">Purok
-                        Information</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-round card-danger">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="icon-layers"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Blotter</h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($blotter) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="blotter.php" class="card-link text-light">Blotter
-                        Information</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card card-stats card-round" style="background-color:#3E9C35; color:#fff">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i>₱</i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              Collection - by day
-                            </h7>
-                            <h7 class="fw-bold text-uppercase">
-                              P <?= number_format($revenue["am"], 2) ?></h7>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="revenue.php" class="card-link text-light">All
-                        Collection Payment</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <div class="card card-stats card-round" style="background-color:#8E7f36; color:#fff">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="fas flaticon-user"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-4">
-                            <h7 class="fw-bold text-uppercase">
-                              4ps Member</h7>
-                            <h7 class="fw-bold text-uppercase">
-                              <?= number_format($revenue["am"], 2) ?>
-                            </h7>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="revenue.php" class="card-link text-light">4ps
-                        Members</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <div class="card card-stats card-round card-danger">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="icon-layers"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-3">
-                            <h7 class="fw-bold text-uppercase">
-                              Requested Documents
-                            </h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($documents) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="requestdoc.php" class="card-link text-light">Requested
-                        Documents</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <div class="card card-stats card-round card-info">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-2">
-                          <div class="icon-big text-center">
-                            <i class="icon-layers"></i>
-                          </div>
-                        </div>
-                        <div class="col-3 col-stats">
-                        </div>
-                        <div class="col-6 col-stats">
-                          <div class="numbers mt-3">
-                            <h7 class="fw-bold text-uppercase">
-                              Requested Certificates
-                            </h7>
-                            <h3 class="fw-bold text-uppercase">
-                              <?= number_format($certificate_requests_summary["total"]) ?>
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <a href="requestdoc.php" class="card-link text-light">Requested Certificates</a>
-                    </div>
+                  <div class="card-body">
+                    <a href="resident_info.php?state=all" class="card-link text-light">Total
+                      Population </a>
                   </div>
                 </div>
               </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-secondary card-round">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="flaticon-user"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Male</h7>
+                          <h3 class="fw-bold">
+                            <?= number_format($residents_summary["male"]) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="resident_info.php?state=male" class="card-link text-light">Total
+                      Male </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-warning card-round">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="icon-user-female"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Female</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($residents_summary["female"]) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="resident_info.php?state=female" class="card-link text-light">Total
+                      Female </a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card card-stats card-success card-round">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="fas fa-fingerprint"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Voters</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($residents_summary["voters"]) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="resident_info.php?state=voters" class="card-link text-light">Total
+                      Voters </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-info card-round">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="flaticon-users"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Non Voters</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($residents_summary["non_voters"]) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="resident_info.php?state=non_voters" class="card-link text-light">Total
+                      Non Voters </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-round" style="background-color:#a349a3; color:#fff">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="fas fa-phone"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Contact Number</h7>
+                          <h7 class="fw-bold">
+                            <?= number_format($precinct) ?>
+                          </h7>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="purok_info.php?state=precinct" class="card-link text-light">Contact
+                      Number Information</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-round" style="background-color:#880a14; color:#fff">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="icon-direction"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Purok Number</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($purok) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="purok_info.php?state=purok" class="card-link text-light">Purok
+                      Information</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-round card-danger">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="icon-layers"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Blotter</h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($blotter) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="blotter.php" class="card-link text-light">Blotter
+                      Information</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-stats card-round" style="background-color:#3E9C35; color:#fff">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i>₱</i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            Collection - by day
+                          </h7>
+                          <h7 class="fw-bold text-uppercase">
+                            P <?= number_format($revenue["am"], 2) ?></h7>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="revenue.php" class="card-link text-light">All
+                      Collection Payment</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card card-stats card-round" style="background-color:#8E7f36; color:#fff">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="fas flaticon-user"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-4">
+                          <h7 class="fw-bold text-uppercase">
+                            4ps Member</h7>
+                          <h7 class="fw-bold text-uppercase">
+                            <?= number_format($revenue["am"], 2) ?>
+                          </h7>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="revenue.php" class="card-link text-light">4ps
+                      Members</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card card-stats card-round card-danger">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="icon-layers"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-3">
+                          <h7 class="fw-bold text-uppercase">
+                            Requested Documents
+                          </h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($documents) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="requestdoc.php" class="card-link text-light">Requested
+                      Documents</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card card-stats card-round card-info">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-2">
+                        <div class="icon-big text-center">
+                          <i class="icon-layers"></i>
+                        </div>
+                      </div>
+                      <div class="col-3 col-stats">
+                      </div>
+                      <div class="col-6 col-stats">
+                        <div class="numbers mt-3">
+                          <h7 class="fw-bold text-uppercase">
+                            Requested Certificates
+                          </h7>
+                          <h3 class="fw-bold text-uppercase">
+                            <?= number_format($certificate_requests_summary["total"]) ?>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a href="requestdoc.php" class="card-link text-light">Requested Certificates</a>
+                  </div>
+                </div>
+              </div>
+            </div>
             <?php endif; ?>
 
             <div class="row">
@@ -881,16 +903,16 @@ align-items: center;
                 </div>
               </div>
             </div>
-            </div>
           </div>
-          <!-- Main Footer -->
-          <?php include "templates/main-footer.php"; ?>
-          <!-- End Main Footer -->
-
         </div>
+        <!-- Main Footer -->
+        <?php include "templates/main-footer.php"; ?>
+        <!-- End Main Footer -->
 
       </div>
-      <?php include "templates/footer.php"; ?>
+
+    </div>
+    <?php include "templates/footer.php"; ?>
   </body>
 
 </html>
