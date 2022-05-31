@@ -646,7 +646,7 @@ $admin_dashboard_cards = [
             </div>
             <?php endif; ?>
 
-            <?php if (isAdmin()): ?>
+            <?php if (role(["administrator", "staff"])): ?>
             <div class="row">
               <?php foreach ($admin_dashboard_cards as $row): ?>
               <div class="col-md-4">
