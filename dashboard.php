@@ -10,6 +10,9 @@ $residents_summary = $db
 		"female" => "SUM(residents.gender = 'Female')",
 		"voters" => "SUM(residents.voterstatus = 'Yes')",
 		"non_voters" => "SUM(residents.voterstatus = 'No')",
+		"total_pwds" => "SUM(residents.is_pwd)",
+		"total_4ps" => "SUM(residents.is_4ps)",
+		"total_seniors" => "SUM(residents.is_senior)",
 	])
 	->exec();
 
@@ -111,22 +114,22 @@ $resident_request_list = (function () use ($db) {
 })();
 
 $resident_certificate_requests_summary = (function () use ($db) {
-  if (isUser()) {
-    $resident_details = $GLOBALS["resident_details"];
+	if (isUser()) {
+		$resident_details = $GLOBALS["resident_details"];
 
-    return $db
-      ->from("certificate_requests")
-      ->whereRaw("MONTH(created_at) = MONTH(CURDATE())")
-      ->whereRaw("YEAR(created_at) = YEAR(CURDATE())")
-      ->where("resident_id", $resident_details["id"])
-      ->select([
-        "total" => "COUNT(id)",
-      ])
-      ->first()
-      ->exec();
-  }
+		return $db
+			->from("certificate_requests")
+			->whereRaw("MONTH(created_at) = MONTH(CURDATE())")
+			->whereRaw("YEAR(created_at) = YEAR(CURDATE())")
+			->where("resident_id", $resident_details["id"])
+			->select([
+				"total" => "COUNT(id)",
+			])
+			->first()
+			->exec();
+	}
 
-  return [];
+	return [];
 })();
 
 $announcements = (function () use ($db) {
@@ -139,10 +142,117 @@ $announcements = (function () use ($db) {
 			"thumbnail" => "a.thumbnail",
 			"created_at" => "a.created_at",
 		])
-    ->orderBy("a.created_at", "desc")
+		->orderBy("a.created_at", "desc")
 		->exec();
 })();
 
+function getRandomColor()
+{
+	$colors = [
+		"#f97316",
+		"#ef4444",
+		"#f59e0b",
+		"#eab308",
+		"#84cc16",
+		"#22c55e",
+		"#10b981",
+		"#14b8a6",
+		"#06b6d4",
+		"#0ea5e9",
+		"#3b82f6",
+		"#6366f1",
+		"#8b5cf6",
+		"#a855f7",
+		"#d946ef",
+		"#ec4899",
+		"#f43f5e",
+	];
+
+	$key = array_rand($colors, 1);
+
+	return $colors[$key];
+}
+
+$admin_dashboard_cards = [
+	[
+		"icon" => "flaticon-users",
+		"title" => "Population",
+		"subtitle" => "Total Population",
+		"value" => number_format($residents_summary["total"]),
+	],
+	[
+		"icon" => "flaticon-user",
+		"title" => "Male",
+		"subtitle" => "Total Male",
+		"value" => number_format($residents_summary["male"]),
+	],
+	[
+		"icon" => "icon-user-female",
+		"title" => "Female",
+		"subtitle" => "Total Female",
+		"value" => number_format($residents_summary["female"]),
+	],
+	[
+		"icon" => "fas fa-fingerprint",
+		"title" => "Voters",
+		"subtitle" => "Total Voters",
+		"value" => number_format($residents_summary["voters"]),
+	],
+	[
+		"icon" => "fas fa-fingerprint",
+		"title" => "Non voters",
+		"subtitle" => "Total Non voters",
+		"value" => number_format($residents_summary["non_voters"]),
+	],
+	[
+		"icon" => "fas fa-phone",
+		"title" => "Contact Number",
+		"subtitle" => "Contact Number Information",
+		"value" => number_format($precinct),
+	],
+	[
+		"icon" => "icon-direction",
+		"title" => "Purok Number",
+		"subtitle" => "Purok Information",
+		"value" => number_format($purok),
+	],
+	[
+		"icon" => "icon-layers",
+		"title" => "Blotter",
+		"subtitle" => "Blotter Information",
+		"value" => number_format($purok),
+	],
+	[
+		"icon-text" => "₱",
+		"title" => "Collection - by day",
+		"subtitle" => "Collection Payment",
+		"value" => number_format($revenue["am"], 2),
+	],
+	[
+		"icon" => "fas flaticon-user",
+		"title" => "4ps Members",
+		"subtitle" => "4ps Members",
+		"value" => $residents_summary["total_4ps"],
+	],
+	[
+		"icon" => "fas flaticon-user",
+		"title" => "PWD Members",
+		"subtitle" => "PWD Members",
+		"value" => $residents_summary["total_pwds"],
+	],
+	[
+		"icon" => "fas flaticon-user",
+		"title" => "Senior Members",
+		"subtitle" => "Senior Members",
+		"value" => $residents_summary["total_seniors"],
+	],
+	[
+		"icon" => "icon-layers",
+		"title" => "Requested Certificates",
+		"subtitle" => "Requested Certificates",
+		"value" => $certificate_requests_summary["total"],
+	],
+];
 ?>
 
 <!DOCTYPE html>
@@ -253,29 +363,29 @@ $announcements = (function () use ($db) {
                       <div class="col-md-4">
                         <div style="height: 250;" class="text-center" id="my_camera">
                           <img src="<?= imgSrc($resident_details["avatar"]) ??
-                            	"assets/img/person.png" ?>" alt="..." class="img " width="250" height="250"
+                          	"assets/img/person.png" ?>" alt="..." class="img " width="250" height="250"
                             style="max-height: 250; object-fit: cover;">
                         </div>
 
                         <div class="form-group">
                           <label>National ID No.</label>
                           <input type="text" class="form-control" name="national_id" readonly value="<?= $resident_details[
-                              	"national_id"
-                              ] ?>" placeholder="Enter National ID No." required>
+                          	"national_id"
+                          ] ?>" placeholder="Enter National ID No." required>
                         </div>
 
                         <div class="form-group">
                           <label>Citizenship</label>
                           <input type="text" class="form-control" readonly name="citizenship" value="<?= $resident_details[
-                              	"citizenship"
-                              ] ?>" placeholder="Enter citizenship" required>
+                          	"citizenship"
+                          ] ?>" placeholder="Enter citizenship" required>
                         </div>
 
                         <div class="form-group">
                           <label>Address</label>
                           <textarea class="form-control" readonly name="address" required placeholder="Enter Address"><?= $resident_details[
-                            	"address"
-                            ] ?></textarea>
+                          	"address"
+                          ] ?></textarea>
                         </div>
                       </div>
 
@@ -327,7 +437,9 @@ $announcements = (function () use ($db) {
                             <div class="form-group">
                               <label>Birthdate</label>
                               <input readonly type="date" class="form-control" placeholder="Enter Birthdate"
-                                name="birthdate" required value="<?= $resident_details["birthdate"] ?>">
+                                name="birthdate" required value="<?= $resident_details[
+                                	"birthdate"
+                                ] ?>">
                             </div>
                           </div>
                         </div>
@@ -418,18 +530,22 @@ $announcements = (function () use ($db) {
                               <div class="form-check">
                                 <div class="btn-group btn-group-justified" data-toggle="buttons">
                                   <label class="btn <?= $resident_details["is_4ps"] == 1
-                                    	? "active"
-                                    	: "" ?>">
-                                    <input readonly type="radio" name="is_4ps" class="hidden" <?= $resident_details["is_4ps"] == 1
-                                        	? "checked"
-                                        	: null ?> value="1"> Yes
+                                  	? "active"
+                                  	: "" ?>">
+                                    <input readonly type="radio" name="is_4ps" class="hidden" <?= $resident_details[
+                                    	"is_4ps"
+                                    ] == 1
+                                    	? "checked"
+                                    	: null ?> value="1"> Yes
                                   </label>
                                   <label class="btn <?= $resident_details["is_4ps"] == 0
-                                    	? "active"
-                                    	: "" ?>">
-                                    <input readonly type="radio" name="is_4ps" class="hidden" value="0" <?= $resident_details["is_4ps"] == 0
-                                        	? "checked"
-                                        	: null ?>> No
+                                  	? "active"
+                                  	: "" ?>">
+                                    <input readonly type="radio" name="is_4ps" class="hidden" value="0" <?= $resident_details[
+                                    	"is_4ps"
+                                    ] == 0
+                                    	? "checked"
+                                    	: null ?>> No
                                   </label>
                                 </div>
                               </div>
@@ -443,18 +559,22 @@ $announcements = (function () use ($db) {
                               <div class="form-check">
                                 <div class="btn-group" data-toggle="buttons">
                                   <label class="btn <?= $resident_details["is_pwd"] == 1
-                                    	? "active"
-                                    	: "" ?>">
-                                    <input disabled type="radio" name="is_pwd" class="hidden" <?= $resident_details["is_pwd"] == 1
-                                        	? "checked"
-                                        	: null ?> value="1"> Yes
+                                  	? "active"
+                                  	: "" ?>">
+                                    <input disabled type="radio" name="is_pwd" class="hidden" <?= $resident_details[
+                                    	"is_pwd"
+                                    ] == 1
+                                    	? "checked"
+                                    	: null ?> value="1"> Yes
                                   </label>
                                   <label class="btn <?= $resident_details["is_pwd"] == 0
-                                    	? "active"
-                                    	: "" ?>">
-                                    <input disabled type="radio" name="is_pwd" class="hidden" value="0" <?= $resident_details["is_pwd"] == 0
-                                        	? "checked"
-                                        	: null ?>> No
+                                  	? "active"
+                                  	: "" ?>">
+                                    <input disabled type="radio" name="is_pwd" class="hidden" value="0" <?= $resident_details[
+                                    	"is_pwd"
+                                    ] == 0
+                                    	? "checked"
+                                    	: null ?>> No
                                   </label>
                                 </div>
                               </div>
@@ -528,13 +648,20 @@ $announcements = (function () use ($db) {
 
             <?php if (isAdmin()): ?>
             <div class="row">
+              <?php foreach ($admin_dashboard_cards as $row): ?>
               <div class="col-md-4">
-                <div class="card card-stats card-primary card-round">
+                <div class="card card-stats card-round"
+                style="background-color: <?= getRandomColor() ?>; color: #fff"
+                >
                   <div class="card-body">
                     <div class="row">
                       <div class="col-2">
                         <div class="icon-big text-center">
-                          <i class="flaticon-users"></i>
+                          <?php if (isset($row["icon"])): ?>
+                            <i class="<?= $row["icon"] ?>"></i>
+                          <?php elseif (isset($row["icon-text"])): ?>
+                            <i><?= $row["icon-text"] ?></i>
+                            <?php endif; ?>
                         </div>
                       </div>
                       <div class="col-3 col-stats">
@@ -542,333 +669,23 @@ $announcements = (function () use ($db) {
                       <div class="col-6 col-stats">
                         <div class="numbers mt-4">
                           <h7 class="fw-bold text-uppercase">
-                            Population</h7>
+                            <?= $row["title"] ?>
+                            </h7>
                           <h3 class="fw-bold text-uppercase">
-                            <?= number_format($residents_summary["total"]) ?>
+                            <?= $row["value"] ?>
                           </h3>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="card-body">
-                    <a href="resident_info.php?state=all" class="card-link text-light">Total
-                      Population </a>
+                    <a href="javascript:void(0)" class="card-link text-light">
+                      <?= $row["subtitle"] ?>
+                    </a>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-secondary card-round">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="flaticon-user"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Male</h7>
-                          <h3 class="fw-bold">
-                            <?= number_format($residents_summary["male"]) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="resident_info.php?state=male" class="card-link text-light">Total
-                      Male </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-warning card-round">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="icon-user-female"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Female</h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($residents_summary["female"]) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="resident_info.php?state=female" class="card-link text-light">Total
-                      Female </a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="card card-stats card-success card-round">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="fas fa-fingerprint"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Voters</h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($residents_summary["voters"]) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="resident_info.php?state=voters" class="card-link text-light">Total
-                      Voters </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-info card-round">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="flaticon-users"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Non Voters</h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($residents_summary["non_voters"]) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="resident_info.php?state=non_voters" class="card-link text-light">Total
-                      Non Voters </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-round" style="background-color:#a349a3; color:#fff">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="fas fa-phone"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Contact Number</h7>
-                          <h7 class="fw-bold">
-                            <?= number_format($precinct) ?>
-                          </h7>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="purok_info.php?state=precinct" class="card-link text-light">Contact
-                      Number Information</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-round" style="background-color:#880a14; color:#fff">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="icon-direction"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Purok Number</h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($purok) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="purok_info.php?state=purok" class="card-link text-light">Purok
-                      Information</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-round card-danger">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="icon-layers"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Blotter</h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($blotter) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="blotter.php" class="card-link text-light">Blotter
-                      Information</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card card-stats card-round" style="background-color:#3E9C35; color:#fff">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i>₱</i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            Collection - by day
-                          </h7>
-                          <h7 class="fw-bold text-uppercase">
-                            P <?= number_format($revenue["am"], 2) ?></h7>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="revenue.php" class="card-link text-light">All
-                      Collection Payment</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="card card-stats card-round" style="background-color:#8E7f36; color:#fff">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="fas flaticon-user"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-4">
-                          <h7 class="fw-bold text-uppercase">
-                            4ps Member</h7>
-                          <h7 class="fw-bold text-uppercase">
-                            <?= number_format($revenue["am"], 2) ?>
-                          </h7>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="revenue.php" class="card-link text-light">4ps
-                      Members</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="card card-stats card-round card-danger">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="icon-layers"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-3">
-                          <h7 class="fw-bold text-uppercase">
-                            Requested Documents
-                          </h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($documents) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="requestdoc.php" class="card-link text-light">Requested
-                      Documents</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="card card-stats card-round card-info">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-2">
-                        <div class="icon-big text-center">
-                          <i class="icon-layers"></i>
-                        </div>
-                      </div>
-                      <div class="col-3 col-stats">
-                      </div>
-                      <div class="col-6 col-stats">
-                        <div class="numbers mt-3">
-                          <h7 class="fw-bold text-uppercase">
-                            Requested Certificates
-                          </h7>
-                          <h3 class="fw-bold text-uppercase">
-                            <?= number_format($certificate_requests_summary["total"]) ?>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <a href="requestdoc.php" class="card-link text-light">Requested Certificates</a>
-                  </div>
-                </div>
-              </div>
+              <?php endforeach; ?>
             </div>
             <?php endif; ?>
 
