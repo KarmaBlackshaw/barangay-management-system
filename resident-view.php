@@ -65,7 +65,6 @@ $resident = (function () use ($db) {
     ])
     ->exec();
 })();
-
 ?>
 
 <!DOCTYPE html>
@@ -139,7 +138,8 @@ $resident = (function () use ($db) {
                   <div class="row g-5">
                     <div class="col-md-4">
                       <div style="height: 250;" class="text-center" id="my_camera">
-                        <img src="<?= imgSrc($resident["avatar"]) ?? "assets/img/person.png" ?>" alt="..." class="img "
+                        <img src="<?= imgSrc($resident["avatar"]) ??
+                        	"assets/img/person.png" ?>" alt="..." class="img "
                           width="250" height="250" style="max-height: 250; object-fit: cover;">
                       </div>
 
@@ -163,13 +163,17 @@ $resident = (function () use ($db) {
                       <div class="form-group">
                         <label>National ID No.</label>
                         <input type="text" class="form-control" name="national_id"
-                          value="<?= $resident["national_id"] ?>" placeholder="Enter National ID No." required>
+                          value="<?= $resident[
+                          	"national_id"
+                          ] ?>" placeholder="Enter National ID No." required>
                       </div>
 
                       <div class="form-group">
                         <label>Citizenship</label>
                         <input type="text" class="form-control" name="citizenship"
-                          value="<?= $resident["citizenship"] ?>" placeholder="Enter citizenship" required>
+                          value="<?= $resident[
+                          	"citizenship"
+                          ] ?>" placeholder="Enter citizenship" required>
                       </div>
 
                       <div class="form-group">
@@ -246,21 +250,32 @@ $resident = (function () use ($db) {
                           <div class="form-group">
                             <label>Civil Status</label>
 
-                            <select class="form-control" name="civil_status" value="<?= $resident["civilstatus"] ?>">
+                            <select class="form-control" name="civil_status" value="<?= $resident[
+                            	"civilstatus"
+                            ] ?>">
                               <option disabled selected>Select Civil Status</option>
 
                               <option value="Single"
-                                <?= ifThen($resident["civilstatus"] == "Single", 'selected="true"') ?>>
+                                <?= ifThen(
+                                	$resident["civilstatus"] == "Single",
+                                	'selected="true"'
+                                ) ?>>
                                 Single
                               </option>
 
                               <option value="Married"
-                                <?= ifThen($resident["civilstatus"] == "Married", 'selected="true"') ?>>
+                                <?= ifThen(
+                                	$resident["civilstatus"] == "Married",
+                                	'selected="true"'
+                                ) ?>>
                                 Married
                               </option>
 
                               <option value="Widow"
-                                <?= ifThen($resident["civilstatus"] == "Widow", 'selected="true"') ?>>
+                                <?= ifThen(
+                                	$resident["civilstatus"] == "Widow",
+                                	'selected="true"'
+                                ) ?>>
                                 Widow
                               </option>
                             </select>
@@ -270,14 +285,22 @@ $resident = (function () use ($db) {
                         <div class="col-sm-4">
                           <div class="form-group">
                             <label>Gender</label>
-                            <select class="form-control" name="gender" required value="<?= $resident["gender"] ?>">
+                            <select class="form-control" name="gender" required value="<?= $resident[
+                            	"gender"
+                            ] ?>">
                               <option disabled selected>Select Gender</option>
 
-                              <option <?= ifThen($resident["gender"] == "Male", 'selected="true"') ?> value="Male">
+                              <option <?= ifThen(
+                              	$resident["gender"] == "Male",
+                              	'selected="true"'
+                              ) ?> value="Male">
                                 Male
                               </option>
 
-                              <option <?= ifThen($resident["gender"] == "Female", 'selected="true"') ?> value="Female">
+                              <option <?= ifThen(
+                              	$resident["gender"] == "Female",
+                              	'selected="true"'
+                              ) ?> value="Female">
                                 Female
                               </option>
                             </select>
@@ -293,7 +316,10 @@ $resident = (function () use ($db) {
                               <option disabled selected>Select Purok Name</option>
                               <?php foreach ($purokList as $purok): ?>
                               <option value="<?= $purok["id"] ?>"
-                                <?= ifThen($resident["purok_id"] == $purok["id"], 'selected="true"') ?>>
+                                <?= ifThen(
+                                	$resident["purok_id"] == $purok["id"],
+                                	'selected="true"'
+                                ) ?>>
                                 <?= $purok["name"] ?>
                               </option>
                               <?php endforeach; ?>
@@ -308,11 +334,17 @@ $resident = (function () use ($db) {
                               value="<?= $resident["voterstatus"] ?>">
                               <option disabled selected>Select Voters Status</option>
 
-                              <option value="Yes" <?= ifThen($resident["voterstatus"] == "Yes", 'selected="true"') ?>>
+                              <option value="Yes" <?= ifThen(
+                              	$resident["voterstatus"] == "Yes",
+                              	'selected="true"'
+                              ) ?>>
                                 Yes
                               </option>
 
-                              <option value="No" <?= ifThen($resident["voterstatus"] == "No", 'selected="true"') ?>>
+                              <option value="No" <?= ifThen(
+                              	$resident["voterstatus"] == "No",
+                              	'selected="true"'
+                              ) ?>>
                                 No
                               </option>
                             </select>
@@ -358,40 +390,55 @@ $resident = (function () use ($db) {
                       </div>
 
                       <div class="row g-0">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                           <div class="form-group">
                             <label>Are you a 4Ps Beneficiary?</label>
 
                             <div class="form-check">
                               <div class="btn-group btn-group-justified" data-toggle="buttons">
-                                <label class="btn <?= $resident['is_4ps'] == 1 ? 'active' : '' ?>">
+                                <label class="btn <?= $resident["is_4ps"] == 1 ? "active" : "" ?>">
                                   <input type="radio" name="is_4ps" class="hidden"
-                                    <?= $resident['is_4ps'] == 1 ? 'checked' : null ?> value="1"> Yes
+                                    <?= $resident["is_4ps"] == 1
+                                    	? "checked"
+                                    	: null ?> value="1"> Yes
                                 </label>
-                                <label class="btn <?= $resident['is_4ps'] == 0 ? 'active' : '' ?>">
+                                <label class="btn <?= $resident["is_4ps"] == 0 ? "active" : "" ?>">
                                   <input type="radio" name="is_4ps" class="hidden" value="0"
-                                    <?= $resident['is_4ps'] == 0 ? 'checked' : null ?>> No
+                                    <?= $resident["is_4ps"] == 0 ? "checked" : null ?>> No
                                 </label>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                           <div class="form-group">
                             <label>Are you a PWD?</label>
 
                             <div class="form-check">
                               <div class="btn-group" data-toggle="buttons">
-                                <label class="btn <?= $resident['is_pwd'] == 1 ? 'active' : '' ?>">
+                                <label class="btn <?= $resident["is_pwd"] == 1 ? "active" : "" ?>">
                                   <input type="radio" name="is_pwd" class="hidden"
-                                    <?= $resident['is_pwd'] == 1 ? 'checked' : null ?> value="1"> Yes
+                                    <?= $resident["is_pwd"] == 1
+                                    	? "checked"
+                                    	: null ?> value="1"> Yes
                                 </label>
-                                <label class="btn <?= $resident['is_pwd'] == 0 ? 'active' : '' ?>">
+                                <label class="btn <?= $resident["is_pwd"] == 0 ? "active" : "" ?>">
                                   <input type="radio" name="is_pwd" class="hidden" value="0"
-                                    <?= $resident['is_pwd'] == 0 ? 'checked' : null ?>> No
+                                    <?= $resident["is_pwd"] == 0 ? "checked" : null ?>> No
                                 </label>
                               </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                          <div class="form-group">
+                            <label>Is senior?</label>
+
+                            <div class="form-check">
+                            <input class="form-control" readonly placeholder="Is senior" name="is_senior"
+                              value="<?= $resident["is_senior"] ? "Yes" : "No" ?>">
                             </div>
                           </div>
                         </div>
@@ -456,7 +503,24 @@ $resident = (function () use ($db) {
       </div>
     </div>
 
+
     <?php include "templates/footer.php"; ?>
+
+    <script>
+      $(document).ready(function () {
+          const ageInput = document.querySelector('input[name="age"]')
+          const isSeniorInput = document.querySelector('input[name="is_senior"]')
+
+          if (ageInput) {
+            ageInput.addEventListener('input', function (e) {
+              const age = Number(e.target.value)
+
+              isSeniorInput.value = age > 60 ? 'Yes' : 'No'
+
+            })
+          }
+      })
+    </script>
   </body>
 
 </html>

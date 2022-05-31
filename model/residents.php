@@ -4,11 +4,12 @@ include "../bootstrap/index.php";
 
 use function _\camelCase as _camelCase;
 
-function toNumberOrZero($val) {
-  if (is_numeric($val)) {
-    return $val + 0;
-  }
-  return 0;
+function toNumberOrZero($val)
+{
+	if (is_numeric($val)) {
+		return $val + 0;
+	}
+	return 0;
 }
 
 if (isset($_POST["register-resident"])) {
@@ -368,6 +369,7 @@ if (isset($_POST["update-resident"])) {
 			"occupation" => $occupation,
 			"is_4ps" => $is_4ps,
 			"is_pwd" => $is_pwd,
+			"is_senior" => ((int) $age) > 60 ? 1 : 0,
 			"address" => $address,
 		])
 		->exec();
@@ -379,20 +381,20 @@ if (isset($_POST["update-resident"])) {
 	return $conn->close();
 }
 
-if (isset($_GET['unset-4ps'])) {
-	$resident_id = $_GET['id'];
+if (isset($_GET["unset-4ps"])) {
+	$resident_id = $_GET["id"];
 
 	$db
-	->update('residents')
-	->where('residents.id', $resident_id)
-	->set([
-		'is_4ps' => 0
-	])
-	->exec();
+		->update("residents")
+		->where("residents.id", $resident_id)
+		->set([
+			"is_4ps" => 0,
+		])
+		->exec();
 
-		$_SESSION["message"] = "Resident removed from 4Ps";
-		$_SESSION["status"] = "success";
+	$_SESSION["message"] = "Resident removed from 4Ps";
+	$_SESSION["status"] = "success";
 
-		header("location: ../4ps-residents.php");
-		return $conn->close();
+	header("location: ../4ps-residents.php");
+	return $conn->close();
 }
