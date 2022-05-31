@@ -209,14 +209,6 @@ function appendActiveClass(array $pages)
             <p>Support</p>
           </a>
         </li>
-        <?php if (isStaff()): ?>
-          <li class="nav-item">
-            <a href="#requestdoc" data-toggle="modal">
-              <i class="fas fa-flag"></i>
-              <p>Requested Documents</p>
-            </a>
-          </li>
-        <?php endif; ?>
         <?php endif; ?>
 
         <?php if (isAdmin()): ?>
