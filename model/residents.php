@@ -385,8 +385,11 @@ if (isset($_GET["remove-resident"])) {
 	$resident_id = $_GET["id"];
 
 	$db
-		->delete("residents")
+		->update("residents")
 		->where("residents.id", $resident_id)
+		->set([
+			"deleted_at" => date("Y-m-d"),
+		])
 		->exec();
 
 	$_SESSION["message"] = "Resident removed";

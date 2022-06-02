@@ -23,6 +23,7 @@ $residentList = (function () use ($db) {
     ->from("residents")
     ->join("purok", "purok.id", "residents.purok_id")
     ->join("users", "users.id", "residents.account_id")
+    ->whereRaw("residents.deleted_at IS NULL")
     ->orderBy("residents.id", "desc")
     ->select([
       "id" => "residents.id",
