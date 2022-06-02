@@ -19,7 +19,7 @@ $purokList = (function () use ($db) {
 
 $residentList = (function () use ($db) {
 	// prettier-ignore
-	return $db
+	$query = $db
     ->from("residents")
     ->join("purok", "purok.id", "residents.purok_id")
     ->join("users", "users.id", "residents.account_id")
@@ -50,8 +50,25 @@ $residentList = (function () use ($db) {
       "purok_id" => "purok.id",
       "purok_name" => "purok.name",
       "purok_details" => "purok.details",
-    ])
-    ->exec();
+    ]);
+
+	if (isset($_GET["gender"])) {
+		$query->where("residents.gender", $_GET["gender"]);
+	}
+
+	if (isset($_GET["voter"])) {
+		$query->where("residents.voterstatus", $_GET["voter"]);
+	}
+
+	if (isset($_GET["is_pwd"])) {
+		$query->where("residents.is_pwd", $_GET["is_pwd"]);
+	}
+
+	if (isset($_GET["is_senior"])) {
+		$query->where("residents.is_senior", $_GET["is_senior"]);
+	}
+
+	return $query->exec();
 })();
 ?>
 <!DOCTYPE html>
@@ -188,7 +205,9 @@ $residentList = (function () use ($db) {
                                       <a
                                         type="button"
                                         data-toggle="tooltip"
-                                        href="model/remove_resident.php?id=<?= $row["id"] ?>"
+                                        href="model/residents.php?id=<?= $row[
+                                        	"id"
+                                        ] ?>&remove-resident=1"
                                         onclick="confirm('Are you sure you want to delete this resident?');" class="btn btn-link btn-danger"
                                         data-original-title="Remove"
                                       >

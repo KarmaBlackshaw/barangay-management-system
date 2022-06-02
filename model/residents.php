@@ -381,6 +381,21 @@ if (isset($_POST["update-resident"])) {
 	return $conn->close();
 }
 
+if (isset($_GET["remove-resident"])) {
+	$resident_id = $_GET["id"];
+
+	$db
+		->delete("residents")
+		->where("residents.id", $resident_id)
+		->exec();
+
+	$_SESSION["message"] = "Resident removed";
+	$_SESSION["status"] = "success";
+
+	header("location: ../resident-view.php");
+	return $conn->close();
+}
+
 if (isset($_GET["unset-4ps"])) {
 	$resident_id = $_GET["id"];
 
