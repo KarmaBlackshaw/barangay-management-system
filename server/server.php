@@ -163,11 +163,11 @@ class DB
 
 	public function whereRaw(string $query)
 	{
-			if ($this->_where === "") {
-				$this->_where = " WHERE {$query} ";
-			} else {
-				$this->_where .= " AND {$query} ";
-			}
+		if ($this->_where === "") {
+			$this->_where = " WHERE {$query} ";
+		} else {
+			$this->_where .= " AND {$query} ";
+		}
 
 		return $this;
 	}
