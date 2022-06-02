@@ -400,9 +400,11 @@ $resident = (function () use ($db) {
 
         <input type="hidden" name="resident_id" value="<?= $resident["id"] ?>">
 
-        <a type="submit" href="resident.php" class="btn btn-dark btn-block text-white fw-bold">
-          Back
-        </a>
+        <?php if (isAdmin()): ?>
+          <a type="submit" href="resident.php" class="btn btn-dark btn-block text-white fw-bold">
+            Back
+          </a>
+        <?php endif; ?>
 
         <button type="submit" class="btn btn-success btn-block text-white fw-bold">
           Update
