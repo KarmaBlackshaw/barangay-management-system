@@ -179,78 +179,91 @@ $admin_dashboard_cards = [
 		"title" => "Population",
 		"subtitle" => "Total Population",
 		"value" => number_format($residents_summary["total"]),
+		"href" => "resident.php",
 	],
 	[
 		"icon" => "flaticon-user",
 		"title" => "Male",
 		"subtitle" => "Total Male",
 		"value" => number_format($residents_summary["male"]),
+		"href" => "resident.php?gender=male",
 	],
 	[
 		"icon" => "icon-user-female",
 		"title" => "Female",
 		"subtitle" => "Total Female",
 		"value" => number_format($residents_summary["female"]),
+		"href" => "resident.php?gender=female",
 	],
 	[
 		"icon" => "fas fa-fingerprint",
 		"title" => "Voters",
 		"subtitle" => "Total Voters",
 		"value" => number_format($residents_summary["voters"]),
+		"href" => "resident.php?voter=yes",
 	],
 	[
 		"icon" => "fas fa-fingerprint",
 		"title" => "Non voters",
 		"subtitle" => "Total Non voters",
 		"value" => number_format($residents_summary["non_voters"]),
+		"href" => "resident.php?voter=no",
 	],
 	[
 		"icon" => "fas fa-phone",
 		"title" => "Contact Number",
 		"subtitle" => "Contact Number Information",
 		"value" => number_format($precinct),
+		"href" => "precinct.php",
 	],
 	[
 		"icon" => "icon-direction",
 		"title" => "Purok Number",
 		"subtitle" => "Purok Information",
 		"value" => number_format($purok),
+		"href" => "purok.php",
 	],
 	[
 		"icon" => "icon-layers",
 		"title" => "Blotter",
 		"subtitle" => "Blotter Information",
-		"value" => number_format($purok),
+		"value" => number_format($blotter),
+		"href" => "blotter.php",
 	],
 	[
 		"icon-text" => "₱",
 		"title" => "Collection - by day",
 		"subtitle" => "Collection Payment",
 		"value" => number_format($revenue["am"], 2),
+		"href" => "revenue.php",
 	],
 	[
 		"icon" => "fas flaticon-user",
 		"title" => "4ps Members",
 		"subtitle" => "4ps Members",
 		"value" => $residents_summary["total_4ps"],
+		"href" => "4ps-residents.php",
 	],
 	[
 		"icon" => "fas flaticon-user",
 		"title" => "PWD Members",
 		"subtitle" => "PWD Members",
 		"value" => $residents_summary["total_pwds"],
+		"href" => "resident.php?is_pwd=1",
 	],
 	[
 		"icon" => "fas flaticon-user",
 		"title" => "Senior Members",
 		"subtitle" => "Senior Members",
 		"value" => $residents_summary["total_seniors"],
+		"href" => "resident.php?is_senior=1",
 	],
 	[
 		"icon" => "icon-layers",
 		"title" => "Requested Certificates",
 		"subtitle" => "Requested Certificates",
 		"value" => $certificate_requests_summary["total"],
+		"href" => "certificate-requests.php",
 	],
 ];
 ?>
@@ -679,7 +692,7 @@ $admin_dashboard_cards = [
                     </div>
                   </div>
                   <div class="card-body">
-                    <a href="javascript:void(0)" class="card-link text-light">
+                    <a href="<?= $row["href"] ?>" class="card-link text-light">
                       <?= $row["subtitle"] ?>
                     </a>
                   </div>
