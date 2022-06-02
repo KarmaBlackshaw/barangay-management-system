@@ -384,13 +384,28 @@ if (isset($_POST["update-resident"])) {
 if (isset($_GET["remove-resident"])) {
 	$resident_id = $_GET["id"];
 
-	$db
-		->update("residents")
+	$conn->query("SET FOREIGN_KEY_CHECKS=0;");
+
+	$resident_details = $db
+		->from("residents")
 		->where("residents.id", $resident_id)
-		->set([
-			"deleted_at" => date("Y-m-d"),
+		->select([
+			"account_id" => "residents.account_id",
 		])
+		->first()
 		->exec();
+
+	$db
+		->delete("residents")
+		->where("residents.id", $resident_id)
+		->exec();
+
+	$db
+		->delete("users")
+		->where("id", $resident_details["account_id"])
+		->exec();
+
+	$conn->query("SET FOREIGN_KEY_CHECKS=1;");
 
 	$_SESSION["message"] = "Resident removed";
 	$_SESSION["status"] = "success";
