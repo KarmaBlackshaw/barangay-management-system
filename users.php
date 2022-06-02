@@ -1,12 +1,20 @@
-<?php include "bootstrap/index.php"; ?>
 <?php
-$user = $_SESSION["username"];
-$query = "SELECT * FROM users WHERE NOT username='$user' ORDER BY `created_at` DESC";
-$result = $conn->query($query);
-$users = [];
-while ($row = $result->fetch_assoc()) {
-	$users[] = $row;
-}
+
+require_once "./bootstrap/index.php";
+
+$users = $db
+	->from("users")
+	->orderBy("created_at", "desc")
+	->whereNot("users.username", $_SESSION["username"])
+	->select([
+		"id" => "users.id",
+		"username" => "users.username",
+		"password" => "users.password",
+		"user_type" => "users.user_type",
+		"avatar" => "users.avatar",
+		"created_at" => "users.created_at",
+	])
+	->exec();
 ?>
 <!DOCTYPE html>
 <html lang="en">
