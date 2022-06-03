@@ -3,12 +3,12 @@
 <head>
     <title>BarangayServicesManagementSystem</title>
     <script language="javascript">
-        window.location.href = "dashboard.php"
+        window.location.href = "login.php"
     </script>
 </head>
 
 <body>
-    Go to <a href="dashboard.php">dashboard.php</a>
+    Go to <a href="login.php">login.php</a>
 </body>
 
 </html>
