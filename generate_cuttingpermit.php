@@ -17,6 +17,33 @@ $captain = $db
     "name" => "officials.name",
   ])
   ->exec();
+
+if (isset($_GET['request_id'])) {
+  $cr_request = $db
+    ->from(["certificate_requests" => "cr"])
+    ->join("residents", "residents.id", "cr.resident_id")
+    ->where("cr.id", $_GET['request_id'])
+    ->first()
+    ->select([
+      "data" => "cr.data",
+      "firstname" => "residents.firstname",
+      "middlename" => "residents.middlename",
+      "lastname" => "residents.lastname",
+      "created_at" => "residents.created_at",
+    ])
+    ->exec();
+
+  if (!empty($cr_request)) {
+    $cr_request['data'] = json_decode($cr_request['data'], true);
+
+    $request['name'] = fullname($cr_request);
+    $request['pcs'] = $cr_request['data']['quantity'];
+    $request['type'] = $cr_request['data']['material'];
+    $request['location'] = $cr_request['data']['location'];
+    $request['applied'] = $cr_request['created_at'];
+  }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

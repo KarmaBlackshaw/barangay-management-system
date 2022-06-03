@@ -18,6 +18,25 @@ $captain = $db
   ])
   ->exec();
 
+if (isset($_GET['request_id'])) {
+  $request = $db
+    ->from(["certificate_requests" => "cr"])
+    ->where("cr.id", $_GET['request_id'])
+    ->first()
+    ->exec();
+
+  if (!empty($request)) {
+    $request['data'] = json_decode($request['data'], true);
+
+    $permit['name'] = $request['data']['name'];
+    $permit['owner1'] = $request['data']['owner_1'];
+    $permit['owner2'] = $request['data']['owner_2'];
+    $permit['nature'] = $request['data']['nature'];
+    $permit['applied'] = $request['created_at'];
+  }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,14 +124,14 @@ $captain = $db
                         <h2 class="mt-5 fw-bold">GRANTED TO:</h2>
                         <div class="text-center pt-4">
                           <h1 class="mt-4 fw-bold mb-0"><?= ucfirst($permit['name']) ?></h1>
-                          <hr class="w-50 mt-0 mb-0" style="border-top: 2px solid black;">
+                          <hr class="w-50 mt-0 mb-0 mx-auto" style="border-top: 2px solid black;">
                           <h2 class="mt-0">NAME OF BUSINESS OR ESTABLISHMENT</h2>
                         </div>
                         <div class="text-center pt-4 mb-5">
                           <h1 class="mt-4 fw-bold mb-0">
                             <?= empty($permit['owner2']) ? $permit['owner1'] : ucwords($permit['owner1'] . ' & ' . $permit['owner2']) ?>
                           </h1>
-                          <hr class="w-50 mt-0 mb-0" style="border-top: 2px solid black;">
+                          <hr class="w-50 mt-0 mb-0 mx-auto" style="border-top: 2px solid black;">
                           <h2 class="mt-0">NAME OF BUSINESS OR ESTABLISHMENT</h2>
                         </div>
                         <h2 class="mt-5" style="text-indent: 40px;">This clearance is granted in accordance with section

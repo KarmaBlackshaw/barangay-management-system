@@ -52,6 +52,7 @@ $request_list = (function () use ($db) {
 			->from(["certificate_requests" => "cr"])
 			->join("certificates", "certificates.id", "cr.certificate_id")
 			->join("residents", "residents.id", "cr.resident_id")
+      ->orderBy("cr.created_at", "desc")
 			->select([
 				"id" => "cr.id",
 				"certificate_id" => "cr.certificate_id",
@@ -148,23 +149,16 @@ $request_list = (function () use ($db) {
                             </td>
                             <td class="d-flex justify-content-center align-items-center gap-3">
                               <?php if (isUser()): ?>
-                              <a
-                                href="javascript:void(0)"
-                                data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>"
-                                data-value-memo="<?= $request["memo"] ?>"
-                                data-value-certificate_id="<?= $request["certificate_id"] ?>"
-                                onclick="showModal(this)">
+                              <a href="javascript:void(0)" data-target="#edit-request"
+                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
+                                data-value-certificate_id="<?= $request["certificate_id"] ?>" onclick="showModal(this)">
                                 <i class="fa fa-edit"></i>
                               </a>
                               <?php endif; ?>
 
                               <?php if (role(["administrator", "staff"])): ?>
-                              <a
-                                href="javascript:void(0)"
-                                data-target="#edit-request"
-                                data-value-id="<?= $request["id"] ?>"
-                                data-value-memo="<?= $request["memo"] ?>"
+                              <a href="javascript:void(0)" data-target="#edit-request"
+                                data-value-id="<?= $request["id"] ?>" data-value-memo="<?= $request["memo"] ?>"
                                 data-value-certificate_id="<?= $request[
                                 	"certificate_id"
                                 ] ?>" onclick="showModal(this)">
@@ -244,48 +238,52 @@ $request_list = (function () use ($db) {
                       <div class="col-md-12">
                         <div class="form-group">
                           <label>Business Name</label>
-                          <input
-                            class="form-control"
-                            placeholder="Enter business name"
-                            name="business_name"
-                            required
-                          />
+                          <input class="form-control" placeholder="Enter business name" name="business_name" />
                         </div>
                       </div>
 
                       <div class="col-md-12">
                         <div class="form-group">
                           <label>Business Owner 1</label>
-                          <input
-                            class="form-control"
-                            placeholder="Enter business name"
-                            name="business_owner_1"
-                            required
-                          />
+                          <input class="form-control" placeholder="Enter business name" name="business_owner_1" />
                         </div>
                       </div>
 
                       <div class="col-md-12">
                         <div class="form-group">
                           <label>Business Owner 2</label>
-                          <input
-                            class="form-control"
-                            placeholder="Enter business name"
-                            name="business_owner_2"
-                            required
-                          />
+                          <input class="form-control" placeholder="Enter business name" name="business_owner_2" />
                         </div>
                       </div>
 
                       <div class="col-md-12">
                         <div class="form-group">
                           <label>Nature of Business</label>
-                          <input
-                            class="form-control"
-                            placeholder="Enter business name"
-                            name="business_nature"
-                            required
-                          />
+                          <input class="form-control" placeholder="Enter business name" name="business_nature" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="add_certificate_cutting_container">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Material</label>
+                          <input class="form-control" placeholder="Enter material name (e.g., coconut)"
+                            name="cutting_material" />
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Quantity</label>
+                          <input class="form-control" placeholder="Enter quantity" name="cutting_quantity" />
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>Location</label>
+                          <input class="form-control" placeholder="Enter location" name="cutting_location" />
                         </div>
                       </div>
                     </div>
@@ -336,14 +334,8 @@ $request_list = (function () use ($db) {
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Memo</label>
-                      <textarea
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter Complainant Name"
-                        id="edit-request-memo"
-                        name="memo"
-                        required
-                        <?= ifThen(!isUser(), "readonly") ?>>
+                      <textarea type="text" class="form-control" placeholder="Enter Complainant Name"
+                        id="edit-request-memo" name="memo" required <?= ifThen(!isUser(), "readonly") ?>>
                       </textarea>
                     </div>
                   </div>
@@ -376,16 +368,27 @@ $request_list = (function () use ($db) {
         "order": []
       });
 
-      const businessContainer = $('#add_certificate_business_container')
+      const certificatesById = {
+        5: $('#add_certificate_business_container'),
+        6: $('#add_certificate_cutting_container')
+      }
 
-      businessContainer.hide()
+      function hideCertificateContainers() {
+        for (const key in certificatesById) {
+          const element = certificatesById[key];
+          element.hide()
+        }
+      }
+
+      hideCertificateContainers()
+
       $('#add_certificate_options').on('change', e => {
         const certificateId = e.target.value
 
-        if (certificateId == 5) {
-          businessContainer.show()
-        } else {
-          businessContainer.hide()
+        hideCertificateContainers()
+
+        if (certificatesById[certificateId]) {
+          certificatesById[certificateId].show()
         }
       })
     });

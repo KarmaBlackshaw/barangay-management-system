@@ -246,7 +246,7 @@ class DB
 
 	public function values(array $payload)
 	{
-		$wrapQuote = fn($str) => '"' . $str . '"';
+		$wrapQuote = fn($str) => "'" . $str . "'";
 		$wrapTicks = fn($str) => "`" . $str . "`";
 
 		$filteredPayload = array_filter($payload);

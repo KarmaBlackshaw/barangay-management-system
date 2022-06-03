@@ -35,6 +35,8 @@ if (isset($_POST["request-certificate"])) {
 		])
 		->exec();
 
+	$has_empty_cert_field = false;
+
 	/**
 	 * Is business clearance
 	 */
@@ -52,18 +54,38 @@ if (isset($_POST["request-certificate"])) {
 			"Business Nature" => $request_data["nature"],
 		];
 
-		/**
-		 * Check required fields
-		 */
-		$emptyRequiredField = array_find_key($requiredFields, fn($item) => empty($item));
+		$has_empty_cert_field = array_find_key($requiredFields, fn($item) => empty($item));
+	}
 
-		if ($emptyRequiredField) {
-			$_SESSION["message"] = "<b>$emptyRequiredField</b> is required!";
-			$_SESSION["status"] = "danger";
+	/**
+	 * Is cutting permit
+	 */
+	if ($certificate_id == 6) {
+		$request_data = [
+			"material" => getBody("cutting_material", $_POST),
+			"quantity" => getBody("cutting_quantity", $_POST),
+			"location" => getBody("cutting_location", $_POST),
+		];
 
-			header("Location: ../certificate-requests.php");
-			return $conn->close();
-		}
+		$requiredFields = [
+			"Material" => $request_data["material"],
+			"Quantity" => $request_data["quantity"],
+			"Location" => $request_data["location"],
+		];
+
+		$has_empty_cert_field = array_find_key($requiredFields, fn($item) => empty($item));
+	}
+
+	/**
+	 * Check required fields
+	 */
+
+	if ($has_empty_cert_field) {
+		$_SESSION["message"] = "<b>$has_empty_cert_field</b> is required!";
+		$_SESSION["status"] = "danger";
+
+		header("Location: ../certificate-requests.php");
+		return $conn->close();
 	}
 
 	$result = $db
@@ -77,27 +99,27 @@ if (isset($_POST["request-certificate"])) {
 		])
 		->exec();
 
-	// if ($result["status"] !== true) {
-	// 	$_SESSION["message"] = "Internal server error";
-	// 	$_SESSION["status"] = "danger";
+	if ($result["status"] !== true) {
+		$_SESSION["message"] = "Internal server error";
+		$_SESSION["status"] = "danger";
 
-	// 	header("Location: ../certificate-requests.php");
-	// 	return $conn->close();
-	// }
+		header("Location: ../certificate-requests.php");
+		return $conn->close();
+	}
 
-	// $db
-	// 	->update("certificate_requests")
-	// 	->where("id", $result["id"])
-	// 	->set([
-	// 		"url" => $certificateDetails["url"] . "?id=$resident_id&request_id={$result["id"]}",
-	// 	])
-	// 	->exec();
+	$db
+		->update("certificate_requests")
+		->where("id", $result["id"])
+		->set([
+			"url" => $certificateDetails["url"] . "?id=$resident_id&request_id={$result["id"]}",
+		])
+		->exec();
 
-	// $_SESSION["message"] = "Certificate request sent!";
-	// $_SESSION["status"] = "success";
+	$_SESSION["message"] = "Certificate request sent!";
+	$_SESSION["status"] = "success";
 
-	// header("Location: ../certificate-requests.php");
-	// return $conn->close();
+	header("Location: ../certificate-requests.php");
+	return $conn->close();
 }
 
 if (isset($_POST["edit-request"])) {
